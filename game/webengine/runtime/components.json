@@ -1,0 +1,758 @@
+{
+ "Sound": {
+  "module": "audio",
+  "title": "소리",
+  "icon": "🔊",
+  "help": "소리 파일을 튼다. '시작하면 재생'을 끄면 코드에서 this.node.get(\"Sound\").play()로 튼다",
+  "props": {
+   "asset": {
+    "type": "asset",
+    "default": "",
+    "label": "소리 파일"
+   },
+   "autoplay": {
+    "type": "bool",
+    "default": true,
+    "label": "시작하면 재생"
+   },
+   "loop": {
+    "type": "bool",
+    "default": false,
+    "label": "반복"
+   },
+   "volume": {
+    "type": "number",
+    "default": 1,
+    "label": "크기",
+    "help": "0 = 소리 없음 · 1 = 원래 크기",
+    "min": 0,
+    "max": 1
+   }
+  }
+ },
+ "Particles": {
+  "module": "fx",
+  "title": "입자 효과",
+  "icon": "✨",
+  "help": "같은 오브젝트의 그리기 판에 입자 효과를 그린다 (튀는 조각·고리·번쩍임·선). 코드: node.get(\"Particles\").play(효과 목록, x, y)",
+  "props": {
+   "limit": {
+    "type": "number",
+    "default": 600,
+    "label": "입자 최대 수",
+    "help": "넘으면 오래된 것부터 지운다",
+    "unit": "개",
+    "min": 10,
+    "max": 5000
+   }
+  }
+ },
+ "Feed": {
+  "module": "talk",
+  "title": "이야기 칸",
+  "icon": "💬",
+  "help": "이름표 붙은 말과 서술을 차례로 쌓는다. 한 글자씩 나오고, 누르면 다 보이고, 새 글을 따라 끝으로 내려간다. 코드: await node.get(\"Feed\").say({who: \"이름\", text: \"글\", kind: \"say\"}) — kind는 say(말)·narr(서술)·me(내 말)·note(알림)",
+  "props": {
+   "speed": {
+    "type": "number",
+    "default": 40,
+    "label": "글 빠르기",
+    "help": "한 글자씩 나오는 빠르기. 0 = 바로 다 나옴",
+    "unit": "글자/초",
+    "min": 0,
+    "max": 200
+   },
+   "size": {
+    "type": "number",
+    "default": 17,
+    "label": "글자 크기",
+    "help": "0 = 스타일 시트를 따름 (모양 전부)",
+    "unit": "px",
+    "min": 0
+   },
+   "color": {
+    "type": "color",
+    "default": "#e8e6e1",
+    "label": "글자 색"
+   },
+   "nameColor": {
+    "type": "color",
+    "default": "#9ec1ff",
+    "label": "이름표 색"
+   },
+   "back": {
+    "type": "color",
+    "default": "",
+    "label": "배경색",
+    "help": "비우면 투명"
+   },
+   "gap": {
+    "type": "number",
+    "default": 12,
+    "label": "줄 사이 간격",
+    "unit": "px",
+    "min": 0,
+    "max": 60
+   },
+   "follow": {
+    "type": "bool",
+    "default": true,
+    "label": "새 글을 따라 내려가기",
+    "help": "끄면 읽던 자리에 머문다"
+   },
+   "keep": {
+    "type": "number",
+    "default": 200,
+    "label": "남겨 둘 줄 수",
+    "help": "넘으면 가장 오래된 줄부터 지운다",
+    "unit": "줄",
+    "min": 10,
+    "max": 2000
+   }
+  }
+ },
+ "Choices": {
+  "module": "talk",
+  "title": "번호 선택지",
+  "icon": "🔢",
+  "help": "번호가 붙은 고를 것을 보인다. 누르거나 숫자 키로 고르면 'pick' 신호({id, index, item}), 마우스를 올리거나 길게 누르면 'hover' 신호. 코드: node.get(\"Choices\").show([{id: \"a\", label: \"글\"}]) · const 고른것 = await ….ask(목록) · await ….confirm(\"할 일\")",
+  "props": {
+   "max": {
+    "type": "number",
+    "default": 4,
+    "label": "선택지 최대 수",
+    "help": "이보다 많이 주면 앞에서부터 이만큼만 보인다",
+    "unit": "개",
+    "min": 1,
+    "max": 9
+   },
+   "keys": {
+    "type": "bool",
+    "default": true,
+    "label": "숫자 키로 고르기"
+   },
+   "once": {
+    "type": "bool",
+    "default": true,
+    "label": "고르면 닫기",
+    "help": "하나를 고르면 선택지를 치운다 (두 번 고르지 못하게)"
+   },
+   "longPress": {
+    "type": "number",
+    "default": 0.4,
+    "label": "길게 누르기 시간",
+    "help": "터치에서 이만큼 누르고 있으면 고르지 않고 올림 신호만 보낸다",
+    "unit": "초",
+    "min": 0.1,
+    "max": 2
+   },
+   "size": {
+    "type": "number",
+    "default": 16,
+    "label": "글자 크기",
+    "help": "0 = 스타일 시트를 따름 (모양 전부)",
+    "unit": "px",
+    "min": 0
+   },
+   "color": {
+    "type": "color",
+    "default": "#232a3a",
+    "label": "칸 색"
+   },
+   "textColor": {
+    "type": "color",
+    "default": "#ffffff",
+    "label": "글자 색"
+   },
+   "accent": {
+    "type": "color",
+    "default": "#9ec1ff",
+    "label": "강조 색",
+    "help": "번호와, 올렸을 때의 테두리"
+   },
+   "gap": {
+    "type": "number",
+    "default": 8,
+    "label": "사이 간격",
+    "unit": "px",
+    "min": 0,
+    "max": 40
+   },
+   "confirmQuestion": {
+    "type": "text",
+    "default": "이렇게 할까요?",
+    "label": "되묻는 글",
+    "help": "confirm()이 고르기 전에 보이는 글"
+   },
+   "confirmYes": {
+    "type": "text",
+    "default": "이렇게 한다",
+    "label": "되묻기 — 한다"
+   },
+   "confirmNo": {
+    "type": "text",
+    "default": "아니다",
+    "label": "되묻기 — 안 한다"
+   }
+  }
+ },
+ "Gauge": {
+  "module": "talk",
+  "title": "막대",
+  "icon": "📊",
+  "help": "값을 막대로 보인다. 값이 바뀌면 짧게 번쩍이고, 미리 보기로 '오르면 여기까지'(초록)·'내리면 여기까지'(빨강)를 보인다. 코드: node.get(\"Gauge\").set(7) · .preview(\"up\") · .preview(\"down\", 2) · .preview(null)",
+  "props": {
+   "label": {
+    "type": "text",
+    "default": "",
+    "label": "이름",
+    "help": "막대 앞에 보이는 글"
+   },
+   "value": {
+    "type": "number",
+    "default": 0,
+    "label": "값"
+   },
+   "max": {
+    "type": "number",
+    "default": 10,
+    "label": "가장 큰 값",
+    "min": 1
+   },
+   "step": {
+    "type": "number",
+    "default": 1,
+    "label": "미리 보기 크기",
+    "help": "preview()에 크기를 주지 않았을 때 보이는 변화량",
+    "min": 0
+   },
+   "flash": {
+    "type": "number",
+    "default": 0.45,
+    "label": "번쩍임 길이",
+    "help": "값이 바뀌었을 때 번쩍이는 시간. 0 = 번쩍이지 않음",
+    "unit": "초",
+    "min": 0,
+    "max": 3
+   },
+   "showNumber": {
+    "type": "bool",
+    "default": true,
+    "label": "숫자 보이기",
+    "help": "막대 뒤에 '값 / 가장 큰 값'"
+   },
+   "size": {
+    "type": "number",
+    "default": 14,
+    "label": "글자 크기",
+    "help": "0 = 스타일 시트를 따름 (모양 전부)",
+    "unit": "px",
+    "min": 0
+   },
+   "color": {
+    "type": "color",
+    "default": "#6aa9ff",
+    "label": "막대 색"
+   },
+   "back": {
+    "type": "color",
+    "default": "#2a2f3a",
+    "label": "빈 곳 색"
+   },
+   "upColor": {
+    "type": "color",
+    "default": "#4caf6a",
+    "label": "오름 색",
+    "help": "오르는 미리 보기와 오른 뒤의 번쩍임"
+   },
+   "downColor": {
+    "type": "color",
+    "default": "#d9534f",
+    "label": "내림 색",
+    "help": "내리는 미리 보기와 내린 뒤의 번쩍임"
+   }
+  }
+ },
+ "Hotspots": {
+  "module": "talk",
+  "title": "그림 위 구역",
+  "icon": "🗺",
+  "help": "그림(또는 상자) 위에 누를 구역을 둔다. 올리면 밝아지고 이름이 뜨며, 누르면 'pick' 신호({id, zone}), 올리면 'hover' 신호. 터치는 한 번 누르면 이름만, 한 번 더 누르면 고른다. 코드: node.get(\"Hotspots\").set(구역들) · node.on(\"pick\", h => …)",
+  "props": {
+   "zones": {
+    "type": "json",
+    "default": [],
+    "label": "구역들",
+    "help": "[{\"id\": \"a\", \"label\": \"이름\", \"note\": \"한 줄 설명\", \"rect\": [왼쪽, 위, 너비, 높이]}] — 숫자는 그림 크기의 퍼센트. 네모가 아니면 \"points\": [[x, y], …]. \"disabled\": true면 이름만 보이고 고를 수 없다"
+   },
+   "light": {
+    "type": "color",
+    "default": "#fff3c4",
+    "label": "밝아지는 색",
+    "help": "올린 구역에 덮이는 빛"
+   },
+   "strength": {
+    "type": "number",
+    "default": 0.35,
+    "label": "밝기",
+    "help": "0 = 안 밝아짐 · 1 = 색으로 덮임",
+    "min": 0,
+    "max": 1
+   },
+   "outline": {
+    "type": "bool",
+    "default": false,
+    "label": "구역 늘 보이기",
+    "help": "올리지 않아도 구역을 옅게 보인다 (배치를 볼 때)"
+   },
+   "tips": {
+    "type": "bool",
+    "default": true,
+    "label": "이름 띄우기",
+    "help": "올린 구역의 이름과 설명을 그 곁에 보인다"
+   },
+   "size": {
+    "type": "number",
+    "default": 14,
+    "label": "글자 크기",
+    "help": "0 = 스타일 시트를 따름 (모양 전부)",
+    "unit": "px",
+    "min": 0
+   }
+  }
+ },
+ "Transform": {
+  "module": "ui",
+  "title": "위치와 크기",
+  "icon": "📐",
+  "help": "화면에서 어디에, 얼마나 크게 놓일지 (부모 기준, 픽셀). 부모가 '가로로 나란히'·'세로로 쌓기'면 순서대로 놓인다",
+  "props": {
+   "x": {
+    "type": "number",
+    "default": 0,
+    "label": "가로 위치",
+    "help": "왼쪽에서부터",
+    "unit": "px"
+   },
+   "y": {
+    "type": "number",
+    "default": 0,
+    "label": "세로 위치",
+    "help": "위에서부터",
+    "unit": "px"
+   },
+   "w": {
+    "type": "number",
+    "default": 100,
+    "label": "너비",
+    "help": "0 = 부모에 맞춤",
+    "unit": "px",
+    "min": 0
+   },
+   "h": {
+    "type": "number",
+    "default": 40,
+    "label": "높이",
+    "help": "0 = 내용에 맞춤",
+    "unit": "px",
+    "min": 0
+   },
+   "rotation": {
+    "type": "number",
+    "default": 0,
+    "label": "회전",
+    "help": "시계 방향",
+    "unit": "도"
+   },
+   "scale": {
+    "type": "number",
+    "default": 1,
+    "label": "크기 배율",
+    "help": "1 = 그대로",
+    "unit": "배",
+    "min": 0
+   },
+   "opacity": {
+    "type": "number",
+    "default": 1,
+    "label": "불투명도",
+    "help": "0 = 안 보임 · 1 = 또렷",
+    "min": 0,
+    "max": 1
+   },
+   "z": {
+    "type": "number",
+    "default": 0,
+    "label": "앞뒤 순서",
+    "help": "클수록 앞"
+   },
+   "visible": {
+    "type": "bool",
+    "default": true,
+    "label": "보이기"
+   },
+   "anchor": {
+    "type": "text",
+    "default": "none",
+    "label": "기준점",
+    "help": "창 크기가 바뀔 때 어디에 붙을지. 붙이면 가로·세로 위치는 가장자리에서 띄우는 거리",
+    "options": [
+     "none",
+     "fill",
+     "top",
+     "bottom",
+     "left",
+     "right",
+     "center",
+     "css"
+    ],
+    "labels": {
+     "none": "고정 위치 (왼쪽 위 기준)",
+     "fill": "꽉 채움",
+     "top": "위쪽에 가로로 꽉",
+     "bottom": "아래쪽에 가로로 꽉",
+     "left": "왼쪽에 세로로 꽉",
+     "right": "오른쪽에 세로로 꽉",
+     "center": "가운데",
+     "css": "스타일 시트가 정함 (위치·크기를 쓰지 않음)"
+    }
+   }
+  }
+ },
+ "Panel": {
+  "module": "ui",
+  "title": "상자 (배경·배치)",
+  "icon": "▭",
+  "help": "배경색·테두리·둥근 모서리, 그리고 안에 든 오브젝트를 어떻게 놓을지",
+  "props": {
+   "color": {
+    "type": "color",
+    "default": "",
+    "label": "배경색",
+    "help": "비우면 투명"
+   },
+   "border": {
+    "type": "color",
+    "default": "",
+    "label": "테두리 색",
+    "help": "비우면 없음"
+   },
+   "radius": {
+    "type": "number",
+    "default": 0,
+    "label": "모서리 둥글기",
+    "unit": "px",
+    "min": 0
+   },
+   "padding": {
+    "type": "number",
+    "default": 0,
+    "label": "안쪽 여백",
+    "unit": "px",
+    "min": 0
+   },
+   "layout": {
+    "type": "text",
+    "default": "none",
+    "label": "안의 것 배치",
+    "options": [
+     "none",
+     "row",
+     "column",
+     "css"
+    ],
+    "labels": {
+     "none": "자유 배치 (위치 직접)",
+     "row": "가로로 나란히",
+     "column": "세로로 쌓기",
+     "css": "스타일 시트가 정함 (이 상자의 칸은 스크롤만 씀)"
+    }
+   },
+   "gap": {
+    "type": "number",
+    "default": 0,
+    "label": "사이 간격",
+    "help": "나란히·쌓기일 때",
+    "unit": "px",
+    "min": 0
+   },
+   "wrap": {
+    "type": "bool",
+    "default": false,
+    "label": "넘치면 다음 줄로",
+    "help": "가로로 나란히일 때"
+   },
+   "align": {
+    "type": "text",
+    "default": "stretch",
+    "label": "가로세로 맞춤",
+    "help": "나란히·쌓기일 때, 줄의 직각 방향",
+    "options": [
+     "stretch",
+     "start",
+     "center",
+     "end"
+    ],
+    "labels": {
+     "stretch": "꽉 채우기",
+     "start": "앞쪽(왼쪽·위)",
+     "center": "가운데",
+     "end": "뒤쪽(오른쪽·아래)"
+    }
+   },
+   "justify": {
+    "type": "text",
+    "default": "start",
+    "label": "줄 방향 맞춤",
+    "help": "나란히·쌓기일 때, 줄 방향",
+    "options": [
+     "start",
+     "center",
+     "end",
+     "between"
+    ],
+    "labels": {
+     "start": "앞쪽부터",
+     "center": "가운데로 모으기",
+     "end": "뒤쪽으로 모으기",
+     "between": "고르게 벌리기"
+    }
+   },
+   "scroll": {
+    "type": "bool",
+    "default": false,
+    "label": "넘치면 스크롤"
+   }
+  }
+ },
+ "Text": {
+  "module": "ui",
+  "title": "글자",
+  "icon": "🔤",
+  "help": "글을 보여 준다. 코드에서 바꾸려면 node.get(\"Text\").set(\"새 글\") — 한 글자씩 나오게 했으면 다 나올 때까지 기다릴 수 있다(await)",
+  "props": {
+   "text": {
+    "type": "text",
+    "default": "",
+    "label": "내용"
+   },
+   "size": {
+    "type": "number",
+    "default": 18,
+    "label": "글자 크기",
+    "help": "0 = 스타일 시트를 따름",
+    "unit": "px",
+    "min": 0
+   },
+   "color": {
+    "type": "color",
+    "default": "#ffffff",
+    "label": "글자 색",
+    "help": "비우면 스타일 시트를 따름"
+   },
+   "align": {
+    "type": "text",
+    "default": "left",
+    "label": "정렬",
+    "options": [
+     "left",
+     "center",
+     "right"
+    ],
+    "labels": {
+     "left": "왼쪽",
+     "center": "가운데",
+     "right": "오른쪽"
+    }
+   },
+   "bold": {
+    "type": "bool",
+    "default": false,
+    "label": "굵게"
+   },
+   "font": {
+    "type": "text",
+    "default": "",
+    "label": "글꼴",
+    "help": "비우면 기본"
+   },
+   "wrap": {
+    "type": "bool",
+    "default": true,
+    "label": "줄 바꿈",
+    "help": "넘치면 다음 줄로"
+   },
+   "reveal": {
+    "type": "number",
+    "default": 0,
+    "label": "한 글자씩 나오기",
+    "help": "0 = 바로 다 나옴",
+    "unit": "글자/초",
+    "min": 0
+   },
+   "markup": {
+    "type": "bool",
+    "default": false,
+    "label": "강조 표시 쓰기",
+    "help": "**이렇게** 쓰면 굵게"
+   }
+  }
+ },
+ "Canvas": {
+  "module": "ui",
+  "title": "그리기 판",
+  "icon": "🎨",
+  "help": "코드로 자유롭게 그리는 판 (풍경·효과·도형). 코드에서 const g = this.node.get(\"Canvas\"); g.ctx로 그린다 (크기: g.width, g.height). 매 프레임 'draw' 신호(ctx, dt)도 보낸다",
+  "props": {
+   "background": {
+    "type": "color",
+    "default": "",
+    "label": "바탕색",
+    "help": "비우면 투명. 매 프레임 이 색으로 지운다"
+   },
+   "clear": {
+    "type": "bool",
+    "default": true,
+    "label": "매 프레임 지우기",
+    "help": "끄면 그린 것이 남는다"
+   },
+   "sharp": {
+    "type": "number",
+    "default": 1,
+    "label": "선명도",
+    "help": "1 = 보통, 2 = 고해상도 (무거움)",
+    "unit": "배",
+    "min": 1,
+    "max": 3
+   }
+  }
+ },
+ "Image": {
+  "module": "ui",
+  "title": "그림",
+  "icon": "🖼",
+  "help": "파일 창의 자원(그림)을 보여 준다. 없으면 점선 칸. 코드가 만든 그림(SVG 글 등)은 '직접 주소'에 넣는다: node.get(\"Image\").props.url = \"data:image/svg+xml,…\"",
+  "props": {
+   "asset": {
+    "type": "asset",
+    "default": "",
+    "label": "그림 파일"
+   },
+   "url": {
+    "type": "text",
+    "default": "",
+    "label": "직접 주소",
+    "help": "비우면 위의 그림 파일. 코드가 만든 그림(data: 주소)이나 인터넷 주소"
+   },
+   "fit": {
+    "type": "text",
+    "default": "contain",
+    "label": "맞추는 방법",
+    "options": [
+     "contain",
+     "cover",
+     "fill"
+    ],
+    "labels": {
+     "contain": "다 보이게 맞춰 넣기",
+     "cover": "꽉 채우기 (잘릴 수 있음)",
+     "fill": "늘려서 채우기"
+    }
+   }
+  }
+ },
+ "Button": {
+  "module": "ui",
+  "title": "버튼",
+  "icon": "🔘",
+  "help": "누르면 이 오브젝트에 'click' 신호를 보낸다. 코드에서 받기: this.node.on(\"click\", () => { … })",
+  "props": {
+   "label": {
+    "type": "text",
+    "default": "버튼",
+    "label": "버튼 글자"
+   },
+   "color": {
+    "type": "color",
+    "default": "#2f4470",
+    "label": "버튼 색"
+   },
+   "textColor": {
+    "type": "color",
+    "default": "#ffffff",
+    "label": "글자 색"
+   },
+   "size": {
+    "type": "number",
+    "default": 16,
+    "label": "글자 크기",
+    "help": "0 = 스타일 시트를 따름 (모양 전부)",
+    "unit": "px",
+    "min": 0
+   },
+   "disabled": {
+    "type": "bool",
+    "default": false,
+    "label": "누를 수 없게"
+   },
+   "padding": {
+    "type": "number",
+    "default": 0,
+    "label": "좌우 여백",
+    "help": "글자 양옆 빈칸. 너비를 0(글에 맞춤)으로 두면 글 길이 + 여백만큼 넓어진다",
+    "unit": "px",
+    "min": 0
+   }
+  }
+ },
+ "TextInput": {
+  "module": "ui",
+  "title": "글 입력칸",
+  "icon": "⌨",
+  "help": "글을 쓰고 Enter를 누르면 'submit' 신호(쓴 글)를, 쓰는 중에는 'change' 신호를 보낸다",
+  "props": {
+   "placeholder": {
+    "type": "text",
+    "default": "",
+    "label": "안내 글",
+    "help": "비어 있을 때 흐리게 보이는 글"
+   },
+   "value": {
+    "type": "text",
+    "default": "",
+    "label": "처음 내용"
+   },
+   "size": {
+    "type": "number",
+    "default": 16,
+    "label": "글자 크기",
+    "help": "0 = 스타일 시트를 따름 (모양 전부)",
+    "unit": "px",
+    "min": 0
+   },
+   "disabled": {
+    "type": "bool",
+    "default": false,
+    "label": "쓸 수 없게",
+    "help": "켜면 글을 쓸 수 없고 흐리게 보인다"
+   },
+   "maxLength": {
+    "type": "number",
+    "default": 0,
+    "label": "가장 긴 글",
+    "help": "이보다 길게 쓸 수 없다. 0 = 한도 없음",
+    "unit": "자",
+    "min": 0
+   },
+   "lines": {
+    "type": "number",
+    "default": 1,
+    "label": "줄 수",
+    "help": "2부터는 여러 줄 칸: Enter로 보내고 Shift+Enter로 줄을 바꾼다",
+    "unit": "줄",
+    "min": 1,
+    "max": 20
+   }
+  }
+ }
+}

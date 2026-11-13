@@ -1,0 +1,211 @@
+(function(root){
+'use strict';
+const places={
+ hall:{name:'마을 회관',short:'회관',direction:'중앙 회관',photo:0,light:2,cover:0,text:'긴 의자와 연단이 놓인 회관입니다. 고발 신청은 이곳에서 받습니다.'},
+ warehouse:{name:'갱도 입구',short:'갱도',direction:'동쪽 갱도',photo:1,light:-2,cover:2,text:'녹슨 광차 너머로 갱도가 이어집니다. 입구 옆에 화약고가 있습니다. 어둡고 숨을 곳이 많습니다.'},
+ tavern:{name:'광부 술집',short:'술집',direction:'서쪽 술집',photo:2,light:0,cover:1,text:'술잔과 탁자가 놓인 술집입니다. 바 뒤편은 시야가 잘 닿지 않습니다.'},
+ clinic:{name:'마을 진료소',short:'진료소',direction:'북쪽 진료소',photo:3,light:2,cover:0,text:'밝은 진찰등과 처치대가 있습니다. 지혈과 치료에 유리합니다.'},
+ chapel:{name:'작은 교회',short:'교회',direction:'남쪽 교회',photo:4,light:0,cover:1,text:'긴 의자와 촛불이 놓여 있습니다. 목소리가 돌벽에 울립니다.'},
+ home:{name:'주택가',short:'주거지',direction:'서남쪽 주택가',photo:5,light:0,cover:1,text:'주민들이 머무는 주택가입니다. 창문 너머로 눈 쌓인 길이 보입니다.'}
+};
+const roles={
+ godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 높은 설득으로 영입을 제안할 수 있지만 상대의 동의가 필요합니다. 공격과 피해는 다른 인물과 같은 판정 규칙을 따릅니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:9},items:{knife:1,bandage:2}},
+ mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 싸움 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 다른 사람의 행동을 대신 소비하지 않으며 자신의 큰 행동으로 공격합니다.',stats:{fight:9,observe:5,agility:6,medical:3,persuade:4},items:{knife:1,bandage:2}},
+ consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 작은 행동으로 같은 장소의 인물을 조사해 실제 사건 기록을 확인합니다. 확인하지 않은 직업이나 개인 기록은 알 수 없습니다.',stats:{fight:7,observe:9,agility:5,medical:3,persuade:8},items:{knife:1,bandage:2}},
+ kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 강제 대화나 기록 공개는 요구하지 않습니다.',stats:{fight:8,observe:5,agility:7,medical:3,persuade:4},items:{club:1,bandage:2}},
+ guard:{name:'퇴역군인',desc:'싸움에 익숙하며 곤봉과 붕대를 갖고 시작합니다.',stats:{fight:8,observe:6,agility:4,medical:4,persuade:4},items:{club:1,bandage:2}},
+ courier:{name:'배달원',desc:'민첩과 관찰이 장점입니다. 이동 횟수나 시간은 다른 주민과 같습니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1,bandage:2}},
+ detective:{name:'탐정',desc:'관찰과 설득이 장점입니다. 실제 현장 흔적을 조사하며 보안관 전용 행동은 사용할 수 없습니다.',stats:{fight:4,observe:9,agility:6,medical:3,persuade:7},items:{knife:1,bandage:2}},
+ mechanic:{name:'정비공',desc:'싸움과 손을 쓰는 처치에 익숙하며 곤봉을 갖고 시작합니다.',stats:{fight:7,observe:6,agility:6,medical:6,persuade:3},items:{club:1,bandage:2}},
+ pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 의사가 아니므로 체력 회복 치료는 할 수 없습니다.',stats:{fight:3,observe:6,agility:5,medical:8,persuade:6},items:{knife:1,bandage:4}},
+ lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다. 재판의 동의·표결 규칙은 다른 주민과 같습니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:9},items:{knife:1,bandage:2}},
+
+ sheriff:{name:'보안관',desc:'작은 행동으로 같은 장소의 인물을 조사합니다. 그가 남긴 실제 사건 기록을 확인하며 진영을 마법처럼 알아내지는 않습니다.',stats:{fight:5,observe:8,agility:5,medical:3,persuade:5},items:{knife:1,bandage:2}},
+ doctor:{name:'의사',desc:'큰 행동으로 같은 장소의 부상자를 치료합니다. 체력 회복은 의사만 가능합니다. 치료제는 한정되어 있습니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:5},items:{knife:1,bandage:3,medicine:3}},
+ jailor:{name:'간수',desc:'같은 장소의 상대를 하루 한 번 구금할 수 있습니다. 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 작은 행동과 말하기는 가능합니다.',stats:{fight:7,observe:5,agility:4,medical:3,persuade:5},items:{club:1,bandage:2}},
+ reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다. 사진의 장면과 기자의 주장은 구분됩니다.',stats:{fight:3,observe:8,agility:6,medical:3,persuade:8},items:{knife:1,bandage:2,camera:1}},
+ dockworker:{name:'항만 노동자',desc:'힘과 현장 경험이 장점입니다. 직업은 진영을 보장하지 않습니다.',stats:{fight:7,observe:5,agility:5,medical:3,persuade:4},items:{club:1,bandage:2}},
+ shopkeeper:{name:'잡화상',desc:'물자와 협상에 익숙합니다. 붕대를 다른 사람에게 건넬 수 있습니다.',stats:{fight:4,observe:6,agility:5,medical:4,persuade:8},items:{knife:1,bandage:4}}
+};
+// Initial affiliation only. A later, voluntary recruitment changes team but keeps the job.
+const rolePools={mafia:['godfather','mafioso','consigliere','kidnapper'],town:['sheriff','doctor','jailor','guard','detective','reporter','lawyer','pharmacist']};
+for(const role of Object.values(roles))role.team??='town';
+const canInvestigate=p=>['sheriff','consigliere'].includes(p.role),canJail=p=>['jailor','kidnapper'].includes(p.role);
+const weapons={fist:{name:'맨손',die:2,bleed:false},club:{name:'곤봉',die:4,bleed:true},knife:{name:'단검',die:6,bleed:true},pistol:{name:'권총',die:8,bleed:true}};
+const stats={fight:'싸움',observe:'관찰',agility:'민첩',medical:'처치',persuade:'설득'};
+const config={startingMoney:8,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:120,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:120,voteSeconds:60,medicalDifficulty:11,heal:3,criticalHP:2,bleedLoss:1};
+const narrative=()=>root.NoirNarrative||(typeof require==='function'?require('./01Narrative.js'):null),press=()=>root.NoirPress||(typeof require==='function'?require('./02Press.js'):null);
+const big=['photograph','publish','scene','move','attack','heal','jail','recruit','bandage','give','share','file','wait','attempt'];
+const small=['scene','buy','evidence','observe','investigate','hide','bandage','unhide','wait','attempt'];
+const find=(s,id)=>s.players.find(p=>p.id===id),alive=s=>s.players.filter(p=>p.hp>0),label=s=>`${s.day}일째 ${s.turn===2?'밤':'낮 '+(s.turn+1)}`;
+const clone=x=>JSON.parse(JSON.stringify(x)),die=(rng,n)=>1+Math.min(n-1,Math.floor(rng()*n));
+
+// These d10 scales belong to this game, not to the D&D ability-score table.
+function check(p,statKey,rng,{label='',dc=null,terms=[],edge=0}={}){
+ const rolls=[die(rng,10)];if(edge)rolls.push(die(rng,10));const roll=edge>0?Math.max(...rolls):edge<0?Math.min(...rolls):rolls[0],stat=Math.max(0,Math.min(10,Number(p.stats[statKey])||0)),env=terms.reduce((n,t)=>n+t.value,0),total=roll+stat+env;
+ return {kind:'check',label,statKey,stat,rolls,roll,edge,terms,env,total,difficulty:dc,success:dc===null?null:total>=dc};
+}
+function sightTerms(s,p){const ts=[];if(s.turn===2)ts.push({label:'밤의 시야',value:-2});if(places[p.location].light<0)ts.push({label:places[p.location].name+'의 어두운 시야',value:-2});return ts;}
+function opposed(p,key,t,against,rng,terms=[],defTerms=[]){const a=check(p,key,rng,{terms}),b=check(t,against,rng,{terms:defTerms});return {kind:'opposed',actor:a,opponent:b,success:a.total>b.total,tie:a.total===b.total};}
+function bandage(s,p,t,rng,personal=false){const kit=p.items.bandage>0;if(kit)p.items.bandage--;const terms=[];if(p.location==='clinic')terms.push({label:'진료소 처치대',value:2});if(s.turn===2)terms.push({label:'밤의 어둠',value:-2});
+ const r=check(p,'medical',rng,{label:'지혈',dc:s.cfg.medicalDifficulty,terms,edge:kit?1:-1});r.edgeReason=kit?'붕대를 사용해 안정적으로 압박':'붕대 없이 즉석 처치';if(r.success)t.bleeding=false;
+ emit(s,personal?[p.id]:localIds(s,p),'check',`${p.name}이 ${t.name}의 상처를 압박했습니다. ${r.success?'출혈이 멎었습니다.':'압박이 충분하지 않아 피가 계속 배어 나옵니다.'} 체력은 ${t.hp}로, 회복되지 않습니다.`,{roll:r});
+}
+function recruit(s,p,t,a,rng){if(root.NoirScenarios)return root.NoirScenarios.recruit(s,p,t,a,rng);const r=check(p,'persuade',rng,{label:'영입 설득',dc:16});p.hidden=false;p.spotted=[];emit(s,[p.id,t.id],'check',`${p.name}이 ${t.name}에게 같은 편으로 합류할 것을 제안했습니다. ${r.success?'제안이 전달됐습니다. 상대가 직접 수락해야 진영이 바뀝니다.':'상대를 설득하지 못했습니다. 진영은 바뀌지 않았습니다.'}`,{roll:r});learn(s,t.id,`${p.name}이 마피아 합류를 제안했다.`,p.id,'직접 받은 제안','claim');if(r.success)s.offers.push({id:'o'+(++s.serial),kind:'recruit',from:p.id,to:t.id,terms:String(a.reason||'함께 살아남기').slice(0,300),done:false});}
+function caseDay(s){return s.day+(s.turn===2?1:0);}
+function closeCases(s,selected){for(const c of s.cases.filter(c=>c.day===s.day&&!c.closed&&c.id!==selected)){c.closed=true;c.status=c.support.filter(id=>find(s,id)?.hp>0).length<Math.ceil(alive(s).length/3)?'동의 부족으로 미개정':'오늘의 다른 신청이 우선되어 미개정';const to=s.players.filter(p=>p.id===c.by||p.knownCases?.includes(c.id)||p.location==='hall').map(p=>p.id);emit(s,to,'notice',`${find(s,c.target).name}의 재판 신청: ${c.status}.`);}}
+function create(seats,rng,settings={}){
+ const ids=seats.map(p=>p.id),shuffled=[...ids].sort(()=>0);for(let i=shuffled.length-1;i>0;i--){const j=die(rng,i+1)-1;[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+ const mafiaCount=Math.max(1,Math.floor(ids.length/3)),gang=new Set(shuffled.slice(0,mafiaCount)),bySeat={};
+ for(const team of ['mafia','town']){const members=shuffled.filter(id=>gang.has(id)===(team==='mafia')),jobs=rolePools[team].slice(0,members.length);if(jobs.length!==members.length)throw new Error('지원하는 인원 범위를 벗어났습니다.');for(let i=jobs.length-1;i>0;i--){const j=die(rng,i+1)-1;[jobs[i],jobs[j]]=[jobs[j],jobs[i]];}members.forEach((id,i)=>bySeat[id]=jobs[i]);}
+ const s={cfg:{...config,...settings},day:1,turn:0,stage:'small',epoch:1,players:seats.map((p,i)=>{const job=bySeat[p.id],r=roles[job],team=gang.has(p.id)?'mafia':'town';return {...p,role:job,team,money:(settings.startingMoney??config.startingMoney),hp:10,bleeding:false,hidden:false,location:'hall',stats:{...r.stats,fight:team==='mafia'?Math.max(7,r.stats.fight):r.stats.fight},items:{...r.items},used:{big:false,small:false},defense:'dodge',known:[],photos:[],guesses:{},will:'',filedDay:0,jailDay:0,jailEpoch:0};}),newspapers:[],feed:[],events:[],cases:[],offers:[],plans:{},ready:[],reactions:{},serial:0,ai:{mode:'off',answered:0,fallback:0,pending:0},startedAt:Date.now(),trial:null,result:null};
+ s.composition=['mafia','town','neutral'].map(team=>({team,roles:Object.entries(roles).map(([role])=>({role,count:s.players.filter(p=>p.team===team&&p.role===role).length})).filter(x=>x.count)}));
+ if(root.NoirScenarios)root.NoirScenarios.start(s,rng);else emit(s,ids,'story','마피아의 습격에 주민들이 회관에 모여 투표로 범인을 가려내기로 했습니다. 다섯째 날 밤이 지나면 외부 경찰과 판사가 도착합니다.');return s;
+}
+function emit(s,to,kind,text,extra={}){if(s.actionContext&&!['speech','environment','death'].includes(kind))extra={actionRecord:true,...extra};text=korean(s,text);const locations=[...new Set(to.map(id=>find(s,id)?.location).filter(Boolean))];const e={place:locations.length===1?locations[0]:null,i:++s.serial,to:[...new Set(to)],kind,text,time:label(s),epoch:s.epoch,...extra};s.feed.push(e);return e;}
+function korean(s,text){let t=String(text);for(const p of [...s.players].sort((a,b)=>b.name.length-a.name.length)){const c=p.name.charCodeAt(p.name.length-1),tail=c>=44032&&c<=55203?(c-44032)%28:1;for(const [a,b] of [['이','가'],['을','를'],['은','는'],['과','와']])for(const used of [a,b])t=t.split(p.name+used+' ').join(p.name+(tail?a:b)+' ');}return t;}
+function learn(s,id,text,about,source,kind='observed',event=null){text=korean(s,text);const p=find(s,id);if(!p)return;const n={id:'k'+(++s.serial),text,about:about||null,source,kind,time:label(s),event};p.known.push(n);return n;}
+function sameSpace(s,a,b){return a.location===b.location&&(s.turn!==2||a.location!=='home'||(a.houseId||a.id)===(b.houseId||b.id));}
+function visible(s,viewer,p){return p.id===viewer.id||sameSpace(s,viewer,p)&&(!p.hidden||(p.spotted||[]).includes(viewer.id)||s.stage==='trial'||s.stage==='vote');}
+function environment(s,id){const p=find(s,id),others=alive(s).filter(o=>o.id!==id&&visible(s,p,o));const recent=s.feed.filter(e=>e.to.includes(id)&&e.i>=(s.chapter?.from||0)&&e.epoch>=s.epoch-1&&(e.localEvent||e.kind==='environment')).slice(-5);return [places[p.location].text,others.length?'지금 보이는 사람: '+others.map(o=>o.name).join(', '):'현재 같은 장소에 보이는 다른 사람은 없습니다.',...recent.map(e=>`${e.time}${e.place?' · '+places[e.place].name:''} · ${korean(s,e.localSummary||e.text)}`)];}
+function combatContext(s,p,t){const place=places[p.location],ambush=p.hidden&&!visible(s,t,p),crowd=alive(s).filter(o=>o.id!==p.id&&o.id!==t.id&&sameSpace(s,o,p)&&!o.hidden).length,terms=[];
+ if(s.turn===2)terms.push({label:'밤의 어둠',value:-2});if(place.light<0)terms.push({label:place.name+'의 어둠',value:place.light});if(ambush)terms.push({label:'상대에게 들키지 않은 기습',value:2});else if(crowd)terms.push({label:`주변에 보이는 ${crowd}명 앞의 공개 공격 · 상대가 대비하기 쉬움`,value:-Math.min(3,crowd)});
+ return {env:terms.reduce((n,x)=>n+x.value,0),terms,ambush,publicAttack:!ambush&&crowd>0,dark:s.turn===2||place.light<0};}
+function threats(s,id){return Object.entries(s.plans).filter(([from,a])=>s.stage==='react'&&a.type==='attack'&&a.target===id&&find(s,from)?.hp>0).map(([from,a])=>{const p=find(s,from),t=find(s,id),seen=visible(s,t,p);return {from:seen?p.name:'모습이 보이지 않는 상대',weapon:seen?weapons[a.weapon]?.name:'알 수 없는 무기'};});}
+function narrate(s,id,text,extra={}){return emit(s,[id],'story',text,extra);}
+function health(p){return p.hp===0?'사망':p.hp<=2?'치명상':p.hp<=5?'중상':'활동 가능';}
+function view(s,id){if(s.publication?.pending&&s.publication.views?.[id])return {...s.publication.views[id],stage:'settle',readingStep:null,ai:{...s.ai},elapsed:Math.floor(elapsed(s)/1000)};const me=find(s,id);if(!me)return null;me.knownCases=me.knownCases||[];if(me.location==='hall')for(const c of s.cases)if(!me.knownCases.includes(c.id))me.knownCases.push(c.id);me.seenLocations=me.seenLocations||Object.fromEntries(s.players.map(p=>[p.id,{place:'hall',time:'1일째 낮 1',epoch:1}]));for(const p of alive(s))if(visible(s,me,p))me.seenLocations[p.id]={place:p.location,time:label(s),epoch:s.epoch};return {locationName:s.turn===2&&me.location==='home'?(find(s,me.houseId||me.id)?.name||me.name)+'의 집':places[me.location].name,newspapers:clone(s.newspapers||[]),day:s.day,turn:s.turn,time:label(s),stage:s.stage,epoch:s.epoch,cfg:s.cfg,trialDay:s.trialDay||0,sceneChoices:root.NoirScenarios?.choices(s,me,'big')||[],sceneSmallChoices:root.NoirScenarios?.choices(s,me,'small')||[],sceneGuide:root.NoirScenarios?.guide(s,me)||null,story:root.NoirStory?.projection(s,me)||null,npcOptions:root.NoirScenarios?.npcOptions(s,me)||[],hazard:root.NoirScenarios?.hazardView(s,me)||null,consent:s.consent?{...clone(s.cases.find(c=>c.id===s.consent)),...consentStatus(s,s.cases.find(c=>c.id===s.consent)),responses:undefined,mine:s.cases.find(c=>c.id===s.consent)?.responses?.[id]??null}:null,chapter:clone(s.chapter||null),verdict:clone(s.verdict||null),composition:s.composition||null,progress:progress(s),readingStep:s.readingStep||null,me:clone({...me,spotted:undefined,stealth:undefined}),places,roles,stats,weapons,environment:environment(s,id),people:s.players.map(p=>({id:p.id,name:p.name,hp:p.hp,condition:health(p),bleeding:p.bleeding,bot:p.bot,here:p.hp>0&&visible(s,me,p),location:visible(s,me,p)?p.location:null,lastSeen:me.seenLocations[p.id]||null,role:s.result||p.id===id||me.team==='mafia'&&p.team==='mafia'?p.role:null,team:s.result||p.id===id||me.team==='mafia'&&p.team==='mafia'?p.team:null,will:p.hp===0?p.will:null})),feed:s.feed.filter(e=>e.to.includes(id)&&!(s.publication?.pending&&e.i>=s.publication.from)).map(({to,...e})=>e),cases:s.cases.filter(c=>c.day>=s.day-1&&(me.knownCases.includes(c.id)||c.by===id)),offers:s.offers.filter(o=>o.kind!=='help'&&o.to===id&&!o.done).map(o=>o.anonymous?{id:o.id,kind:o.kind,anonymous:true,terms:o.terms,amount:o.amount||0,done:o.done}:clone(o)),plans:s.plans[id]||null,ready:s.ready.includes(id),reaction:s.reactions[id]||null,threats:threats(s,id),trial:s.trial?{id:s.trial.id,by:s.trial.by,target:s.trial.target,reason:s.trial.reason,reasons:clone(s.trial.reasons||[]),evidence:clone(s.trial.evidence||[]),vote:s.trial.votes[id]||null}:null,result:s.result,ai:s.ai,elapsed:Math.floor(elapsed(s)/1000)};}
+function elapsed(s){return Math.max(0,Date.now()-s.startedAt-(s.pausedMs||0)-(s.readingSince?Date.now()-s.readingSince:0));}
+function progress(s){const people=alive(s);if(s.stage==='hazard')return {label:'행동 결과 진행 중',private:true};if(s.stage==='gathering')return {label:'회관에서 서로 대화하는 시간 · 2분',private:true};if(s.stage==='consent'){const c=s.cases.find(c=>c.id===s.consent),v=consentStatus(s,c);return {label:'재판 동의·반대 응답',done:v.responded,total:v.total};}if(s.stage==='react'){const targets=people.filter(p=>threats(s,p.id).length);return {label:'대응 확정',done:targets.filter(p=>p.bot?!!s.reactions[p.id]:s.ready.includes(p.id)).length,total:targets.length};}if(['opening','clash','result','summons','decision'].includes(s.stage))return {label:'이야기 출력 완료',done:s.readers?s.readers.filter(id=>s.textSeen?.[id]===s.feed.filter(e=>e.to.includes(id)&&!['speech','environment'].includes(e.kind)).at(-1)?.i).length:0,total:s.readers?.length||0};if(s.turn===2&&['small','plan','react'].includes(s.stage))return {label:'밤 행동 진행 중',private:true};if(s.stage==='vote'){const voters=people.filter(p=>p.id!==s.trial.target);return {label:'투표 완료',done:voters.filter(p=>s.trial.votes[p.id]).length,total:voters.length};}const done=people.filter(p=>s.stage==='small'?(p.used.small||s.ready.includes(p.id)):s.stage==='plan'?(!canAct(s,p)||(p.bot?!!s.plans[p.id]:s.ready.includes(p.id))):s.ready.includes(p.id)).length;return {label:'행동 완료',done,total:people.length};}
+function canAct(s,p){return p&&p.hp>0&&!(s.turn===2&&p.team==='town')&&p.jailEpoch!==s.epoch;}
+function validate(s,id,a,slot){const p=find(s,id);if(!p||p.hp<=0||s.turn===2&&p.team==='town'||slot==='big'&&p.jailEpoch===s.epoch)return '지금은 행동할 수 없습니다.';if(p.used[slot])return '이번 턴의 해당 행동을 이미 사용했습니다.';if(!(slot==='big'?big:small).includes(a?.type))return '이 행동 크기에는 사용할 수 없는 행동입니다.';
+ if(['photograph','publish'].includes(a.type))return press().validate(s,p,a);
+ if(a.type==='scene')return root.NoirScenarios?.validate(s,p,a,slot)||(!root.NoirScenarios?'사건 처리기를 사용할 수 없습니다.':null);
+ const t=find(s,a.target),need=['attack','heal','jail','recruit','investigate','bandage','give'].includes(a.type);
+ const raid=a.type==='attack'&&s.turn===2&&p.team==='mafia'&&t?.location==='home'&&a.nightRaid,letter=a.type==='recruit'&&p.team==='mafia'&&a.anonymous;
+ if(need&&(!t||t.hp<=0||(!raid&&!letter&&(!visible(s,p,t)||!sameSpace(s,p,t)))))return '같은 장소에서 확인할 수 있는 살아 있는 대상이 필요합니다.';
+ if(['attack','jail','recruit','investigate'].includes(a.type)&&t.id===id)return '자기 자신을 대상으로 삼을 수 없습니다.';
+ if(a.type==='move'&&(!places[a.place]||a.place===p.location))return '다른 이동 장소를 선택하세요.';
+ if(a.type==='attack'&&(!weapons[a.weapon]||(a.weapon!=='fist'&&!p.items[a.weapon])))return '소지한 무기를 선택하세요.';
+ if(a.type==='attack'&&a.weapon==='pistol'&&!p.items.ammo)return '탄약이 없습니다.';
+ if(a.type==='heal'&&(p.role!=='doctor'||!p.items.medicine))return '치료제와 의사 직업이 필요합니다.';
+ if(a.type==='investigate'&&!canInvestigate(p))return '보안관과 조언자의 직업 행동입니다.';
+ if(a.type==='jail'&&(!canJail(p)||p.jailDay===s.day))return '간수와 납치범은 하루 한 번 구금할 수 있습니다.';
+ if(a.type==='recruit'&&(p.team!=='mafia'||t.team==='mafia'))return '다른 편의 상대에게만 영입을 제안할 수 있습니다.';
+ if(a.type==='file'&&a.facts&&(!Array.isArray(a.facts)||a.facts.length>5||a.facts.some(id=>!p.known.some(k=>k.id===id))))return '자신이 아는 기록을 최대 다섯 개 선택하세요.';
+ if(a.type==='file'&&s.trialDay===caseDay(s))return '오늘의 재판은 이미 진행했습니다.';
+ if(a.type==='file'&&(p.location!=='hall'||p.filedDay===caseDay(s)||!t||t.hp<=0||t.id===id||!String(a.reason||'').trim()))return '회관에서 하루 한 번, 살아 있는 상대와 고발 이유를 정해 신청하세요.';
+ if(a.type==='buy'&&s.scenario?.continuation?.stock===0)return '진료소 붕대가 모두 떨어졌습니다.';
+ if(a.type==='buy'&&(p.location!=='clinic'||a.item!=='bandage'||p.money<(s.cfg?.bandagePrice??config.bandagePrice)))return '진료소에서 소지금으로 붕대를 살 수 있습니다.';
+ if(a.type==='bandage'&&(!t.bleeding||slot==='small'&&t.id!==id))return '작은 행동은 자기 지혈만 가능합니다. 타인 지혈은 큰 행동입니다.';
+ if(a.type==='give'&&!p.items.bandage)return '건넬 붕대가 없습니다.';
+ if(a.type==='share'&&!p.known.some(k=>k.id===a.fact))return '자신이 아는 기록만 공유할 수 있습니다.';
+ return null;
+}
+function queue(s,id,a){if(s.stage!=='plan')return '큰 행동을 정하는 시간이 아닙니다.';const err=validate(s,id,a,'big');if(err)return err;s.plans[id]=clone(a);return null;}
+function localIds(s,p){return alive(s).filter(o=>sameSpace(s,o,p)).map(o=>o.id);}
+function recordEvent(s,type,actor,target,text,location){const e={id:'e'+(++s.serial),type,actor,target,location:location||find(s,actor)?.location,day:s.day,turn:s.turn,time:label(s),text};s.events.push(e);return e;}
+function witness(s,event,actor,target,rng){const a=find(s,actor),ids=[];if(a.hidden)a.stealth=Math.max(0,(a.stealth??12)-4);
+ for(const o of alive(s).filter(p=>sameSpace(s,p,a))){
+ const saw=visible(s,o,a)||check(o,'observe',rng,{terms:sightTerms(s,o)}).total>(a.stealth??12);
+ if(saw){ids.push(o.id);if(a.hidden&&!a.spotted?.includes(o.id))(a.spotted??=[]).push(o.id);const targetPlayer=find(s,target),knownText=event.type==='attack'&&targetPlayer&&!visible(s,o,targetPlayer)?`${a.name}이 모습이 잘 보이지 않는 쪽으로 공격하는 것을 보았습니다.`:event.text;learn(s,o.id,knownText,actor,'직접 목격','observed',event.id);}else emit(s,[o.id],'environment','가까운 곳에서 몸이 부딪히는 소리가 들렸지만 누군지는 확인하지 못했습니다.');
+ }return ids;}
+function noise(s,place,text){const others=alive(s).filter(p=>p.location!==place).map(p=>p.id);emit(s,others,'environment',places[place].direction+' 쪽에서 '+text);}
+function finish(s){if(s.scenario?.hazardPending)return null;if(s.result)return s.result;const live=alive(s),mafia=live.filter(p=>p.team==='mafia');let r=null;if(!live.length)r={team:'none',text:'살아남은 주민이 없습니다.'};else if(mafia.length*2>=live.length)r={team:'mafia',text:'마피아 편이 생존자의 절반 이상이 되어 마을을 장악했습니다.'};else if(!mafia.length)r={team:'town',text:'마을에 남은 마피아가 없어 시민 편이 승리했습니다.'};else if(s.day>s.cfg.days||elapsed(s)>=s.cfg.hardSeconds*1000)r={team:'town',text:'외부 경찰과 판사가 도착했습니다. 장악에 실패한 마피아를 제압하고 시민 편이 승리했습니다.'};if(r){if(root.NoirScenarios)r.text=root.NoirScenarios.ending(s,r);s.result={...r,seconds:Math.floor(elapsed(s)/1000),wallSeconds:Math.floor((Date.now()-s.startedAt)/1000)};s.stage='end';emit(s,s.players.map(p=>p.id),'ending',r.text);}return r;}
+function death(s,p,cause){if(p.hp>0)return;root.NoirScenarios?.fallen(s,p);p.hp=0;p.bleeding=false;p.hidden=false;emit(s,[...new Set([p.id,...localIds(s,p)])],'death',`${p.name} 사망 · ${cause}`,{who:p.id,will:p.will});}
+function announceClashes(s){root.NoirScenarios?.prepareRaids(s);const attacks=Object.entries(s.plans).filter(([id,a])=>a.type==='attack'&&!validate(s,id,a,'big'));s.declaredCombat={epoch:s.epoch,values:Object.fromEntries(attacks.map(([id,a])=>[id+'>'+a.target,combatContext(s,find(s,id),find(s,a.target))]))};for(const [id] of attacks){find(s,id).hidden=false;find(s,id).spotted=[];}for(const viewer of alive(s)){const lines=[];for(const [id,a] of attacks){const p=find(s,id),t=find(s,a.target);if(!sameSpace(s,viewer,p))continue;if(viewer.id===id)lines.push(`${places[p.location].name}에서 ${a.weapon==='fist'?'주먹을 쥐고':weapons[a.weapon].name+'을 들고'} ${t.name}에게 공격을 시도합니다. 상대에게 닿기 전의 짧은 틈이 남아 있습니다.`);else if(visible(s,viewer,p))lines.push(`${p.name}이 ${a.weapon==='fist'?'주먹을 쥐고':weapons[a.weapon].name+'을 들고'} ${visible(s,viewer,t)?t.name:'같은 장소의 상대'}에게 공격을 시도합니다.${viewer.id===t.id?' 당신을 향한 공격입니다.':''}`);else if(viewer.id===t.id)lines.push('모습이 보이지 않는 상대가 당신에게 공격을 시도합니다.');}
+ if(lines.length)emit(s,[viewer.id],'confrontation',lines.join('\n'));else if(!viewer.bot)emit(s,[viewer.id],'transition','선택한 행동을 함께 처리하고 있습니다. 직접 보고 들은 결과가 정리될 때까지 기다립니다.');}return attacks.length;}
+function attackRoll(s,p,t,a,rng){const place=places[p.location],context=s.declaredCombat?.epoch===s.epoch&&s.declaredCombat.values[p.id+'>'+t.id]||combatContext(s,p,t),env=context.env,def=s.reactions[t.id]||t.defense,ds=def==='block'?t.stats.fight:t.stats.agility,defEnv=def==='dodge'?place.cover:0;
+ const ac=check(p,'fight',rng,{label:'공격',terms:context.terms}),dc=check(t,def==='block'?'fight':'agility',rng,{label:'대응',terms:defEnv?[{label:'엄폐물을 이용한 회피',value:defEnv}]:[]}),ar=ac.roll,dr=dc.roll;
+ const attack=ac.total,defense=dc.total,diff=attack-defense,w=weapons[a.weapon]||weapons.fist,raw=die(rng,w.die),bonus=Math.min(4,Math.floor(p.stats.fight/2)),reduction=diff<0?6:diff<=2?3:0,hitDamage=Math.max(0,raw+bonus-reduction),damage=a.weapon==='pistol'&&hitDamage>0?Math.max(5,hitDamage):hitDamage;
+ return {minimumDamage:a.weapon==='pistol'&&damage>0?5:0,ambush:context.ambush,publicAttack:context.publicAttack,dark:context.dark,attack,defense,damage,raw,bonus,reduction,attackRoll:ar,defenseRoll:dr,env,defEnv,defenseType:def,weapon:w.name,die:w.die,attackStat:p.stats.fight,defenseStat:ds,envReason:context.terms.map(x=>x.label+' '+(x.value>0?'+':'')+x.value).join(' / ')||'공격 환경 보정 없음',defReason:defEnv?'엄폐물을 이용한 회피 +'+defEnv:'방어 환경 보정 없음'};
+}
+function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const acts=Object.entries(s.plans).filter(([id,a])=>{const reason=validate(s,id,a,'big');if(reason)narrate(s,id,'선택한 큰 행동을 실행하지 못했습니다: '+reason);return !reason;});
+ // Resolve confrontations at the shared starting positions before survivors travel.
+ for(const [id] of acts)find(s,id).used.big=true;
+ for(const [id,a] of acts){s.actionContext=a.type!=='wait';const p=find(s,id),t=find(s,a.target);if(['move','photograph','publish'].includes(a.type))continue;
+ if(['attack','heal','jail','investigate'].includes(a.type)&&(!t||!sameSpace(s,p,t))){narrate(s,id,'상대가 자리를 옮겨 닿을 수 없었습니다. 이번 큰 행동은 시도로 끝났습니다.');continue;}
+ if(a.type==='attack'){const r=attackRoll(s,p,t,a,rng);p.hidden=false;p.spotted=[];if(a.weapon==='pistol')p.items.ammo--;const event=recordEvent(s,'attack',id,t.id,`${p.name}이 ${t.name}을 ${r.weapon}으로 공격했습니다.`);const seen=witness(s,event,id,t.id,rng);attacks.push({p,t,r,seen,event});noise(s,p.location,a.weapon==='pistol'?'총성이 들렸습니다.':'비명과 다투는 소리가 들렸습니다.');}
+
+ else if(a.type==='scene'){root.NoirScenarios?.resolve(s,p,a,rng);}
+ else if(a.type==='heal'){p.items.medicine--;const before=t.hp;t.hp=Math.min(10,t.hp+s.cfg.heal);t.bleeding=false;const text=`${p.name}이 ${t.name}의 상처를 처치했습니다. 체력 ${before} → ${t.hp}, 출혈이 멎었습니다.`;emit(s,localIds(s,p),'story',text);recordEvent(s,'heal',id,t.id,text);}
+
+ else if(a.type==='jail'){p.jailDay=s.day;const r=opposed(p,'fight',t,'agility',rng);if(r.success){t.jailEpoch=s.epoch+1;t.hidden=false;narrate(s,t.id,'상대에게 제지당했습니다. 다음 턴의 큰 행동을 할 수 없습니다. 작은 행동과 말하기는 가능합니다.');}emit(s,localIds(s,p),'check',`${p.name}이 ${t.name}을 붙잡으려 했습니다. ${r.success?'상대의 움직임을 제지했습니다. 다음 턴의 큰 행동이 제한됩니다.':r.tie?'힘이 팽팽히 맞서 구금하지 못했습니다.':'상대가 붙잡는 손을 피했습니다.'}`,{roll:r});}
+ else if(a.type==='recruit')recruit(s,p,t,a,rng);
+ else if(a.type==='bandage')bandage(s,p,t,rng);
+ else if(a.type==='give'){p.items.bandage--;t.items.bandage=(t.items.bandage||0)+1;emit(s,localIds(s,p),'story',`${p.name}이 ${t.name}에게 붕대 하나를 건넸습니다.`);}
+ else if(a.type==='share'){const k=p.known.find(k=>k.id===a.fact);for(const to of localIds(s,p).filter(x=>x!==id))learn(s,to,`${p.name}의 증언: ${k.text}`,k.about,p.name+'에게 들음','claim');emit(s,localIds(s,p),'speech',k.text,{who:id,name:p.name});}
+ else if(a.type==='file'){const hearingDay=caseDay(s);p.filedDay=hearingDay;let c=s.cases.find(c=>c.day===hearingDay&&c.target===a.target&&!c.closed);const evidence=(a.facts||[]).map(id=>p.known.find(k=>k.id===id)).filter(Boolean).map(k=>({id:k.id,by:p.id,text:k.text,source:k.source,kind:k.kind,time:k.time}));if(c){if(!c.support.includes(id))c.support.push(id);c.responses??=Object.fromEntries(c.support.map(id=>[id,true]));c.responses[id]=true;c.reasons.push({by:id,text:String(a.reason).slice(0,300)});c.evidence??=[];for(const k of evidence)if(!c.evidence.some(e=>e.by===k.by&&e.id===k.id))c.evidence.push(k);}else{c={id:'c'+(++s.serial),day:hearingDay,submittedAt:label(s),closed:false,target:a.target,by:id,reason:String(a.reason).slice(0,300),reasons:[{by:id,text:String(a.reason).slice(0,300)}],evidence,support:[id],responses:{[id]:true},order:s.serial};s.cases.push(c);}for(const o of alive(s)){o.knownCases??=[];if(!o.knownCases.includes(c.id))o.knownCases.push(c.id);}emit(s,alive(s).map(p=>p.id),'notice',`공식 재판 신청: ${p.name} → ${t.name}. 이유: ${String(a.reason).slice(0,300)}. 제출 근거 ${c.evidence.length}건. ${hearingDay>s.day?'다음 날 낮에':'행동 결과를 확인한 뒤'} 동의·반대를 받습니다. 생존자 ⅓이 동의하면 집계 직후 재판을 엽니다.`,{case:c.id});}
+ else if(a.type==='attempt')narrate(s,id,`시도: ${String(a.text||'행동').slice(0,300)}. ${a.explanation||'현재 조건에서 실행 가능한 결과를 만들지 못했습니다.'}`);
+ else narrate(s,id,'주변을 지켜보며 이번 큰 행동을 마쳤습니다.');
+ }
+ s.actionContext=false;
+ // Every declared attack is evaluated before any casualties; no first-input advantage.
+ for(const {p,t,r,seen,event} of attacks){const before=t.hp;t.hp=Math.max(0,t.hp-r.damage);if(r.damage&&t.hp>0&&t.hp<=s.cfg.criticalHP)t.bleeding=true;
+ for(const viewerId of [...new Set([...seen,t.id])]){const viewer=find(s,viewerId),seesAttacker=seen.includes(viewerId),seesTarget=visible(s,viewer,t),pov=viewerId===p.id?'attacker':viewerId===t.id?'target':'witness';
+ const facts={place:p.location,pov,attacker:seesAttacker?p.name:null,target:seesTarget?t.name:null,weaponKnown:seesAttacker,weapon:r.weapon,ambush:r.ambush,publicAttack:r.publicAttack,dark:r.dark,defenseType:r.defenseType,damage:r.damage,reduction:r.reduction,after:t.hp,bleeding:t.bleeding,visibleWitnesses:seen.filter(w=>w!==p.id&&w!==t.id&&visible(s,p,find(s,w))).map(w=>find(s,w).name)};
+ const text=seesTarget?narrative().combat(facts):`${p.name}이 모습이 잘 보이지 않는 쪽으로 공격을 뻗는다. 그 너머에서 어떤 일이 일어났는지는 확인할 수 없다.`;
+ const roll=seesTarget?{...(seesAttacker&&pov!=='witness'?r:{damage:r.damage}),before,after:t.hp}:null;
+ const cameraText=seesAttacker&&seesTarget?narrative().combat({...facts,pov:'witness',visibleWitnesses:[]}):null;
+ const localSummary=seesTarget?(t.hp===0?`${t.name}이 쓰러져 움직이지 않습니다.`:t.bleeding?`${t.name}의 상처에서 피가 흐릅니다.`:r.damage?`${t.name}에게 상처가 보입니다.`:'눈앞에서 다툼이 있었지만 새로 다친 사람은 보이지 않습니다.'):'모습이 잘 보이지 않는 쪽에서 다툼이 벌어졌습니다.';
+ emit(s,[viewerId],'combat',text,{roll,target:seesTarget?t.id:null,impact:r.weapon==='권총'?'gun':r.weapon==='단검'?'blade':'blunt',event:event.id,localEvent:true,localSummary,cameraText,actionRecord:true,cameraFrame:seesAttacker&&seesTarget?{attacker:{id:p.id,name:p.name},target:{id:t.id,name:t.name},weapon:r.weapon,defense:r.defenseType,damage:r.damage,reduction:r.reduction,after:t.hp,bleeding:t.bleeding}:null});
+ }}
+ // Photography records the same resolved moment, before surviving travellers leave.
+ for(const [id,a] of acts){const p=find(s,id);s.actionContext=true;try{if(a.type==='photograph')press().capture(s,p,a);else if(a.type==='publish')press().publish(s,p,a);}finally{s.actionContext=false;}}
+
+ const beforePlaces=Object.fromEntries(s.players.map(p=>[p.id,p.location]));
+ for(const [id,a] of acts){const p=find(s,id);if(a.type==='move'&&p.hp>0){p.location=a.place;p.houseId=a.place==='home'&&s.turn===2?p.id:null;p.hidden=false;p.spotted=[];}}
+ for(const [id,a] of acts.filter(([id,a])=>a.type==='move'&&find(s,id).hp>0)){const p=find(s,id),old=beforePlaces[id];const full=`${p.name}이 ${places[old].name}에서 ${places[p.location].name}에 도착했습니다.`,e=recordEvent(s,'move',id,null,full);
+ for(const o of alive(s)){let text=null;if(o.id===id)text=full;else if(sameSpace(s,o,p))text=`${p.name}이 ${places[p.location].name}에 도착하는 모습을 봤습니다.`;else if(beforePlaces[o.id]===old&&!(s.turn===2&&old==='home'))text=`${p.name}이 ${places[old].name}을 떠나는 모습을 봤습니다. 어디에 도착했는지는 확인하지 못했습니다.`;if(text){learn(s,o.id,text,id,'이동 목격','observed',e.id);emit(s,[o.id],'story',text,{localEvent:true,event:e.id,actionRecord:true});}}
+ const moved=s.feed.findLast(x=>x.event===e.id&&x.to.includes(id));if(!root.NoirScenarios?.arrival(s,p,moved?.i))narrate(s,id,places[p.location].text);}
+
+ for(const id of active){const p=find(s,id);if(p.hp===0)death(s,p,'공격');}
+ root.NoirStory?.afterActions(s,acts,attacks);
+ s.plans={};return finish(s);
+}
+function smallAct(s,id,a,rng){const prev=s.actionContext;s.actionContext=a.type!=='wait';try{return smallAction(s,id,a,rng);}finally{s.actionContext=prev;}}
+function smallAction(s,id,a,rng){if(!['small','plan'].includes(s.stage))return '행동 선택 시간이 아닙니다.';if(s.stage==='plan'&&s.plans[id])return '큰 행동을 고른 뒤에는 작은 행동을 할 수 없습니다.';const p=find(s,id);let err=validate(s,id,a,'small');if(err&&p?.jailEpoch===s.epoch){const old=p.jailEpoch;p.jailEpoch=0;err=validate(s,id,a,'small');p.jailEpoch=old;}if(err)return err;p.used.small=true;const t=find(s,a.target);
+ if(a.type==='hide'){const pl=places[p.location],terms=[];if(pl.cover)terms.push({label:'주변 엄폐물',value:pl.cover});if(pl.light>0)terms.push({label:'밝은 실내',value:-2});if(s.turn===2)terms.push({label:'밤의 어둠',value:2});
+ const r=check(p,'agility',rng,{label:'숨기',dc:12,terms});p.hidden=r.success;p.stealth=r.total;p.spotted=[];
+ if(p.hidden)for(const o of alive(s).filter(o=>o.id!==id&&sameSpace(s,o,p))){const passive=5+o.stats.observe+sightTerms(s,o).reduce((n,t)=>n+t.value,0);if(passive>=r.total){p.spotted.push(o.id);learn(s,o.id,`${p.name}이 엄폐물 뒤로 숨는 모습을 확인했습니다.`,id,'직접 관찰');}}
+ emit(s,[id],'check',r.success?'몸을 엄폐물 뒤로 숨겼습니다. 누가 숨는 모습을 봤는지는 알 수 없습니다. 발견하지 못한 상대에게만 기습 준비가 적용됩니다.':'몸을 충분히 가리지 못해 모습이 드러나 있습니다.',{roll:r});}
+ else if(a.type==='evidence'||a.type==='investigate'){if(a.type==='evidence'&&root.NoirScenarios?.investigate(s,p,rng))return null;const named=a.type==='investigate';if(!named){root.NoirScenarios?.inspect(s,p,null);const hiddenTrace=s.events.some(e=>e.type==='attack'&&e.location===p.location)||s.scenario?.documents.some(d=>d.location===p.location);if(s.scenario&&!hiddenTrace){emit(s,[id],'check','이곳에서 새로 확인할 단서를 찾지 못했습니다. 수첩에 적힌 내용으로 대화하거나 다른 장소를 살펴볼 수 있습니다.',{authored:true});return null;}}const r=check(p,'observe',rng,{label:named?'인물 흔적 조사':'현장 증거 조사',dc:named?16:12,terms:sightTerms(s,p)}),events=s.events.filter(e=>e.type==='attack'&&e.location===p.location&&(!named||e.actor===t.id));
+ const source=named?roles[p.role].name+' 현장 조사':'현장 흔적 조사',fresh=events.filter(e=>!p.known.some(k=>k.event===e.id&&k.source===source));
+ if(r.success)for(const e of fresh.slice(-3))learn(s,id,named?`${e.time}, 이곳의 공격 흔적에서 ${t.name}과 연결되는 증거를 확인했습니다.`:`${e.time}, 이곳에서 다툰 흔적을 확인했습니다. 흔적만으로 누가 공격했는지는 알 수 없습니다.`,named?t.id:null,source,'evidence',e.id);
+ const text=!r.success?'흔적을 충분히 구분하지 못했습니다. 증거가 없거나 상대가 무죄라는 뜻은 아닙니다.':fresh.length?'실제 남아 있던 흔적을 확인해 수첩에 기록했습니다.':events.length?'확인한 흔적 외에 새로운 증거는 찾지 못했습니다.':'현장을 살폈지만 이곳에서 범행과 연결할 증거는 확인하지 못했습니다. 상대 진영이나 무죄가 확정되는 것은 아닙니다.';
+ emit(s,[id],'check',s.scenario&&r.success&&!events.length?'눈에 띄는 전투 흔적은 없습니다. 이 장소에 남은 다른 기록도 살펴봅니다.':text,{roll:r});if(!named)root.NoirScenarios?.inspect(s,p,r);}
+ else if(a.type==='bandage')bandage(s,p,t,rng,true);
+ else if(a.type==='buy'){if(s.scenario?.continuation)s.scenario.continuation.stock--;p.money-=s.cfg.bandagePrice;p.items.bandage=(p.items.bandage||0)+1;emit(s,[id],'preparation',`진료소에서 붕대 하나를 구입했습니다. 소지금 ${s.cfg.bandagePrice} 지출 · 남은 소지금 ${p.money}. 지혈용이며 체력을 회복하지 않습니다.`);}
+ else if(a.type==='scene'){root.NoirScenarios?.resolve(s,p,a,rng);}
+ else if(a.type==='observe'){const r=check(p,'observe',rng,{label:'주변 보기',terms:sightTerms(s,p)}),discovered=[];
+ for(const other of alive(s).filter(o=>o.id!==id&&sameSpace(s,o,p)&&o.hidden&&!visible(s,p,o))){if(r.total>(other.stealth??12)){learn(s,id,`${other.name}이 이곳에 숨어 있는 모습을 확인했습니다.`,other.id,'직접 관찰');(other.spotted??=[]).push(id);discovered.push(other.name);}}
+ emit(s,[id],'check',discovered.length?`${discovered.join(', ')}의 모습을 발견했습니다. 당신의 시야와 수첩에만 반영됩니다.`:'주변을 살폈지만 새로 발견한 인물은 없습니다. 아무도 숨어 있지 않다는 보장은 아닙니다.',{roll:{...r,hiddenComparison:true}});}
+ else if(a.type==='unhide'){p.hidden=false;narrate(s,id,'몸을 드러냈습니다. 같은 장소의 사람들이 당신을 볼 수 있습니다.');}
+ else if(a.type==='attempt')narrate(s,id,`시도: ${String(a.text||'').slice(0,300)}. ${a.explanation||'현재 조건에서 실행 가능한 결과를 만들지 못했습니다.'}`);
+ else narrate(s,id,'작은 행동을 마쳤습니다.');return null;
+}
+function tickBleed(s){for(const p of alive(s)){if(p.bleeding){p.hp=Math.max(0,p.hp-s.cfg.bleedLoss);narrate(s,p.id,`처치하지 않은 출혈로 체력 ${s.cfg.bleedLoss} 감소 · 현재 ${p.hp}.`);if(!p.hp)death(s,p,'출혈');}}}
+function nextTurn(s){s.turn++;if(s.turn===3){s.turn=0;s.day++;}s.epoch++;s.declaredCombat=null;s.stage='small';s.plans={};s.ready=[];s.reactions={};for(const p of s.players){p.used={big:false,small:false};p.prepared=false;p.proposal=null;}return finish(s);}
+function selectCase(s){const eligible=s.cases.filter(c=>c.day===s.day&&!c.closed&&find(s,c.target)?.hp>0&&c.support.filter(id=>find(s,id)?.hp>0).length>=Math.ceil(alive(s).length/3));return eligible.sort((a,b)=>b.support.filter(id=>find(s,id)?.hp>0).length-a.support.filter(id=>find(s,id)?.hp>0).length||a.order-b.order)[0]||null;}
+function beginTrial(s,c){s.verdict=null;s.chapter={id:c.id,kind:'trial',from:s.serial+1};s.trial={...clone(c),votes:{},oldPlaces:Object.fromEntries(alive(s).map(p=>[p.id,p.location]))};s.stage='trial';s.trialDay=s.day;for(const p of alive(s)){p.location='hall';p.houseId=null;p.hidden=false;}emit(s,s.players.map(p=>p.id),'trial',`회관 문이 닫히고 주민들이 서로 마주 앉는다. ${find(s,c.by)?.name||'신청자'}이 제출한 고발장이 연단에 펼쳐지고, ${find(s,c.target).name}에게 혐의에 답할 기회가 주어진다. 모든 생존자가 이 자리에 모였다.\n고발 이유: ${c.reason}\n먼저 2분 동안 서로 묻고 증언한다. 이어 1분 동안 최종 변론을 듣고 유죄·무죄 표를 정한다.`);}
+function judge(s){const c=s.trial,original=s.cases.find(x=>x.id===c.id);if(original){original.closed=true;original.status='재판 완료';}const vs=Object.entries(c.votes).filter(([id])=>find(s,id)?.hp>0&&id!==c.target),yes=vs.filter(([,v])=>v==='guilty').length,no=vs.filter(([,v])=>v==='innocent').length;s.verdict={target:c.target,name:find(s,c.target).name,guilty:yes>no,yes,no,abstain:vs.length-yes-no};emit(s,s.players.map(p=>p.id),'trial',`유죄 ${yes} · 무죄 ${no} · 기권 ${vs.length-yes-no}. ${yes>no?'유죄 판결이 내려진다. 피고는 회관 밖 처형대로 이끌려가고, 판결은 집행된다.':'무죄 판결이 내려진다. 피고 앞을 막고 있던 사람들이 길을 비킨다. 문이 열리고, 그는 다시 주민들 사이로 돌아온다.'}`,{verdict:clone(s.verdict)});if(yes>no){const p=find(s,c.target);p.hp=0;death(s,p,'재판 처형');}s.trial=null;return finish(s);}
+function consentStatus(s,c){const ids=alive(s).map(p=>p.id),responses=c?.responses||Object.fromEntries((c?.support||[]).map(id=>[id,true])),yes=ids.filter(id=>responses[id]===true).length,no=ids.filter(id=>responses[id]===false).length;return {yes,no,responded:yes+no,total:ids.length,missing:ids.length-yes-no,needed:Math.ceil(ids.length/3)};}
+function nextConsent(s){if(s.turn===2||s.trialDay===s.day)return null;return s.cases.filter(c=>c.day===s.day&&!c.closed&&!c.decision&&find(s,c.target)?.hp>0).sort((a,b)=>a.order-b.order)[0]||null;}
+function beginConsent(s,c){c.responses??=Object.fromEntries(c.support.map(id=>[id,true]));s.consent=c.id;s.stage='consent';emit(s,alive(s).map(p=>p.id),'notice',`${find(s,c.by).name}이 신청한 ${find(s,c.target).name}의 재판을 열지 결정합니다. 근거를 확인하고 동의 또는 반대를 선택하세요. 응답 제한 30초. 생존자 ⅓ 동의가 필요합니다.`);}
+function finishConsent(s){const c=s.cases.find(c=>c.id===s.consent);if(!c)return null;const count=consentStatus(s,c);c.decision=count.yes>=count.needed?'approved':'rejected';c.status=c.decision==='approved'?'개정 동의 충족':'동의 부족으로 미개정';c.closed=c.decision==='rejected';s.consent=null;emit(s,alive(s).map(p=>p.id),'notice',`개정 동의 집계: 동의 ${count.yes} · 반대 ${count.no} · 미응답 ${count.missing} / 생존자 ${count.total}명. 필요 동의 ${count.needed}명. ${c.decision==='approved'?'기준을 충족해 지금 회관으로 소집하고 재판을 시작합니다.':'기준을 충족하지 못해 재판을 열지 않습니다.'}`);return c.decision==='approved'?c:null;}
+function support(s,id,caseId,yes=true){if(!find(s,id)?.hp||!['plan','react','small','consent'].includes(s.stage)||s.turn===2)return '지금은 개정에 응답할 수 없습니다.';const c=s.cases.find(c=>c.id===caseId&&c.day===s.day&&!c.closed&&!c.decision);if(!c)return '응답할 수 있는 신청이 아닙니다.';if(s.stage==='consent'&&s.consent!==caseId)return '현재 동의를 받고 있는 신청이 아닙니다.';const p=find(s,id);if(p.location!=='hall'&&c.by!==id&&!p.knownCases?.includes(caseId))return '확인한 신청만 응답할 수 있습니다.';c.responses??=Object.fromEntries(c.support.map(id=>[id,true]));if(typeof c.responses[id]==='boolean')return c.responses[id]===yes?null:'이미 응답했습니다.';c.responses[id]=yes;if(yes&&!c.support.includes(id))c.support.push(id);return null;}
+
+function accept(s,id,offerId,yes,factId){const p=find(s,id),o=s.offers.find(o=>o.kind!=='help'&&o.id===offerId&&o.to===id&&!o.done),from=o&&find(s,o.from);if(!p?.hp||!o||!from?.hp)return '유효한 제안이 아닙니다.';
+ if(yes){p.team='mafia';narrate(s,id,'마피아 편에 합류했습니다. 직업·능력치·소지품은 그대로입니다.');emit(s,alive(s).filter(p=>p.team==='mafia').map(p=>p.id),'notice',`${p.name}이 같은 편이 되었습니다.`);}else narrate(s,o.from,'상대가 제안을 거절했습니다.');o.done=true;finish(s);return null;}
+function choices(s,id,slot){const p=find(s,id);if(!p||!canAct(s,p)&&!(slot==='small'&&p.jailEpoch===s.epoch&&!(s.turn===2&&p.team==='town')))return [];
+ const list=[],add=(a,title)=>{if(!validate(s,id,a,slot))list.push({...a,label:title});},near=alive(s).filter(t=>sameSpace(s,t,p)&&visible(s,p,t));
+ if(slot==='big'){for(const [place,pl] of Object.entries(places))add({type:'move',place},'이동 · '+pl.name);for(const t of near){if(t.id!==id){for(const w of Object.keys(weapons))add({type:'attack',target:t.id,weapon:w},t.name+' 공격 · '+weapons[w].name);add({type:'jail',target:t.id},t.name+' 구금');add({type:'recruit',target:t.id,reason:'함께 살아남기'},t.name+' 영입 제안');add({type:'give',target:t.id},t.name+'에게 붕대 건네기');if(t.bleeding)add({type:'bandage',target:t.id},t.name+' 지혈');}if(t.hp<10)add({type:'heal',target:t.id},t.name+' 치료');}}
+ else{add({type:'observe'},'주변 보기');add({type:'evidence'},'증거 조사하기');add({type:'buy',item:'bandage'},`붕대 구매 · ${s.cfg?.bandagePrice||1}`);add({type:'hide'},'주변에 몸을 숨긴다');if(p.hidden)add({type:'unhide'},'몸을 드러낸다');for(const t of near){if(t.id!==id)add({type:'investigate',target:t.id},t.name+' 흔적 조사');if(t.id===id&&t.bleeding)add({type:'bandage',target:t.id},'자기 지혈');}}
+ if(slot==='big')for(const a of press().choices(s,p))add(a,a.label);
+ for(const a of root.NoirScenarios?.choices(s,p,slot)||[])add(a,a.label);
+ add({type:'wait'},'행동을 마친다');return list;
+}
+root.NoirTRPG={sameSpace,places,roles,weapons,stats,config,create,find,alive,label,view,visible,environment,emit,learn,narrate,finish,death,validate,queue,resolveBig,smallAct,tickBleed,nextTurn,selectCase,beginTrial,judge,support,accept,choices,canAct,attackRoll,combatContext,announceClashes,threats,die,elapsed,progress,check,opposed,caseDay,closeCases,consentStatus,nextConsent,beginConsent,finishConsent,recordEvent,witness};if(typeof module!=='undefined')module.exports=root.NoirTRPG;
+})(globalThis);
+
+

@@ -1,0 +1,75 @@
+(function(root){'use strict';
+const S=root.NoirScenarios,D=root.NoirStory,C=()=>root.NoirTRPG,base={...S},q=s=>s.scenario,z=s=>q(s).continuation;
+function peopleHere(s,p){return C().alive(s).filter(t=>t.id!==p.id&&C().visible(s,p,t));}
+function accessible(s,p,a){return !a.destroyed&&!a.taken&&(a.owner===p.id||a.where===p.location||(p.location==='home'&&(a.where==='home:'+p.id||a.seen?.includes(p.id)&&z(s).executions.some(e=>e.day<s.day&&a.where==='home:'+e.target))));}
+function ownArtifacts(s,p){return z(s).artifacts.filter(a=>!a.destroyed&&!a.taken&&a.owner===p.id);}
+function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town')return [];const out=[],add=(verb,label,fields={})=>out.push({type:'scene',sceneKey:'story-action',verb,label,...fields});
+ if(slot==='small'){
+  if(p.location==='chapel'&&z(s).signals.some(e=>e.kind==='candles'))add('inspectSignal','촛대 배치를 살핀다');
+  if(p.location==='home'){add('searchHouse','내 집에 남은 물건을 살핀다',{house:p.id});for(const e of z(s).executions)if(e.day<s.day)add('searchHouse',C().find(s,e.target).name+'의 빈집을 살핀다',{house:e.target});}
+  for(const a of z(s).artifacts.filter(a=>accessible(s,p,a)&&a.owner!==p.id))add('inspectArtifact','현장의 '+(a.title||'물건')+'을 살핀다',{artifact:a.id});
+  return out;
+ }
+ for(const a of z(s).artifacts.filter(a=>accessible(s,p,a)&&!a.owner))add('takeArtifact',(a.title||'남겨진 물건')+' 챙기기',{artifact:a.id});
+ for(const a of ownArtifacts(s,p)){if(['note','extra','paper','threat'].includes(a.kind))add('burnArtifact',(a.title||'보관한 종이')+' 태우기',{artifact:a.id});for(const t of peopleHere(s,p))add('giveArtifact',(a.title||'보관한 물건')+'을 '+t.name+'에게 건네기',{artifact:a.id,target:t.id});}
+ if(p.items.notebook){for(const t of peopleHere(s,p))add('giveNotebook','리스의 수첩을 '+t.name+'에게 건네기',{target:t.id});}
+ if(p.team==='mafia'){
+  if(p.location==='chapel'){add('bell','교회 종으로 세 번 신호');if(s.day>=4&&s.turn!==2)add('candles','촛대 셋을 삼각형으로 놓기');}
+  if(p.location==='tavern'&&s.day>=2)for(const t of C().alive(s).filter(t=>t.id!==p.id))add('forgeExtra',t.name+'을 지목하는 호외 쓰기',{target:t.id});
+  if(p.location==='hall')for(const a of ownArtifacts(s,p).filter(a=>a.kind==='extra'))add('postExtra','작성한 호외를 회관 벽에 붙이기',{artifact:a.id});
+  if(s.turn===2){if(p.items.pistol&&p.reesePistol)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plantGun',t.name+'의 장작더미에 권총 놓기',{target:t.id});if(!z(s).flags.reesePapersTaken&&p.location==='home')add('reesePapers','리스의 빈집에서 남은 종이 가져오기');
+   for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('chalk',t.name+'의 문에 분필 표시',{target:t.id});
+  }
+  if(p.money>=2)for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&!s.offers.some(o=>o.to===t.id&&!o.done)))add('paidOffer',t.name+'에게 돈을 넣은 영입 쪽지 · 2',{target:t.id});
+  if(p.location==='home'&&s.turn!==2&&z(s).flags.childSpoke&&!z(s).flags.childProtected)add('silenceChild','아이의 보호자에게 입단속 요구');
+ }
+ for(const n of Object.values(z(s).npcs).filter(n=>n.hp>0)){
+  const here=n.location===p.location&&(s.turn!==2||p.location!=='home'||p.houseId==='npc:'+n.id),raid=p.team==='mafia'&&s.turn===2&&n.location==='home';
+  if(here||raid)for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))add('attackNpc',(raid?n.name+'의 집 습격':n.name+' 공격')+' · '+C().weapons[w].name,{npc:n.id,weapon:w,raid});
+  if(here&&s.turn!==2){if(n.hp<10&&p.role==='doctor'&&p.items.medicine)add('healNpc',n.name+' 치료',{npc:n.id});if(n.bleeding)add('bandageNpc',n.name+' 지혈',{npc:n.id});if(['guard','jailor','sheriff'].includes(p.role))add('guardNpc',n.name+' 곁에서 지키기',{npc:n.id});if(n.hp<10&&n.location!=='clinic')add('escortNpc',n.name+'을 진료소로 부축',{npc:n.id});}
+  if(p.team==='mafia'&&(here||raid)&&!n.threatened)add('threatNpc',n.name+'에게 협박 쪽지 전달',{npc:n.id,raid});
+ }
+ return out;
+}
+function validAction(s,p,a,slot){return acts(s,p,slot).some(b=>b.verb===a.verb&&b.target===a.target&&b.npc===a.npc&&b.artifact===a.artifact&&b.house===a.house&&b.weapon===a.weapon&&b.raid===a.raid)?null:'현재 장소·소지품·대상 상태에서 실행할 수 없습니다.';}
+function revealArtifact(s,p,a){if(!a)return;const t=a.kind==='gun'?(a.reese?'손잡이에 리스의 이니셜이 새겨진 권총입니다. 탄환 ':'남겨진 권총입니다. 탄환 ')+a.ammo+'발이 남아 있습니다. 이곳에 둔 사람이 집주인이라는 증거는 아닙니다.':a.text;D.emit(s,[p.id],t,{actionRecord:true});D.observed(s,p,t,null,a.kind==='note'||a.kind==='extra'?'claim':'evidence','artifact:'+a.id);(a.seen??=[]).push(p.id);}
+function searches(s,p,house){if(p.location!=='home')return;const bombs=q(s).bombs.filter(b=>b.where==='home:'+house),as=z(s).artifacts.filter(a=>a.where==='home:'+house&&!a.destroyed&&!a.taken);const r='집 안을 살피자 '+(bombs.length?'폭약 '+bombs.length+'개와 ':'')+(as.length?'남겨진 물건이 보입니다.':'생활 흔적이 보입니다. 새 물건은 찾지 못했습니다.')+' 발견된 물건이 곧 집주인의 범행을 뜻하지는 않습니다.';D.emit(s,[p.id],r,{actionRecord:true});D.observed(s,p,r,house,'evidence','house:'+house+':'+s.epoch);for(const a of as){a.seen??=[];if(!a.seen.includes(p.id))a.seen.push(p.id);revealArtifact(s,p,a);}if(bombs.length&&house===p.id)p.storyKnown.push('planted:'+s.epoch);}
+function resolveAction(s,p,a,rng){const err=validAction(s,p,a,['inspectSignal','searchHouse','inspectArtifact'].includes(a.verb)?'small':'big');if(err)return err;const x=q(s),st=z(s),n=a.npc&&D.npc(s,a.npc),t=a.target&&C().find(s,a.target),art=a.artifact&&st.artifacts.find(x=>x.id===a.artifact);st.actions.push({type:a.verb,who:p.id,target:a.target||a.npc,epoch:s.epoch,day:s.day,turn:s.turn,place:p.location});
+ if(a.verb==='searchHouse'){searches(s,p,a.house);return null;}
+ if(a.verb==='inspectArtifact'){revealArtifact(s,p,art);return null;}
+ if(a.verb==='inspectSignal'){const msg='촛대 셋이 삼각형으로 놓여 있습니다.'+(p.team==='mafia'?' 당신들 편이 정해 둔 교회 집결 신호입니다.':' 누가 놓았는지, 무엇을 뜻하는지는 배열만으로 알 수 없습니다.');D.emit(s,[p.id],msg,{actionRecord:true});D.observed(s,p,msg,null,'evidence','candles:'+st.signals.length);return null;}
+ if(a.verb==='bell'){st.signals.push({kind:'bell',by:p.id,epoch:s.epoch,day:s.day});D.localAct(s,p,p.name+'이 종줄을 세 번 당깁니다. 소리가 마을 지붕 위로 번집니다.');C().emit(s,C().alive(s).filter(o=>o.location!=='chapel').map(o=>o.id),'environment','교회 쪽에서 종이 세 번 울렸습니다. 여기서는 누가 울렸는지 보이지 않습니다.');for(const o of C().alive(s).filter(o=>o.team==='mafia'))D.emit(s,[o.id],'세 번의 종소리입니다. 같은 편의 교회 집결 신호지만, 실제로 갈지는 각자 정해야 합니다.');}
+ if(a.verb==='candles'){st.signals.push({kind:'candles',by:p.id,epoch:s.epoch,day:s.day});D.localAct(s,p,p.name+'이 제단의 촛대 셋을 삼각형으로 옮겨 놓습니다.');}
+ if(a.verb==='forgeExtra'){D.artifact(s,{kind:'extra',title:'작성한 호외',owner:p.id,forged:true,target:t.id,text:'호외 — 폭약을 훔친 자, '+t.name+'. 믿을 만한 사람이 보았다는 주장이나 목격자 이름과 사진은 없음.'});D.emit(s,[p.id],t.name+'의 이름을 넣어 호외를 썼습니다. 아직 붙이지 않았으므로 다른 주민은 이 내용을 모릅니다.',{actionRecord:true});}
+ if(a.verb==='postExtra'){art.taken=true;st.printed.push({id:art.id,headline:art.text,writer:p.id,target:art.target,posted:true,removed:false,day:s.day,epoch:s.epoch});D.localAct(s,p,p.name+'이 회관 벽에 호외를 붙입니다. "'+art.text+'"');D.refreshIncidents(s);}
+ if(a.verb==='plantGun'){const ammo=p.items.ammo||0;p.items.pistol--;p.items.ammo=0;p.reesePistol=false;D.artifact(s,{kind:'gun',reese:true,title:'장작더미의 권총',where:'home:'+t.id,ammo,plantedBy:p.id,text:'리스의 이니셜이 있는 권총'});D.emit(s,[p.id],t.name+'의 장작더미에 권총과 남은 탄환을 숨겼습니다. 이제 당신 품에는 그 권총이 없습니다.',{actionRecord:true});}
+ if(a.verb==='chalk'){D.artifact(s,{kind:'mark',title:'분필 표시',where:'home:'+t.id,text:'문에 분필 가로줄 하나가 있다. 누가 어떤 뜻으로 그렸는지는 보지 못했다.',by:p.id});D.emit(s,[p.id],t.name+'의 문에 분필 표시를 남겼습니다. 표시 자체로 누군가의 진영이 바뀌거나 범행이 입증되지는 않습니다.',{actionRecord:true});}
+ if(a.verb==='reesePapers'){st.flags.reesePapersTaken=true;D.artifact(s,{kind:'paper',title:'리스의 남은 종이',owner:p.id,text:'리스가 남긴 종이에 "화약고 — 자정"이라는 글이 있다. 만난 사람의 이름은 적혀 있지 않다.'});D.emit(s,[p.id],'리스의 빈집 서랍에서 남은 종이를 챙겼습니다. 서랍이 열린 자국은 집에 남습니다.',{actionRecord:true});D.artifact(s,{kind:'trace',title:'열린 서랍',where:'home',text:'리스의 집 서랍이 열려 있다. 누가 가져갔는지는 이 흔적만으로 알 수 없다.'});}
+ if(a.verb==='burnArtifact'){art.destroyed=true;st.actions.push({type:'burn',place:p.location,by:p.id,epoch:s.epoch});D.artifact(s,{kind:'ash',title:'그을린 종이',where:p.location,text:'실제로 태워진 종이의 재다. 남은 글: '+art.text.slice(0,24)+'… 작성자나 태운 사람은 글자만으로 알 수 없다.'});D.localAct(s,p,p.name+'이 보관하던 종이를 태웁니다. 재 속에 글자 일부가 남습니다. 이미 들은 사람의 기억까지 사라지는 것은 아닙니다.');}
+ if(a.verb==='takeArtifact'){art.taken=true;if(art.kind==='gun'){p.items.pistol=(p.items.pistol||0)+1;p.items.ammo=(p.items.ammo||0)+(art.ammo||0);p.reesePistol=!!art.reese;}else if(art.kind==='notebook'){p.items.notebook=(p.items.notebook||0)+1;}else if(art.kind==='camera'){p.items.camera=(p.items.camera||0)+1;for(const photo of art.photos||[])if(!p.photos.some(k=>k.id===photo.id))p.photos.push(JSON.parse(JSON.stringify(photo)));}else{art.taken=false;art.owner=p.id;art.where=null;}D.localAct(s,p,p.name+'이 '+(art.title||'남겨진 물건')+'을 챙깁니다.');revealArtifact(s,p,art);}
+ if(a.verb==='giveArtifact'){art.owner=t.id;D.localAct(s,p,p.name+'이 '+t.name+'에게 '+(art.title||'보관한 물건')+'을 건넵니다.');revealArtifact(s,t,art);}
+ if(a.verb==='giveNotebook'){p.items.notebook--;t.items.notebook=(t.items.notebook||0)+1;D.localAct(s,p,p.name+'이 '+t.name+'에게 리스의 수첩을 건넵니다. 직접 읽기 전에는 수첩의 내용을 알 수 없습니다.');}
+ if(a.verb==='paidOffer'){p.money-=2;base.recruit(s,p,t,{reason:'함께 살아남읍시다. 합류한다면 이 돈을 쓰시오.'});const o=s.offers.findLast(o=>o.to===t.id&&o.from===p.id&&!o.done);if(o){o.amount=2;D.emit(s,[t.id],'이름 없는 봉투에 소지금 2만큼의 돈이 들어 있습니다. 수락하면 당신의 돈이 되고, 거절하면 돌려보냅니다.');}else p.money+=2;}
+ if(a.verb==='silenceChild'){const r=C().check(p,'persuade',rng,{label:'보호자 입단속',dc:16});if(r.success)st.flags.childSilenced=true;D.localAct(s,p,p.name+'이 아이의 보호자와 낮은 목소리로 이야기합니다. '+(r.success?'보호자가 아이를 집으로 들이고 문을 잠급니다.':'보호자가 아이를 감싸며 대화를 거절합니다.'));C().emit(s,[p.id],'check',r.success?'보호자가 더 말하지 않기로 했습니다.':'입단속을 받아들이지 않았습니다.',{roll:r});}
+ if(n&&a.raid){p.location='home';p.houseId='npc:'+n.id;}
+ if(a.verb==='attackNpc'){
+  const r=C().attackRoll(s,p,n,{weapon:a.weapon},rng),before=n.hp;n.hp=Math.max(0,n.hp-r.damage);if(n.hp>0&&n.hp<=2&&r.damage)n.bleeding=true;if(a.weapon==='pistol')p.items.ammo--;n.lastAttack={by:p.id,weapon:a.weapon,day:s.day,turn:s.turn,epoch:s.epoch};n.injuredEpoch=s.epoch;
+  const weapon=C().weapons[a.weapon].name,ids=D.local(s,p).map(o=>o.id);p.hidden=false;D.localAct(s,p,p.name+'이 '+weapon+'으로 '+n.name+'을 공격합니다. '+(r.damage===0?n.name+'이 몸을 피하며 공격을 벗어납니다.':n.hp===0?n.name+'이 바닥에 쓰러지고 움직임이 멎습니다.':n.name+'이 상처를 붙잡고 뒤로 물러납니다.')+(n.bleeding?' 피가 멎지 않습니다.':''));C().emit(s,[p.id],'check','공격과 대응의 결과입니다.',{roll:{...r,before,after:n.hp},authored:true});
+  C().emit(s,allOther(s,ids),'environment',(s.turn===2?'주택가':C().places[p.location].name)+' 쪽에서 '+(a.weapon==='pistol'?'총성이':'다투는 소리와 비명이')+' 들렸습니다. 누군지는 이곳에서 확인할 수 없습니다.');if(n.hp===0){n.bleeding=false;n.diedEpoch=s.epoch;st.flags[n.id+'Dead']=true;}else if(n.hp<10)n.needsClinic=true;
+  if(a.weapon==='pistol'&&r.damage>0)D.artifact(s,{kind:'bullet',title:'총격 흔적',where:n.location,text:n.name+'이 총에 맞은 자리에 탄환 흔적이 있다. 리스의 총이라는 결론은 권총 실물과 다른 근거가 있어야 비교할 수 있다.'});
+ }
+ if(a.verb==='healNpc'){const before=n.hp;p.items.medicine--;n.hp=Math.min(10,n.hp+s.cfg.heal);n.bleeding=false;D.localAct(s,p,p.name+'이 치료제를 사용해 '+n.name+'의 상처를 처치합니다. 몸을 조금 가눌 수 있게 됩니다.');C().emit(s,[p.id],'notice','치료 체력 '+before+' → '+n.hp,{actionRecord:true});}
+ if(a.verb==='bandageNpc'){const kit=p.items.bandage>0;if(kit)p.items.bandage--;const r=C().check(p,'medical',rng,{label:n.name+' 지혈',dc:s.cfg.medicalDifficulty,edge:kit?1:-1,terms:p.location==='clinic'?[{label:'진료소 처치대',value:2}]:[]});if(r.success)n.bleeding=false;D.localAct(s,p,p.name+'이 '+n.name+'의 상처를 압박합니다. '+(r.success?'출혈이 멎습니다.':'피가 계속 배어 나옵니다.'));C().emit(s,[p.id],'check','지혈은 체력을 회복하지 않습니다.',{roll:r,authored:true});}
+ if(a.verb==='escortNpc'){n.escort=p.id;p.storyTravel='clinic';D.localAct(s,p,p.name+'이 '+n.name+'을 부축해 진료소로 향합니다. 치료나 지혈은 따로 해야 합니다.');}
+ if(a.verb==='guardNpc'){n.escort=p.id;n.protected=true;D.localAct(s,p,p.name+'이 '+n.name+' 곁을 지키기로 합니다. 같은 장소에 있을 때만 직접 상황을 볼 수 있습니다.');}
+ if(a.verb==='threatNpc'){n.threatened=true;D.artifact(s,{kind:'threat',title:n.name+'에게 온 협박장',where:'home:npc:'+n.id,npc:n.id,text:n.id==='mayor'?'회관 문을 닫으라는 협박장. 보낸 이름은 없다.':'노조를 넘기지 않으면 노조원들을 해치겠다는 협박장. 보낸 이름은 없다.',public:false});D.emit(s,[p.id],n.name+'에게 이름 없는 협박을 남겼습니다. 상대가 공개하기 전에는 다른 주민이 이 내용을 모릅니다.',{actionRecord:true});}
+ D.refreshIncidents(s);return null;
+}
+function allOther(s,ids){return C().alive(s).filter(p=>!ids.includes(p.id)).map(p=>p.id);}
+S.choices=function(s,p,slot){if(!s.scenario?.continuation)return base.choices(s,p,slot);return [...base.choices(s,p,slot),...D.incidentChoices(s,p,slot),...acts(s,p,slot)];};
+S.validate=function(s,p,a,slot){if(a.sceneKey==='incident'){const def=D.active(s,p).find(e=>e.id===a.incident),o=def?.options.find(o=>o.key===a.branch);return !o||o.slot!==slot||z(s).incidents[def.id].answered?.includes(p.id+':'+o.key)?'이 크기로 선택할 수 없는 사건 행동입니다.':D.effectError(s,p,o.effect);}if(a.sceneKey==='story-action')return validAction(s,p,a,slot);return base.validate(s,p,a,slot);};
+S.resolve=function(s,p,a,rng){let err=null;if(a.sceneKey==='incident')err=D.resolveIncident(s,p,a,rng);else if(a.sceneKey==='story-action')err=resolveAction(s,p,a,rng);else return base.resolve(s,p,a,rng);if(err)D.emit(s,[p.id],err,{actionRecord:true});};
+S.investigate=function(s,p,rng){const entries=z(s).artifacts.filter(a=>accessible(s,p,a)&&!p.directorKnown?.includes('artifact:'+a.id));if(entries.length){const r=C().check(p,'observe',rng,{label:'남은 물건 조사',dc:12});C().emit(s,[p.id],'check',r.success?'물건에 남은 내용을 확인합니다.':'흔적을 구분하지 못했습니다.',{roll:r,authored:true});if(r.success)revealArtifact(s,p,entries[0]);return true;}const before=p.storyKnown.length,done=base.investigate(s,p,rng);if(p.storyKnown.length>before&&p.location==='chapel')z(s).flags.cacheDisturbed=true;return done;};
+S.guide=function(s,p){const list=D.active(s,p).flatMap(def=>def.options.filter(o=>o.slot!=='free'&&!z(s).incidents[def.id].answered?.includes(p.id+':'+o.key)).map(o=>({slot:o.slot,label:o.label,action:{type:'scene',sceneKey:'incident',incident:def.id,branch:o.key}}))).slice(0,2);const old=base.guide(s,p);return list.length?{title:'이 장소에서 이어지는 일',options:list,done:false}:old;};
+Object.assign(D,{actions:acts,resolveAction,searches,accessible,revealArtifact,ownArtifacts});
+})(globalThis);

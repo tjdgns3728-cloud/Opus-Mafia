@@ -1,0 +1,20 @@
+# Runtime/private files stay on the executing computer.
+**/.token
+**/.play_token
+**/.env
+**/.env.*
+**/auth.json
+**/credentials.json
+**/__pycache__/
+*.pyc
+**/.venv/
+**/logs/
+**/outputs/
+**/node_modules/
+**/history/
+*.sqlite3*
+*.db
+*.mp3
+*.wav
+*.ogg
+*.pem

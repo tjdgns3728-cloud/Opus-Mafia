@@ -1,0 +1,712 @@
+{
+ "name": "main",
+ "nodes": [
+  {
+   "name": "화면",
+   "components": [
+    {
+     "type": "Transform",
+     "props": {
+      "x": 0,
+      "y": 0,
+      "w": 960,
+      "h": 600
+     }
+    },
+    {
+     "type": "Panel",
+     "props": {
+      "color": "#1b1e25"
+     }
+    },
+    {
+     "type": "함께판화면",
+     "props": {}
+    }
+   ],
+   "children": [
+    {
+     "name": "처음",
+     "components": [
+      {
+       "type": "Transform",
+       "props": {
+        "x": 0,
+        "y": 0,
+        "w": 960,
+        "h": 600
+       }
+      },
+      {
+       "type": "Panel",
+       "props": {}
+      }
+     ],
+     "children": [
+      {
+       "name": "제목",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 36,
+          "w": 880,
+          "h": 44
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "함께 하는 방 본보기",
+          "size": 30,
+          "bold": true
+         }
+        }
+       ]
+      },
+      {
+       "name": "설명",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 90,
+          "w": 880,
+          "h": 50
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "여럿이 저마다 자기 브라우저로 들어와 한 판을 함께 합니다. 한 사람이 방을 만들고, 나머지는 그 방 이름으로 들어옵니다.",
+          "size": 16,
+          "color": "#b9bfcc"
+         }
+        }
+       ]
+      },
+      {
+       "name": "이름표",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 160,
+          "w": 300,
+          "h": 24
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "부를 이름",
+          "size": 15,
+          "color": "#9ec1ff"
+         }
+        }
+       ]
+      },
+      {
+       "name": "이름칸",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 188,
+          "w": 300,
+          "h": 44
+         }
+        },
+        {
+         "type": "TextInput",
+         "props": {
+          "placeholder": "예: 가람"
+         }
+        }
+       ]
+      },
+      {
+       "name": "만들기",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 256,
+          "w": 300,
+          "h": 48
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "방 만들기"
+         }
+        }
+       ]
+      },
+      {
+       "name": "방이름표",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 336,
+          "w": 300,
+          "h": 24
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "방 이름 (다른 사람이 만든 방)",
+          "size": 15,
+          "color": "#9ec1ff"
+         }
+        }
+       ]
+      },
+      {
+       "name": "방이름칸",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 364,
+          "w": 300,
+          "h": 44
+         }
+        },
+        {
+         "type": "TextInput",
+         "props": {
+          "placeholder": "예: K7QM"
+         }
+        }
+       ]
+      },
+      {
+       "name": "들어가기",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 424,
+          "w": 300,
+          "h": 48
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "들어가기",
+          "color": "#3d5a3d"
+         }
+        }
+       ]
+      },
+      {
+       "name": "알림",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 496,
+          "w": 880,
+          "h": 80
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 17,
+          "color": "#ffb4b4"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "대기",
+     "components": [
+      {
+       "type": "Transform",
+       "props": {
+        "x": 0,
+        "y": 0,
+        "w": 960,
+        "h": 600
+       }
+      },
+      {
+       "type": "Panel",
+       "props": {}
+      }
+     ],
+     "children": [
+      {
+       "name": "방이름표",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 36,
+          "w": 400,
+          "h": 24
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "방 이름 — 함께 할 사람에게 알려 주세요",
+          "size": 15,
+          "color": "#9ec1ff"
+         }
+        }
+       ]
+      },
+      {
+       "name": "방이름",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 64,
+          "w": 400,
+          "h": 80
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 64,
+          "bold": true
+         }
+        }
+       ]
+      },
+      {
+       "name": "사람수",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 160,
+          "w": 500,
+          "h": 28
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 18,
+          "color": "#b9bfcc"
+         }
+        }
+       ]
+      },
+      {
+       "name": "사람들",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 40,
+          "y": 196,
+          "w": 500,
+          "h": 300
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 22
+         }
+        }
+       ]
+      },
+      {
+       "name": "시작",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 560,
+          "y": 196,
+          "w": 300,
+          "h": 56
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "시작"
+         }
+        }
+       ]
+      },
+      {
+       "name": "안내",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 560,
+          "y": 396,
+          "w": 360,
+          "h": 90
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 16,
+          "color": "#b9bfcc"
+         }
+        }
+       ]
+      },
+      {
+       "name": "나가기",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 560,
+          "y": 500,
+          "w": 300,
+          "h": 44
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "처음 화면으로",
+          "color": "#444a57"
+         }
+        }
+       ]
+      },
+      {
+       "name": "컴퓨터넣기",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 560,
+          "y": 268,
+          "w": 300,
+          "h": 44
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "컴퓨터 자리 넣기",
+          "color": "#3a3f5c"
+         }
+        }
+       ]
+      },
+      {
+       "name": "컴퓨터빼기",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 560,
+          "y": 322,
+          "w": 300,
+          "h": 44
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "컴퓨터 자리 빼기",
+          "color": "#444a57"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "판",
+     "components": [
+      {
+       "type": "Transform",
+       "props": {
+        "x": 0,
+        "y": 0,
+        "w": 960,
+        "h": 600
+       }
+      },
+      {
+       "type": "Panel",
+       "props": {}
+      }
+     ],
+     "children": [
+      {
+       "name": "윗줄",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 20,
+          "y": 12,
+          "w": 780,
+          "h": 30
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 18,
+          "bold": true,
+          "color": "#9ec1ff"
+         }
+        }
+       ]
+      },
+      {
+       "name": "숨은숫자",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 20,
+          "y": 50,
+          "w": 300,
+          "h": 56
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 20
+         }
+        }
+       ]
+      },
+      {
+       "name": "사람들",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 20,
+          "y": 110,
+          "w": 300,
+          "h": 276
+         }
+        },
+        {
+         "type": "Panel",
+         "props": {
+          "layout": "column",
+          "gap": 4,
+          "scroll": true
+         }
+        }
+       ],
+       "children": []
+      },
+      {
+       "name": "받는이",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 20,
+          "y": 390,
+          "w": 300,
+          "h": 22
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 14,
+          "color": "#b9bfcc"
+         }
+        }
+       ]
+      },
+      {
+       "name": "선택지",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 20,
+          "y": 416,
+          "w": 300,
+          "h": 176
+         }
+        },
+        {
+         "type": "Choices",
+         "props": {
+          "max": 4
+         }
+        }
+       ]
+      },
+      {
+       "name": "이야기",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 340,
+          "y": 72,
+          "w": 600,
+          "h": 454
+         }
+        },
+        {
+         "type": "Feed",
+         "props": {
+          "speed": 0,
+          "size": 16,
+          "back": "#15171b",
+          "gap": 8
+         }
+        }
+       ]
+      },
+      {
+       "name": "입력",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 340,
+          "y": 538,
+          "w": 340,
+          "h": 44
+         }
+        },
+        {
+         "type": "TextInput",
+         "props": {
+          "placeholder": "글을 쓰고 Enter (받을 사람: 왼쪽 이름)"
+         }
+        }
+       ]
+      },
+      {
+       "name": "한판더",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 690,
+          "y": 538,
+          "w": 120,
+          "h": 44
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "한 판 더",
+          "color": "#3d5a3d"
+         }
+        }
+       ]
+      },
+      {
+       "name": "끝단추",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 820,
+          "y": 538,
+          "w": 120,
+          "h": 44
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "처음으로",
+          "color": "#444a57"
+         }
+        }
+       ]
+      },
+      {
+       "name": "AI줄",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 340,
+          "y": 48,
+          "w": 600,
+          "h": 20
+         }
+        },
+        {
+         "type": "Text",
+         "props": {
+          "text": "",
+          "size": 13,
+          "color": "#8a93a6"
+         }
+        }
+       ]
+      },
+      {
+       "name": "기록단추",
+       "components": [
+        {
+         "type": "Transform",
+         "props": {
+          "x": 820,
+          "y": 8,
+          "w": 120,
+          "h": 32
+         }
+        },
+        {
+         "type": "Button",
+         "props": {
+          "label": "기록 남기기",
+          "size": 13,
+          "color": "#444a57"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+{
+  "days": 5,
+  "hardSeconds": 3000,
+  "smallSeconds": 35,
+  "planSeconds": 60,
+  "reactionSeconds": 15,
+  "trialSeconds": 120,
+  "voteSeconds": 60,
+  "medicalDifficulty": 11,
+  "heal": 3,
+  "criticalHP": 2,
+  "bleedLoss": 1,
+  "startingMoney": 8,
+  "bandagePrice": 1,
+  "gatheringSeconds": 120
+}

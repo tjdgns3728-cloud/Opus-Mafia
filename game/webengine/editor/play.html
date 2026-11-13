@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>게임</title>
+<style>
+:root{--bg:#000}
+html,body{margin:0;height:100%;background:var(--bg);color:#eee;font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;overflow:hidden}
+#box{position:absolute;inset:0}
+#errors{position:fixed;left:8px;bottom:8px;max-width:60%;font:12px/1.5 Consolas,monospace;color:#ffb4b4;background:rgba(40,0,0,.85);border-radius:6px;padding:6px 10px;display:none;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div id="box"></div>
+<div id="errors"></div>
+<pre id="playResult" hidden></pre>
+<script>
+// The player: loads the engine modules, then the open project's scripts and scenes, and runs the start scene.
+// ?project=<id> plays that project (default: the open one); ?seed=<n> fixes randomness; ?frames=<n> runs n
+// steps without waiting for the screen and reports (for checks); ?scene=<name> starts elsewhere.
+try { if (parent !== window && typeof parent.__weTap === "function") parent.__weTap(window); } catch {}   // the room screen test (/roomtest) reads what this window receives
+const Q = new URLSearchParams(location.search);
+const pq = Q.get("project") ? "project=" + encodeURIComponent(Q.get("project")) : "";
+const get = async url => (await fetch(url)).json();
+const load = src => new Promise((ok, no) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = () => no(new Error("불러오지 못함: " + src)); document.head.appendChild(s); });
+const errBox = document.getElementById("errors");
+function showError(e) {
+  errBox.style.display = "block";
+  errBox.textContent += `✖ ${e.where} — ${e.what}: ${e.message}\n`;
+  if (parent !== window) parent.postMessage({webengine: "error", error: e}, "*");
+}
+(async () => {
+  const result = {ok: false, errors: []};
+  try {
+    const eng = await get("/api/engine");
+    await load("/runtime/core.js");
+    for (const m of eng.modules.filter(m => m !== "core")) await load(`/runtime/${m}.js`);
+    const proj = await get("/api/files" + (pq ? "?" + pq : ""));
+    if (proj.error) throw new Error(proj.error);
+    document.title = proj.meta.name || "게임";
+    for (const f of proj.files.filter(f => f.kind === "script")) await load(`/project/${f.path}?${pq}&v=${Date.now()}`);
+    const scenes = {};
+    for (const f of proj.files.filter(f => f.kind === "scene")) scenes[f.path.slice(7, -5)] = (await get(`/api/file?path=${encodeURIComponent(f.path)}${pq ? "&" + pq : ""}`)).content;
+    const prefabs = {};
+    for (const f of proj.files.filter(f => f.kind === "prefab")) prefabs[f.path.slice(8, -5)] = (await get(`/api/file?path=${encodeURIComponent(f.path)}${pq ? "&" + pq : ""}`)).content;
+    const s = proj.meta.settings || {};
+    // params: the page's ?options, for game code (engine.opts.params.auto …)
+    const engine = window.engine = new WebEngine.Engine({stage: document.getElementById("box"), width: s.width || 960, height: s.height || 540, fit: s.fit, params: Object.fromEntries(Q),
+      ai: {token: "__TOKEN__"},
+      seed: Q.has("seed") ? +Q.get("seed") : Date.now() % 1e9, scenes, prefabs, project: proj.meta, assetBase: "/project/assets/", assetQuery: pq ? "?" + pq : ""});
+    for (const f of proj.files.filter(f => f.kind === "asset" && f.path.endsWith(".css")))      // project style sheets
+      engine.render.css(f.path, await (await fetch(`/project/${f.path}${pq ? "?" + pq : ""}`)).text());
+    if (s.background) document.body.style.background = s.background;
+    engine.bus.on("error", showError);
+    engine.bus.on("log", (where, msg) => { if (parent !== window) parent.postMessage({webengine: "log", where, msg}, "*"); });
+    engine.change(Q.get("scene") || proj.meta.start);
+    if (Q.has("frames")) { for (let i = 0; i < +Q.get("frames"); i++) engine.step(1 / 60); }
+    else engine.run();
+    result.ok = !engine.errors.length; result.errors = engine.errors; result.scene = engine.scene && engine.scene.name; result.frames = engine.frame;
+    if (parent !== window) parent.postMessage({webengine: "started", scene: result.scene}, "*");
+  } catch (err) {
+    result.errors.push({where: "플레이 화면", what: "시작", message: err.message});
+    showError({where: "플레이 화면", what: "시작", message: err.message});
+  }
+  document.getElementById("playResult").textContent = JSON.stringify(result);
+})();
+</script>
+</body>
+</html>

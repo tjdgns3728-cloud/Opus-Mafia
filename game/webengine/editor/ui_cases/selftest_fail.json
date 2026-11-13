@@ -1,0 +1,9 @@
+{"note": "시험기 자체 점검 (자원 관리): 일부러 실패한다. 새 프로젝트를 만들고 저장한 뒤, 없는 글을 기다리다 실패 → 실패 증거(결과·만든 프로젝트)만 남고 복사본과 만든 프로젝트는 지워지는지 확인하는 데 쓴다. 통과하면 오히려 시험기가 고장 난 것이다.",
+ "budget": 60,
+ "steps": [
+  {"do": "click", "sel": "[data-cmd=\"newProject\"]"}, {"do": "wait", "sel": "#npName"},
+  {"do": "set", "sel": "#npName", "value": "자원 점검 실패용"}, {"do": "click", "sel": "#npOk"},
+  {"do": "expect", "sel": "#proj", "text": "자원 점검 실패용"},
+  {"do": "note", "text": "일부러 실패: 없는 글을 기다린다"},
+  {"do": "expect", "sel": "#proj", "text": "이 글은 절대 나오지 않는다"}
+ ]}

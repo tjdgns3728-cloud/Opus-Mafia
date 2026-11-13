@@ -1,0 +1,439 @@
+{
+  "source": "local current Black Ridge build, 2026-11-14",
+  "copied_files": [
+    {
+      "path": "game/games/noir-trpg/assets/places.png",
+      "sha256": "b1670c400bc6b583a5eec3114b69a70b2cbadd06df50d78feb2d4aec8ae04734",
+      "bytes": 2580413
+    },
+    {
+      "path": "game/games/noir-trpg/assets/settings.json",
+      "sha256": "fb35e598094b2b6db79b49fadc7069cabff5fe8e112481c51c5227b979abfa29",
+      "bytes": 312
+    },
+    {
+      "path": "game/games/noir-trpg/assets/trpg.css",
+      "sha256": "0b1348282a3775d13e6c9aaa883b9bfc8fd7d05f53c7795bd63a57cb3676e04d",
+      "bytes": 36770
+    },
+    {
+      "path": "game/games/noir-trpg/project.json",
+      "sha256": "ab04e9fec153452e6e6b02720740e0a0441ce6e0c71ff0fe0cad056bd085588c",
+      "bytes": 260
+    },
+    {
+      "path": "game/games/noir-trpg/scenes/main.json",
+      "sha256": "0e18e7f3dc0d308223058cc0a930cced9b6bf9a5f3a455cfb0bd271a4f71f2d0",
+      "bytes": 90
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/00World.js",
+      "sha256": "00ea0f08a4ceaea08845a7cdc1ad37eb3bc14d5b9e4f8f0c1db9a04d15ed8c44",
+      "bytes": 49151
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/01Narrative.js",
+      "sha256": "ae705cdab6215fdb7486b455093f9a9531582f0e66483dad5b447a2c05a50de6",
+      "bytes": 7265
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/02Press.js",
+      "sha256": "7783f2ef2a45025090c8d841df44a8c39141bbcc979ad2dc2d7a26da571b1449",
+      "bytes": 4418
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/03Visuals.js",
+      "sha256": "e28fa8c81ca2ac9d98ae07386c137cf61e78ddb88d4046717df8bea5280ec63b",
+      "bytes": 4839
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/04Incidents.js",
+      "sha256": "8daa154bb60b4773d182fe4ff85fb0b60d62f5f95d55ddad5e6806e7baab231c",
+      "bytes": 37030
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/05Scenarios.js",
+      "sha256": "44ae2aa7484eb767c8ee268aafed79e7aa8f50b1180918bc3df3663a1d6b70ef",
+      "bytes": 31304
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/06StoryDirector.js",
+      "sha256": "e673451574aaba5e19b8ac5a3683467d2339414196a9982f0269a0bfa98346ea",
+      "bytes": 15877
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/07StoryActions.js",
+      "sha256": "53b159b402907682072a8245b31446613e96d234267764b056ae12fe07b7dff8",
+      "bytes": 17341
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/08StoryFlow.js",
+      "sha256": "6a54aec8bd30e1a7d99c7dd6b765f138563a914e41240ded7459d18dfdac71af",
+      "bytes": 30749
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/10Session.js",
+      "sha256": "cd53e3b3f0c1343d0c4534f24a2acb60201a8a493166b7be888539f8d535c51a",
+      "bytes": 22157
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/15Audio.js",
+      "sha256": "1a5ac200eac549bec91913450361880ff03d2662c7162c1c89307d7fc268ef2f",
+      "bytes": 2944
+    },
+    {
+      "path": "game/games/noir-trpg/scripts/20Interface.js",
+      "sha256": "26394bf2fa04584a2652556bd625db247c75d880eb941bd2fe8006db75c0a5bd",
+      "bytes": 78894
+    },
+    {
+      "path": "game/webengine/server/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "game/webengine/server/ai.py",
+      "sha256": "1893a8c57dd3ca923030af8ce541aafaf338499684ea8b2a3df8cb7900682b6e",
+      "bytes": 29297
+    },
+    {
+      "path": "game/webengine/server/app.py",
+      "sha256": "422371d2b59fa0f667b6676ddb59a899e470b0292a73a5aba8a4f3c46e1322c7",
+      "bytes": 14343
+    },
+    {
+      "path": "game/webengine/server/boundary.py",
+      "sha256": "8baacbc9d0f7d7796cbaeed6bb4613021d4b58724183453050e599ab4e90fec8",
+      "bytes": 4993
+    },
+    {
+      "path": "game/webengine/server/check.py",
+      "sha256": "4cf2c051c59057782ec5076862c0b0202e50b9dbe052db9dd957b2d441be78ac",
+      "bytes": 15236
+    },
+    {
+      "path": "game/webengine/server/codex_cli.py",
+      "sha256": "e8a88b4991a7cc5e76664eff231034432e5b7da5ee907502de58052d8ff2cf5d",
+      "bytes": 7250
+    },
+    {
+      "path": "game/webengine/server/draft.py",
+      "sha256": "74618554797f86b070b67429cbc7019adbc5fc451a3b958b536af01fcd9c284a",
+      "bytes": 14171
+    },
+    {
+      "path": "game/webengine/server/image.py",
+      "sha256": "63bf801041cde106e58fd9df57ac3410569ef8b7846be059e1447403725a608b",
+      "bytes": 9451
+    },
+    {
+      "path": "game/webengine/server/library.py",
+      "sha256": "cfc54cfc50bd862a1e0ebc93224c7fb62fa6f73358064213cad6a6bef0addb48",
+      "bytes": 2090
+    },
+    {
+      "path": "game/webengine/server/play.py",
+      "sha256": "22bf15f3c34d06e3820fa629fd4993dffe1ad1a0c69bd131d9fa96344801a344",
+      "bytes": 22936
+    },
+    {
+      "path": "game/webengine/server/resources.py",
+      "sha256": "64767d0b53d70aec126b29520aa8b25a8fa3e74c9fae5d92ddea5dc5379213f8",
+      "bytes": 16100
+    },
+    {
+      "path": "game/webengine/server/room_host.js",
+      "sha256": "25b769b29327f311cf9f6571a991b125a0dcce4d9920e3311cb9d31429ccdffb",
+      "bytes": 38665
+    },
+    {
+      "path": "game/webengine/server/roomtest.py",
+      "sha256": "13b130214e5a53bc5b83ffff28ec556b7af3fec74dc976f40c0924e73a1567b9",
+      "bytes": 2815
+    },
+    {
+      "path": "game/webengine/server/rules_runner.js",
+      "sha256": "828a7e2c56a0af85dbc119b38714e9539e37d98c8f7b1105ceb75599a1c9bef9",
+      "bytes": 1727
+    },
+    {
+      "path": "game/webengine/server/store.py",
+      "sha256": "2769ba9e11dc027930204f5e8c6eef0c242d263b36ec2030f525e94ae3630f9f",
+      "bytes": 11513
+    },
+    {
+      "path": "game/webengine/server/uitest.py",
+      "sha256": "50e4cbcb873503fe4596e53f5e6da44d2093125968813bd8ad00b104c0ab8853",
+      "bytes": 7596
+    },
+    {
+      "path": "game/webengine/runtime/actors.js",
+      "sha256": "694823f6b3e823d5dca175f94322550925467943d3844d938cef31f9ef744d96",
+      "bytes": 5731
+    },
+    {
+      "path": "game/webengine/runtime/ai.js",
+      "sha256": "ffc33f174f69f73ee240f1df32da7b8a6d961427f9aa5a0aecd50c9928bad1d3",
+      "bytes": 17868
+    },
+    {
+      "path": "game/webengine/runtime/assets.js",
+      "sha256": "9f2327c4fc3a5ccbfac4bca910956ad71a7dfc270184fb1f4a6a7559af0f8484",
+      "bytes": 981
+    },
+    {
+      "path": "game/webengine/runtime/audio.js",
+      "sha256": "65d367172d391e24e05ee6bc99c47a76b032521d3aeac581c8e6ab22f1849e71",
+      "bytes": 8418
+    },
+    {
+      "path": "game/webengine/runtime/components.json",
+      "sha256": "95e8bcb15e5fa61db253ba36cd1f3f442959f08adb8a1ddf5dfa6e655ae013bb",
+      "bytes": 19331
+    },
+    {
+      "path": "game/webengine/runtime/cond.js",
+      "sha256": "c31b8cd79d5efa394c58757916ea406a1f0795efc35a0c0f2b5e2482c250db80",
+      "bytes": 5057
+    },
+    {
+      "path": "game/webengine/runtime/core.js",
+      "sha256": "4bcab205bd5deac4425f59b39eb3aee653150422ec27ca97367173a963b0afd2",
+      "bytes": 17499
+    },
+    {
+      "path": "game/webengine/runtime/fx.js",
+      "sha256": "59be2c01c9f89fa64ff6f687a1c859a71c16b4f676b912738dbcd4f10c9b4268",
+      "bytes": 5473
+    },
+    {
+      "path": "game/webengine/runtime/input.js",
+      "sha256": "9097c1d7803210b1cfe3dbaa2933a9803205d5406f8d23e0b061c2ed5f4ca32e",
+      "bytes": 1440
+    },
+    {
+      "path": "game/webengine/runtime/knowledge.js",
+      "sha256": "da1ea8461716ac1eb959ab9be7b84e061c96073445dd27b2374d36d5978e0cc0",
+      "bytes": 5346
+    },
+    {
+      "path": "game/webengine/runtime/korean.js",
+      "sha256": "53b0e85cb1f3375bbc24c5190a76354585e9766a3ec4e4036f79b01e73c60011",
+      "bytes": 1264
+    },
+    {
+      "path": "game/webengine/runtime/match.js",
+      "sha256": "cb1c7d83dd2487ca1f4891d4a82b95e71f3e2336b9ef8b127f2aca11c022f76c",
+      "bytes": 3784
+    },
+    {
+      "path": "game/webengine/runtime/phase.js",
+      "sha256": "0d289a8e02cc8f903b5188770662189fbfb56344d31fc2200862df081e17035b",
+      "bytes": 4597
+    },
+    {
+      "path": "game/webengine/runtime/render.js",
+      "sha256": "201874b74f9a64645e27461282432220a3af7a540a10759d6b85dbbfd9c13273",
+      "bytes": 6848
+    },
+    {
+      "path": "game/webengine/runtime/room.js",
+      "sha256": "469cb7e8820fe6168b0f5631d9139d740f449fddae6cd09739142bc1213c6e65",
+      "bytes": 11638
+    },
+    {
+      "path": "game/webengine/runtime/state.js",
+      "sha256": "82e5fe7370c368cbd07fbbdbe5f7051b14031c4d5bc0d2a11c66ee7875c9ede3",
+      "bytes": 2080
+    },
+    {
+      "path": "game/webengine/runtime/talk.js",
+      "sha256": "3728af392d9d8e4b72eaf878b5ae1f938e48b1d704f7cc56d873948a91603a66",
+      "bytes": 30074
+    },
+    {
+      "path": "game/webengine/runtime/timer.js",
+      "sha256": "a416da89afb6a59afa670c0314426dc559904d14fdc0f8f925b64dbe73eda95a",
+      "bytes": 1433
+    },
+    {
+      "path": "game/webengine/runtime/tween.js",
+      "sha256": "7b6271a244904b65fb7268baf1c80f14de6003a59b46b3fc0d1cc5c2f33b5527",
+      "bytes": 1757
+    },
+    {
+      "path": "game/webengine/runtime/ui.js",
+      "sha256": "678a238d7dc9a24e33ae119cfcebd08a751ddbadd7901b828bea7df92ab0c7b6",
+      "bytes": 20696
+    },
+    {
+      "path": "game/webengine/editor/index.html",
+      "sha256": "ff43de0d8f5dccba360ce67646493a3bf28fab5444c1fe88d5a766cab16a3b95",
+      "bytes": 65708
+    },
+    {
+      "path": "game/webengine/editor/play.html",
+      "sha256": "ea4142363a3f938a807117626797663fc11dd501d66fe7edc37b00c83b057b04",
+      "bytes": 4524
+    },
+    {
+      "path": "game/webengine/editor/roomtest.html",
+      "sha256": "a93dc7e34853686d078aee14242887d67213fb46418001cd7a968b96009d2080",
+      "bytes": 9735
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/first_scene.json",
+      "sha256": "759e8c664a73b62112fd01fc2dfc1338f8d3f2dd6212e7deec8eac85069ec167",
+      "bytes": 3016
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/quiz/answer.js",
+      "sha256": "fab0bee88b7e0584d25e7a9d4c353157dcd8a038c6ed25ace741cb7d637d7b7c",
+      "bytes": 475
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/quiz/progress.js",
+      "sha256": "13801c482961d39b0c859a1edf33307bde754d80707122d98479089f0fda35f7",
+      "bytes": 1557
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/quiz/result.js",
+      "sha256": "361a19129acb749376e7450f8daa61c9d7c58f9aaf323c8c37d2389b8bd96996",
+      "bytes": 583
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/quiz.json",
+      "sha256": "3f3191292001bbbba683bfaf04b52f387e5fc7c88c11a468fbe8fecaf674969f",
+      "bytes": 4908
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/reaction/reaction.js",
+      "sha256": "b7a191c56b4c0f9c42911ac5460005fdb0836f6645d0a87c41ab7a7de4c7bb84",
+      "bytes": 2231
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/reaction.json",
+      "sha256": "7ae9fd512a89cbe02f9715e423f1eb303c24e0a9383cb38e524a9c87c7c7ebde",
+      "bytes": 2544
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/room_demo/project.json",
+      "sha256": "eba6565d0d2c78d22697f6eda64003bbdb2b0d3029f5ac31d0a60d0b7e6a8d17",
+      "bytes": 249
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/room_demo/scenes/main.json",
+      "sha256": "f4be46117c38f8daef9f9424aef8bfc1a309283d0f429a060765f6be2ac00304",
+      "bytes": 13243
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/room_demo/scripts/board.js",
+      "sha256": "371611e88e0ca610e337a8efde6b8fe41ad2087a0b5fe92120c7bb5757cc2c67",
+      "bytes": 7746
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/room_demo/scripts/screen.js",
+      "sha256": "07cd8447d86b563555cb8b1ce926fd518e43bcae9e1873b8eddcadc1b63c1339",
+      "bytes": 8684
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/selftest_fail.json",
+      "sha256": "c44b60570c07863de3f07bf34515531fbd4cd7959923ecc8bdac9c4831ba8204",
+      "bytes": 810
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/style_sheet.json",
+      "sha256": "08e94f0d807dfb0d59b8860a068c97fe8ae11ef959a766137eb53ea785c3773b",
+      "bytes": 2725
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/talk_tools/demo.js",
+      "sha256": "5c1d7633683e14cd513c878b562ceb3090f441e40c4b7727bce7bdf8fe933bcc",
+      "bytes": 9829
+    },
+    {
+      "path": "game/webengine/editor/ui_cases/talk_tools.json",
+      "sha256": "68cb3cd1da4959dc944722016e30f9e7e75689fedee5be454b538910e05da8aa",
+      "bytes": 10082
+    },
+    {
+      "path": "game/webengine/editor/uitest.js",
+      "sha256": "d14c998e1df45058a5ee5eccdc8d5be719228515bc4795878fa1530da30cca69",
+      "bytes": 14492
+    },
+    {
+      "path": "game/webengine/docs/DESIGN.md",
+      "sha256": "5bceb642972d341c8e696b3a8bf9e9f120ff2975c5fa0b0e43b181b81afe615a",
+      "bytes": 12887
+    },
+    {
+      "path": "game/webengine/docs/ENGINE-TALK-1_REPORT.md",
+      "sha256": "bda50d68d217bd6c9be7073821a9ec905c9f77b2c50eec77c37963c7be5fc0a0",
+      "bytes": 13127
+    },
+    {
+      "path": "game/webengine/docs/PLAN.md",
+      "sha256": "9b5380f9a53a409f311b297e0a31c0389f7ad4942929d3c66d90852028658d17",
+      "bytes": 32017
+    },
+    {
+      "path": "game/webengine/docs/ROOM.md",
+      "sha256": "ace66b504084f4b039fb185539458e0a1babc36231bef4fb8c72861103137fa7",
+      "bytes": 17713
+    },
+    {
+      "path": "game/webengine/docs/TALK.md",
+      "sha256": "1794a1d4b36c4bb9b6151c4a28032beed6687b636e13cd4e4d44d357ef9ccaee",
+      "bytes": 4095
+    },
+    {
+      "path": "game/webengine/LICENSE",
+      "sha256": "e1dbbd5c87a28467fe8ce3a4f4e9dce2c2ec4242077c87fe71db6cbd18214db8",
+      "bytes": 541
+    },
+    {
+      "path": "game/webengine/README.md",
+      "sha256": "6a453c697a3a9a08054eb7e7b426faed5dff9a4236a2ca472d5027288d8b12c7",
+      "bytes": 3250
+    },
+    {
+      "path": "game/webengine/engine.json",
+      "sha256": "b244d249367ec0f4dc97103c8da75d26aef75f48908f1f23c32555d4b06bea6a",
+      "bytes": 1461
+    },
+    {
+      "path": "game/webengine/ai.json",
+      "sha256": "bdc06de4b200e9ee38d1035f8b616dd05478d4c80cad1d56943e9b10361b1c12",
+      "bytes": 1976
+    },
+    {
+      "path": "game/webengine/tool.py",
+      "sha256": "6e78bb3e25a47586c9e163c1ddb1eaefbcbd941410fb1b2add843fb68e7da190",
+      "bytes": 26514
+    },
+    {
+      "path": "game/launch_trpg.py",
+      "sha256": "1749bea35d65df010fc72266176737a63a2a508e2284093927a631e7ca116810",
+      "bytes": 4371
+    },
+    {
+      "path": "docs/SCENE_BINDINGS.md",
+      "sha256": "63d827301ec1fdb83a713149a26dc4b43f33d6bd2558fd23abe693b544d39800",
+      "bytes": 15125
+    },
+    {
+      "path": "docs/INCIDENT_BINDINGS.json",
+      "sha256": "dcaf9a681b44e0592b16d6743ca0ac6490b7eb915d7ae655db0c794c1653aaa5",
+      "bytes": 49031
+    }
+  ],
+  "excluded": [
+    "runtime tokens",
+    "logs",
+    "outputs",
+    "databases",
+    "user music"
+  ],
+  "screening": "listed filename exclusions and three credential literal patterns only; not a universal secrecy guarantee",
+  "gameplay_tests": 0
+}

@@ -1,0 +1,35 @@
+{"note": "편집기만으로: 새 프로젝트 → 패널·글자·버튼 배치 → 스크립트를 만들어 붙이고 코드 작성 → 저장 → 실행 → 게임에서 버튼을 누르면 숫자가 오른다.",
+ "steps": [
+  {"do": "note", "text": "1. 새 프로젝트"},
+  {"do": "click", "sel": "[data-cmd=\"newProject\"]"}, {"do": "wait", "sel": "#npName"},
+  {"do": "set", "sel": "#npName", "value": "UI 시험 첫 씬"}, {"do": "click", "sel": "#npOk"},
+  {"do": "expect", "sel": "#proj", "text": "UI 시험 첫 씬"},
+
+  {"do": "note", "text": "2. 패널과 그 안의 글자·버튼"},
+  {"do": "preset", "name": "상자"}, {"do": "name", "value": "Card"},
+  {"do": "prop", "comp": 0, "key": "x", "value": "280"}, {"do": "prop", "comp": 0, "key": "y", "value": "120"},
+  {"do": "prop", "comp": 0, "key": "w", "value": "400"}, {"do": "prop", "comp": 0, "key": "h", "value": "300"},
+  {"do": "prop", "comp": 1, "key": "layout", "value": "column"}, {"do": "prop", "comp": 1, "key": "gap", "value": "14"}, {"do": "prop", "comp": 1, "key": "padding", "value": "20"},
+  {"do": "preset", "name": "글자"}, {"do": "name", "value": "Count"},
+  {"do": "prop", "comp": 0, "key": "w", "value": "360"}, {"do": "prop", "comp": 0, "key": "h", "value": "60"},
+  {"do": "prop", "comp": 1, "key": "text", "value": "0"}, {"do": "prop", "comp": 1, "key": "size", "value": "40"}, {"do": "prop", "comp": 1, "key": "align", "value": "center"},
+  {"do": "node", "name": "Card"}, {"do": "preset", "name": "버튼"}, {"do": "name", "value": "Press"},
+  {"do": "prop", "comp": 0, "key": "w", "value": "360"}, {"do": "prop", "comp": 1, "key": "label", "value": "누르기"},
+
+  {"do": "note", "text": "3. 새 스크립트를 만들어 붙이고 코드 쓰기"},
+  {"do": "answer", "value": "Tally"}, {"do": "click", "sel": "#newScriptHere"},
+  {"do": "wait", "sel": "#cv:not([hidden])"},
+  {"do": "code", "text": "WebEngine.script(\"Tally\", class extends WebEngine.Component {\n  static props = {target: {type: \"node\", default: \"\"}};\n  start() {\n    this.n = 0;\n    this.node.on(\"click\", () => { this.n++; const t = this.scene.find(this.props.target); if (t) t.get(\"Text\").set(this.n); }, this);\n  }\n});\n"},
+  {"do": "expect", "sel": "#codebar", "text": "문법 이상 없음"},
+  {"do": "click", "sel": "[data-cmd=\"save\"]"},
+  {"do": "click", "sel": "#viewTabs [data-view=\"scene\"]"},
+  {"do": "node", "name": "Press"}, {"do": "prop", "comp": 2, "key": "target", "value": "Card/Count"},
+
+  {"do": "note", "text": "4. 저장, 실행, 게임에서 누르기"},
+  {"do": "click", "sel": "[data-cmd=\"save\"]"},
+  {"do": "click", "sel": "#dockTabs [data-dock=\"console\"]"}, {"do": "expect", "sel": "#dockBody", "text": "저장함"},
+  {"do": "click", "sel": "[data-cmd=\"play\"]"},
+  {"do": "expectGame", "text": "누르기"},
+  {"do": "clickGame", "sel": "[data-node$=\"/Press\"]"}, {"do": "clickGame", "sel": "[data-node$=\"/Press\"]"},
+  {"do": "expectGame", "text": "2"}
+ ]}

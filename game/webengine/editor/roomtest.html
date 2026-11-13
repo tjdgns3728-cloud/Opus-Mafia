@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>함께 하는 방 — 창 여덟 화면 시험</title>
+<style>
+html,body{margin:0;background:#0b0c0f;color:#ddd;font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
+#top{padding:6px 10px;font-size:13px;display:flex;gap:12px;align-items:center}
+#top button{font-size:13px;padding:4px 10px}
+#grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:0 4px}
+.seat{position:relative;aspect-ratio:960/600;background:#000}
+.seat iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.seat span{position:absolute;right:4px;top:2px;font-size:11px;color:#8a93a6;z-index:2;pointer-events:none}
+#log{font:12px/1.6 Consolas,monospace;padding:6px 10px;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<div id="top"><b>창 여덟 화면 시험</b><span>놀이용 서버의 게임을 한 쪽에 여덟 자리로 연다. 손으로 해 봐도 되고, 본보기 판(room_demo)이면 [저절로 해 보기]가 처음부터 끝까지 한다.</span>
+<button id="auto">저절로 해 보기</button></div>
+<div id="grid"></div>
+<div id="log"></div>
+<pre id="roomResult" hidden></pre>
+<script>
+// Eight seats of one room on one page (each an <iframe> of /play), driven through the real buttons and input boxes.
+// ?auto=1 (or the button) plays the engine's sample board (editor/ui_cases/room_demo) from making the room to the end
+// and counts how often a seat's screen RECEIVED something hidden from it ("leaks"): every answer a frame gets from the
+// server is kept (play.html hands its fetch to __weTap) and searched for the other seats' hidden numbers and for
+// messages that were not sent to it. The result goes to #roomResult and, for the command line, to /roomtest/result.
+const N = 8, NAMES = ["가람", "나래", "다솜", "라온", "마루", "바다", "사랑", "아름"];
+const grid = document.getElementById("grid"), logBox = document.getElementById("log");
+const frames = [], taps = Array.from({length: N}, () => []);
+window.__weTap = win => {
+  const i = frames.findIndex(f => f.contentWindow === win);
+  if (i < 0) return;
+  const real = win.fetch.bind(win);
+  win.fetch = async (...a) => { const r = await real(...a); r.clone().text().then(t => taps[i].push(t), () => {}); return r; };
+};
+function seat(i, url = "/play") {
+  const box = grid.children[i] || grid.appendChild(Object.assign(document.createElement("div"), {className: "seat"}));
+  box.innerHTML = `<span>창 ${i + 1}</span>`;
+  const f = document.createElement("iframe");
+  frames[i] = f; f.src = url; box.appendChild(f);
+  return f;
+}
+for (let i = 0; i < N; i++) seat(i);
+
+const sleep = ms => new Promise(ok => setTimeout(ok, ms));
+const W = i => frames[i].contentWindow, D = i => frames[i].contentDocument;
+async function until(what, fn, ms = 15000) {
+  const end = Date.now() + ms;
+  for (;;) {
+    let v = null;
+    try { v = fn(); } catch {}
+    if (v) return v;
+    if (Date.now() > end) throw new Error("기다리다 멈춤: " + what);
+    await sleep(100);
+  }
+}
+const ready = i => until(`창 ${i + 1}이 뜸`, () => D(i).getElementById("playResult").textContent && W(i).engine);
+const node = (i, path) => D(i).querySelector(`.we-node[data-node$="${path}"]`);
+const type = (i, path, text) => { const input = node(i, path).querySelector("input"); input.value = text; input.dispatchEvent(new Event("input")); return input; };
+const enter = (i, path, text) => type(i, path, text).dispatchEvent(new KeyboardEvent("keydown", {key: "Enter"}));
+const press = (i, path) => node(i, path).click();
+const stage = i => D(i).querySelector(".we-stage").innerText;
+const feed = i => D(i).querySelector(".we-feed").innerText;
+
+async function auto() {
+  const steps = [], result = {ok: false, steps, leaks: null};
+  const step = (ok, what, detail = "") => { steps.push({ok: !!ok, what, detail}); logBox.textContent += `${ok ? "✔" : "✖"} ${what}${detail ? " — " + detail : ""}\n`; };
+  try {
+    for (let i = 0; i < N; i++) await ready(i);
+    type(0, "처음/이름칸", NAMES[0]); press(0, "처음/만들기");
+    const code = await until("방 이름", () => W(0).engine.room.code);
+    step(/^[A-Z2-9]{4}$/.test(code) && stage(0).includes(code), "방 만들기: 방 이름이 뜬다", code);
+    for (let i = 1; i < N; i++) { type(i, "처음/이름칸", NAMES[i]); type(i, "처음/방이름칸", code); press(i, "처음/들어가기"); await until(`창 ${i + 1} 들어옴`, () => W(i).engine.room.code); }
+    await until("여덟 이름", () => frames.every((f, i) => NAMES.every(n => stage(i).includes(n))));
+    step(true, "들어오기: 여덟 창 모두에 여덟 사람의 이름이 뜬다");
+    const no = await W(3).engine.room.start();
+    step(no.ok === false, "방을 만들지 않은 자리의 시작은 받지 않는다", no.error);
+    const bare = await fetch("/room/chat", {method: "POST", body: JSON.stringify({room: code, seat: "s1", text: "열쇠 없이", to: "all"})}).then(r => r.json());
+    step(bare.ok === false, "자리 열쇠 없이 보낸 글은 받지 않는다", bare.error);
+    press(0, "대기/시작");
+    await until("판 시작", () => frames.every((f, i) => W(i).engine.room.now.status === "play" && /내 숨은 숫자\s*\d{6}/.test(stage(i))));
+    const secret = frames.map((f, i) => stage(i).match(/내 숨은 숫자\s*(\d{6})/)[1]);
+    step(new Set(secret).size === N, "숨은 숫자가 창마다 다르다", secret.join(" "));
+
+    enter(1, "판/입력", "모두에게 하는 말 AL55");
+    await until("모두에게", () => frames.every((f, i) => feed(i).includes("AL55")));
+    step(true, "모두에게 친 글이 여덟 창에 뜬다");
+    for (const id of ["s4", "s5", "s6"]) press(2, "판/사람들/" + id);
+    await sleep(200);
+    enter(2, "판/입력", "셋에게만 하는 말 QZ77");
+    await until("셋에게만", () => [2, 3, 4, 5].every(i => feed(i).includes("QZ77")));
+    await sleep(1200);
+    const sees = frames.map((f, i) => feed(i).includes("QZ77"));
+    step(JSON.stringify(sees) === JSON.stringify([false, false, true, true, true, true, false, false]), "셋에게만 친 글이 그 세 창(과 친 창)에만 뜬다", sees.map(v => v ? "보임" : "없음").join(" "));
+
+    for (let i = 0; i < N; i++) D(i).querySelector(`[data-choice="${["가", "나", "다"][i % 3]}"]`).click();
+    await until("첫 차례가 풀림", () => feed(0).includes("1번째 차례: 가 3명 · 나 3명 · 다 2명 · 안 고름 0명"));
+    step(feed(4).includes("(나에게만) 1번째 차례에 나는 '나'를 골랐다.") && !feed(3).includes("'나'를 골랐다"), "모두 고르면 곧바로 넘어가고, 한 자리에만 가는 소식은 그 창에만 뜬다");
+
+    const url = W(7).location.href, before = feed(7).split("\n").filter(Boolean);
+    seat(7, "about:blank");
+    await until("끊김이 보임", () => stage(0).includes("아름 · 끊김"));
+    step(true, "한 창이 닫히면 다른 창에 끊겼다고 뜬다");
+    seat(7, url); await ready(7);
+    await until("다시 들어옴", () => stage(7).includes(secret[7]) && before.every(l => feed(7).includes(l)));
+    step(!feed(7).includes("QZ77") && !stage(0).includes("아름 · 끊김"), "같은 주소로 다시 열면 같은 자리로 돌아오고 제가 받았던 지난 일이 보인다");
+
+    seat(6, "about:blank");                                   // 일곱째 창은 닫아 둔다
+    for (let i = 0; i < 6; i++) D(i).querySelector('[data-choice="가"]').click();
+    const lefts = [0, 3].map(i => W(i).engine.room.left());
+    step(Math.abs(lefts[0] - lefts[1]) < 0.5, "남은 시간이 창마다 같다", lefts.map(x => x.toFixed(1) + "초").join(" · "));
+    await until("시간이 다 되어 넘어감", () => feed(0).includes("2번째 차례: 가 6명 · 나 0명 · 다 0명 · 안 고름 2명 (시간이 다 됨)"), 60000);
+    step(true, "닫힌 창을 기다리지 않고 시간이 다 되면 넘어간다");
+    await until("판이 끝남", () => stage(0).includes("판이 끝났습니다") && W(0).engine.room.now.status === "over", 60000);
+    step(feed(0).includes("3번째 차례:") && feed(0).includes("안 고름 8명"), "아무도 고르지 않아도 끝까지 간다");
+
+    let leaks = 0, own = 0;
+    for (let i = 0; i < N; i++) {
+      const all = taps[i].join("\n");
+      if (all.includes(secret[i])) own++;
+      for (let j = 0; j < N; j++) if (j !== i && all.includes(secret[j])) leaks++;                 // another seat's hidden number
+      if (![2, 3, 4, 5].includes(i) && all.includes("QZ77")) leaks++;                              // a message for three seats only
+      for (let j = 0; j < N; j++) if (j !== i && all.includes(`1번째 차례에 나는 '${["가", "나", "다"][j % 3]}'를 골랐다`) && j % 3 !== i % 3) leaks++;   // a note for one seat only
+    }
+    result.leaks = leaks; result.received = taps.map(t => t.reduce((s, x) => s + x.length, 0));
+    step(leaks === 0 && own === N, "손님 화면이 남의 숨은 것을 받은 수: " + leaks, `제 숫자는 ${own}/${N} 창이 받음 · 창마다 받은 글자 수 ${result.received.join(",")}`);
+    result.ok = steps.every(s => s.ok);
+  } catch (err) { step(false, "멈춤", err.message); }
+  document.getElementById("roomResult").textContent = JSON.stringify(result);
+  fetch("/roomtest/result", {method: "POST", body: JSON.stringify(result)}).catch(() => {});
+}
+document.getElementById("auto").onclick = () => { document.getElementById("auto").disabled = true; auto(); };
+if (new URLSearchParams(location.search).has("auto")) document.getElementById("auto").click();
+</script>
+</body>
+</html>

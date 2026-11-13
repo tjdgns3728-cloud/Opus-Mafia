@@ -1,0 +1,80 @@
+{
+  "제공자": "codex-cli",
+  "제공자_설명": "codex-cli: 이 컴퓨터의 ChatGPT 구독 로그인으로 NPC 텍스트 응답. API 키 사용 안 함. 사람에게 공개하는 서버에서는 AI 꺼짐.",
+  "roles": {
+    "규칙": "claude-opus-5-5",
+    "작성": "claude-sonnet-5-5",
+    "올림": "claude-opus-5-5",
+    "검토": "claude-sonnet-5-5",
+    "실행": "gpt-6-luna"
+  },
+  "사다리": {
+    "규칙": [
+      "claude-opus-5-5",
+      "claude-sonnet-5-5"
+    ],
+    "작성": [
+      "claude-sonnet-5-5",
+      "claude-haiku-5-5"
+    ],
+    "올림": [
+      "claude-opus-5-5",
+      "claude-sonnet-5-5"
+    ],
+    "검토": [
+      "claude-sonnet-5-5",
+      "claude-haiku-5-5"
+    ],
+    "실행": [
+      "gpt-6-luna"
+    ]
+  },
+  "가격": {
+    "claude-opus-5-5": [
+      5,
+      25
+    ],
+    "claude-sonnet-5-5": [
+      3,
+      15
+    ],
+    "claude-haiku-5-5": [
+      1,
+      5
+    ],
+    "gpt-6-luna": [
+      0.1,
+      0.5
+    ]
+  },
+  "timeout": 600,
+  "환율": 1400,
+  "상한원": {
+    "한판": 10,
+    "시험": 300,
+    "제작": 3000
+  },
+  "그림": {
+    "기본": "gpt",
+    "timeout": 900,
+    "만드는것": {
+      "gpt": {
+        "이름": "GPT 그림 (ChatGPT 구독)",
+        "도구": "codex",
+        "모델": ""
+      },
+      "gpt-luna": {
+        "이름": "GPT 그림 · 가벼운 모델 (ChatGPT 구독, 한도 절약)",
+        "도구": "codex",
+        "모델": "gpt-6-luna"
+      },
+      "claude-svg": {
+        "이름": "Claude SVG (Claude 구독, 벡터 그림)",
+        "도구": "claude",
+        "모델": "claude-sonnet-5-5"
+      }
+    }
+  },
+  "가격_근거": "https://developers.openai.com/api/docs/models/gpt-6-luna — 2026-11-12 확인, 입력/출력 100만 토큰당 USD; GPT 구독의 실제 결제액이 아님. 캐시 할인 미적용 내부 환산.",
+  "표시이름": "ChatGPT 구독 · GPT-6 Luna"
+}

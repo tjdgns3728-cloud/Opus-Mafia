@@ -1,0 +1,14 @@
+{
+  "name": "밤의 증언 · 블랙 리지",
+  "start": "main",
+  "settings": {
+    "width": 1440,
+    "height": 900,
+    "fit": "scale",
+    "background": "#141414",
+    "ai_limits": {
+      "한판": 200,
+      "한판_호출": 90
+    }
+  }
+}

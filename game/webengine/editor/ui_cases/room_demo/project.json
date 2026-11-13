@@ -1,0 +1,15 @@
+{
+ "name": "함께 하는 방 본보기",
+ "start": "main",
+ "modules": [],
+ "settings": {
+  "width": 960,
+  "height": 600,
+  "fit": "scale",
+  "background": "#101216",
+  "ai_limits": {
+   "한판": 300,
+   "한판_호출": 40
+  }
+ }
+}
