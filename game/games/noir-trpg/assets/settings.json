@@ -12,5 +12,5 @@
   "bleedLoss": 1,
   "startingMoney": 8,
   "bandagePrice": 1,
-  "gatheringSeconds": 120
+  "gatheringSeconds": 40
 }
