@@ -28,6 +28,7 @@ function start(s){s.scenario={version:'black-ridge-1',documents:[],bombs:Array.f
  story(s,s.players.map(p=>p.id),OPENING,{source:'P-confirmed-opening'});
  hallScene(s);
  for(const p of s.players)story(s,[p.id],(hooks[p.role]?.[2]||hooks.lawyer[2]).replace('{ammo}',String(p.items.ammo||0)),{private:true,source:'story/story_jobs.md'});
+ for(const p of s.players.filter(p=>p.team==='mafia')){const mates=s.players.filter(o=>o.team==='mafia'&&o.id!==p.id).map(o=>o.name+'('+C().roles[o.role].name+')');story(s,[p.id],mates.length?'당신과 같은 편: '+mates.join(', ')+'. 다른 사람은 이 사실을 모릅니다. 왼쪽 목록에서 같은 편은 이름 옆에 직업이 붉게 표시됩니다.':'이 마을에 당신 말고 같은 편은 없습니다.',{private:true});C().learn(s,p.id,mates.length?'같은 편: '+mates.join(', '):'같은 편 없음',null,'처음부터 아는 사실','observed');}
  sync(s);
 }
 function afterGathering(s){}

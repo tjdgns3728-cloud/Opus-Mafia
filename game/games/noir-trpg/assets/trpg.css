@@ -152,3 +152,16 @@ button.term-player:focus-visible{outline:1px solid #e1c28d;outline-offset:2px}
 #story-scroll .person-detail h3{font-size:18px;margin:4px 0 6px}
 .person-vitals{font-family:'Malgun Gothic',sans-serif;font-weight:700;color:#e1c28d;margin:0 0 8px}
 .person-back{display:block;margin-top:12px}
+/* 마피아에게만 보이는 같은 편 표시 */
+.ally-tag{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:3px;background:#7a2a24;color:#f3d6c8;font:700 11px 'Malgun Gothic',sans-serif;vertical-align:middle}
+/* 진영에 따라 플레이어 칸 색: 마피아는 붉게, 시민은 녹색 계열. 아는 진영은 진하게, 예상은 옅게. */
+.person.team-mafia{background:linear-gradient(100deg,#4a2320,#2a1716);border-color:#9a453b;box-shadow:inset 3px 0 #c0574a}
+.person.team-town{background:linear-gradient(100deg,#2c3324,#1c2119);border-color:#5f7a4e;box-shadow:inset 3px 0 #86a86a}
+.person.guess-mafia{border-color:#6e3b35;box-shadow:inset 3px 0 #a0524a}
+.person.guess-town{border-color:#4d5f40;box-shadow:inset 3px 0 #7d9a62}
+.person.selected{outline:2px solid #e1c28d;outline-offset:-2px}
+#story-scroll .person-detail.team-mafia{border-left:4px solid #c0574a;padding-left:10px;background:#2a1716}
+#story-scroll .person-detail.team-town{border-left:4px solid #86a86a;padding-left:10px;background:#1c2119}
+#story-scroll .person-detail.guess-mafia{border-left:4px solid #a0524a;padding-left:10px}
+#story-scroll .person-detail.guess-town{border-left:4px solid #7d9a62;padding-left:10px}
+.guess-tag{display:inline-block;margin-left:6px;padding:0 5px;border:1px solid #8a7a60;border-radius:3px;color:#cbb894;font:700 11px 'Malgun Gothic',sans-serif;vertical-align:middle}
