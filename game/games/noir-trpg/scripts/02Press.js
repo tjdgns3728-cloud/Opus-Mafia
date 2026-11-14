@@ -13,7 +13,7 @@ function validate(s,p,a){
 function capture(s,p,a){const c=C(),t=c.find(s,a.target);
  if(p.hp<=0)return;
  if(!t||t.location!==p.location||!c.visible(s,p,t)){c.narrate(s,p.id,'사진기를 들었지만 찍으려던 인물의 모습을 확인할 수 없다. 셔터를 내리고 빈 필름을 그대로 둔다.');return;}
- const subjects=s.players.filter(o=>o.id!==p.id&&o.location===p.location&&c.visible(s,p,o)).map(o=>({id:o.id,name:o.name,condition:o.hp===0?'쓰러져 움직이지 않음':o.bleeding?'상처에서 피가 흐름':o.hp<=5?'상처를 입은 모습':'서 있는 모습'}));
+ const subjects=s.players.filter(o=>o.id!==p.id&&o.location===p.location&&c.visible(s,p,o)).map(o=>({id:c.idFor(s,p,o),name:c.nameFor(s,p,o),condition:o.hp===0?'쓰러져 움직이지 않음':o.bleeding?'상처에서 피가 흐름':o.hp<=5?'상처를 입은 모습':'서 있는 모습'}));
  // Only this observer's confirmed, visible outcomes from this common turn enter the photograph.
  const moments=s.feed.filter(e=>e.kind==='combat'&&e.to.includes(p.id)&&e.epoch===s.epoch&&e.place===p.location&&e.cameraText).map(e=>e.cameraText);
  const frames=s.feed.filter(e=>e.kind==='combat'&&e.to.includes(p.id)&&e.epoch===s.epoch&&e.place===p.location&&e.cameraFrame).map(e=>copy(e.cameraFrame));
