@@ -83,7 +83,7 @@ function situation(s,p){const x=q(s),d=x.doyle,m=p.team==='mafia';
  if(x.exploded)return '갱도 입구가 무너졌습니다. 그 소리는 마을 어디서나 들렸습니다.';
  if(d.hp<=0&&d.deathReported)return '도일이 죽었다는 말이 마을에 퍼졌습니다. 노조는 대표를 잃었습니다.';
  if(x.secured)return '폭약 여섯 개가 회관에 봉인되었다는 말이 돕니다. 가져간 사람은 아직 밝혀지지 않았습니다.';
- if(d.cowed)return m?'도일이 노조를 넘기기로 했습니다. 갱도의 폐쇄 팻말은 내려갔습니다.':'갱도의 폐쇄 팻말이 내려갔습니다. 도일은 이유을 말하지 않습니다.';
+ if(d.cowed)return m?'도일이 노조를 넘기기로 했습니다. 갱도의 폐쇄 팻말은 내려갔습니다.':'갱도의 폐쇄 팻말이 내려갔습니다. 도일은 이유를 말하지 않습니다.';
  if(x.mineClosed)return m?'도일이 화약고의 빈 칸을 보았고 갱도는 닫혔습니다. 마을이 폭약을 찾기 시작했습니다.':'도일이 화약고에서 폭약 여섯 개가 사라진 것을 알고 갱도를 닫았습니다. 일을 못 하는 광부들의 임금이 끊겼습니다.';
  return '갱도는 열려 있고 광부들은 일터로 갑니다.';
 }
@@ -110,7 +110,7 @@ function npcRemark(s,p){const x=q(s),said=(p.npcHeard??=[]);const tell=(key,line
  if(p.location==='home'&&!z(s).flags.childSilenced)tell('childDig','골목에서 놀던 아이가 당신 소매를 잡아당깁니다. "교회 앞에서 큰 사람이 땅을 파는 걸 봤어. 얼굴은 못 봤어."','아이의 말: 습격 무렵 교회 앞에서 누군가 땅을 팠다. 교회에 가서 땅을 살펴보면 묻어 둔 것을 찾을 수 있을지 모른다.');
 }
 function arrival(s,p){if(!z(s)||p.hp<=0)return false;D.refreshIncidents(s);const key=p.id+':'+p.location,plain=environmentText(s,p),fresh=z(s).arrivals[key]!==plain;z(s).arrivals[key]=plain;const pending=D.active(s,p).find(e=>!z(s).incidents[e.id].seen.includes(p.id));if(pending){z(s).incidents[pending.id].seen.push(p.id);(z(s).incidents[pending.id].intros??={})[p.id]=D.text(s,p,pending.intro);D.emit(s,[p.id],D.text(s,p,pending.intro),{incident:pending.id,source:pending.source+':'+pending.sourceLine});}else if(fresh)D.emit(s,[p.id],plain,{source:'story/scenes/places_encounters.md'});
- for(const n of Object.values(z(s).npcs).filter(n=>n.location===p.location&&n.hp<10&&s.turn!==2)){const nk='npc-seen:'+n.id+':'+n.hp;if(p.directorKnown.includes(nk))continue;D.observed(s,p,n.name+'을 이곳에서 보았다. '+(n.hp===0?'움직이지 않는 시신이다.':n.bleeding?'상처에서 피가 계속 흐른다.':'상처를 입었지만 살아 있다.'),null,'observed',nk);D.emit(s,[p.id],n.name+(n.hp===0?'이 이곳에 쓰러져 움직이지 않습니다.':n.bleeding?'이 상처를 눌러 잡고 있습니다. 피가 멎지 않습니다.':'이 상처를 감싸고 앉아 있습니다.'));}
+ for(const n of Object.values(z(s).npcs).filter(n=>n.location===p.location&&n.hp<10&&s.turn!==2)){const nk='npc-seen:'+n.id+':'+n.hp;if(p.directorKnown.includes(nk))continue;D.observed(s,p,C.pp(n.name,'을','를')+' 이곳에서 보았다. '+(n.hp===0?'움직이지 않는 시신이다.':n.bleeding?'상처에서 피가 계속 흐른다.':'상처를 입었지만 살아 있다.'),null,'observed',nk);D.emit(s,[p.id],n.name+(n.hp===0?'이 이곳에 쓰러져 움직이지 않습니다.':n.bleeding?'이 상처를 눌러 잡고 있습니다. 피가 멎지 않습니다.':'이 상처를 감싸고 앉아 있습니다.'));}
  {const pres=presence(s,p),pk='pres:'+p.id+':'+p.location;if(pres&&z(s).arrivals[pk]!==pres){z(s).arrivals[pk]=pres;D.emit(s,[p.id],pres);}}
  npcRemark(s,p);
  return true;

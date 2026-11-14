@@ -91,7 +91,7 @@ const WHY={inspect:'이 장소에 남은 것을 살핍니다. 알아낸 것은 �
  threaten:'성공하면 도일이 노조를 넘깁니다. 광부들이 마피아 편에 서서, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다. 실패해도 협박한 사실은 남아, 도일이 나중에 사람들에게 알릴 수 있습니다.',
  bribe:'돈 3을 씁니다. 성공하면 도일이 노조를 넘깁니다. 광부들이 마피아 편에 서서, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다.',
  disclose:'도일이 협박받은 사실을 사람들에게 알리게 합니다. 누가 협박했는지 찾는 실마리가 됩니다.'};
-function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town')return [];const q=s.scenario,a=[],add=(key,label,target)=>a.push({type:'scene',sceneKey:key,label,target,hint:WHY[key]||''});
+function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town'||slot==='big'&&p.jailEpoch===s.epoch)return [];const q=s.scenario,a=[],add=(key,label,target)=>a.push({type:'scene',sceneKey:key,label,target,hint:WHY[key]||''});
  if(slot==='small'){if(p.team==='mafia'&&erasable(s,p).length)add('erase','이 장소의 흔적 지우기 · '+ERASABLE[erasable(s,p)[0]]);return a;}
  if(visibleBombs(s,p).length)add('take','발견한 폭약 가져가기');
  if(p.items.dynamite){if(p.location==='hall')add('secure','폭약을 회관에 맡기기');if(p.location==='chapel')add('bury','폭약을 종탑 아래 묻기');if(p.location==='warehouse'){add('cart','폭약을 수레에 숨기기');if(p.team==='mafia'&&!['lit','exploded'].includes(q.fuse?.status))add('arm','갱도에 폭약 설치하기');}if(p.team==='mafia'&&s.turn===2)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plant',t.name+'의 집에 폭약 하나 놓기',t.id);}
