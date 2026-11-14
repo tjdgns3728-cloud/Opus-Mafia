@@ -26,10 +26,13 @@ function localAction(s,p,text,secret=false){const viewers=local(s,p).filter(o=>o
 function start(s){s.scenario={version:'black-ridge-1',documents:[],bombs:Array.from({length:6},(_,i)=>({id:'d'+i,where:'chapel'})),mineClosed:false,announced:false,secured:false,fuse:null,exploded:false,dayScenes:{},doyle:{id:'npc-doyle',name:'도일',hp:10,location:'hall',stats:{fight:5,agility:5},defense:'dodge',threatened:false,cowed:false,protected:false,disclosed:false},mayor:{name:'해먼드',location:'hall'}};
  for(const p of s.players){p.storyKnown=[];p.sceneVisits={};p.houseId=null;const h=hooks[p.role]||hooks.lawyer;p.personalLead={title:h[0],place:h[1],action:'그 장소의 증거 조사하기',done:false};if(p.team==='mafia'){p.storyKnown.push('cache');C().learn(s,p.id,'우리 편은 화약고에서 가져온 폭약 여섯 개를 교회 종탑 아래에 묻었다.',null,'자신이 아는 작전','observed');}if(p.role==='mafioso'){p.items.pistol=1;p.items.ammo=3;p.reesePistol=true;}}
  story(s,s.players.map(p=>p.id),OPENING,{source:'P-confirmed-opening'});
+ hallScene(s);
  for(const p of s.players)story(s,[p.id],(hooks[p.role]?.[2]||hooks.lawyer[2]).replace('{ammo}',String(p.items.ammo||0)),{private:true,source:'story/story_jobs.md'});
  sync(s);
 }
-function afterGathering(s){story(s,here(s,'hall').map(p=>p.id),'회관 문이 벌컥 열립니다. 숨이 찬 광부 하나가 모자를 움켜쥔 채 서 있습니다. "화약고 문 앞에 꽁초가 떨어져 있소. 끝을 비틀어 만 것이오. 보안관 양반 버릇이지 않소." 웅성거림이 번집니다. 도일이 의자를 밀고 일어납니다. "리스가 간밤에 화약고엘 갔다는 말이오? 내일까지 기다릴 일이 아니군. 지금 열어 봅시다." 해먼드가 손을 듭니다. "다들 몰려가면 누가 무엇을 만졌는지 알 수 없게 되오. 갈 사람은 가고, 남을 사람은 남으시오." 도일이 열쇠 꾸러미를 쥐고 문 쪽으로 걸어갑니다. 광부 몇이 뒤를 따릅니다. 나머지는 서로의 얼굴을 봅니다.');}
+function afterGathering(s){}
+// 첫 장면 바로 뒤에 모두가 보는 장면. 회관 대화가 시작되기 전에 나와야 이야기할 거리가 생긴다.
+function hallScene(s){story(s,s.players.map(p=>p.id),'회관 문이 벌컥 열립니다. 숨이 찬 광부 하나가 모자를 움켜쥔 채 서 있습니다. "화약고 문 앞에 꽁초가 떨어져 있소. 끝을 비틀어 만 것이오. 보안관 양반 버릇이지 않소." 웅성거림이 번집니다. 도일이 의자를 밀고 일어납니다. "리스가 간밤에 화약고엘 갔다는 말이오? 내일까지 기다릴 일이 아니군. 지금 열어 봅시다." 해먼드가 손을 듭니다. "다들 몰려가면 누가 무엇을 만졌는지 알 수 없게 되오. 갈 사람은 가고, 남을 사람은 남으시오." 도일이 열쇠 꾸러미를 챙깁니다. 광부 몇이 따라나설 채비를 합니다. 나머지는 서로의 얼굴을 봅니다.');}
 function chapterText(s,place){const q=s.scenario,d=q.doyle;
  if(place==='warehouse'){if(d.hp<=0)return '갱도 앞에서 도일의 몸이 움직이지 않습니다. 입구에 걸린 폐쇄 팻말이 바람에 흔들립니다.';if(s.day===1&&s.turn===0)return '갱도는 어둡고 화약고에는 자물쇠가 걸려 있습니다. 문틀 밑에 무언가 떨어져 있습니다. 도일이 열쇠를 들고 이쪽으로 오고 있습니다.';return q.secured?'도일이 회수한 폭약 수를 장부와 맞춰 봅니다. "물건은 돌아왔소. 가져간 사람이 누군지는 아직 모르는 일이오."':d.cowed?'도일이 떨리는 손으로 폐쇄 팻말을 내립니다. "일은 다시 하시오. 누구 돈인지는 묻지 마시오."':'도일이 빈 폭약 칸을 가리킵니다. "여섯 개요. 사람을 갱도에 들여보냈다가 어디서 터질지 알 수 없소." 광부들이 닫힌 입구 앞에 멈춰 섭니다.';}
  if(place==='chapel'&&s.day>=4)return '교회 창으로 오후의 빛이 들어옵니다. 종줄은 움직이지 않습니다. 누군가 이곳을 연락 장소로 쓰는지 알아보려면 직접 만나거나 실제로 남긴 것을 찾아야 합니다.';
