@@ -26,12 +26,12 @@ function capture(s,p,a){const c=C(),t=c.find(s,a.target);
  for(const o of witnesses)c.emit(s,[o.id],'story',`${p.name}이 사진기를 들어 ${c.visible(s,o,t)?t.name+' 쪽으로':'눈앞의 풍경을 향해'} 셔터를 누른다.`,{localEvent:true});
 }
 function publish(s,p,a){if(p.hp<=0)return;const c=C(),err=validate(s,p,a);if(err){c.narrate(s,p.id,err);return;}
- const photo=p.photos.find(x=>x.id===a.photo),paper={id:'paper'+(++s.serial),number:(s.newspapers||[]).length+1,by:p.id,byName:p.name,time:c.label(s),headline:String(a.headline).trim(),article:String(a.article).trim(),photo:copy(photo)};
+ const photo=p.photos.find(x=>x.id===a.photo),paper={id:'paper'+(++s.serial),number:(s.newspapers||[]).length+1,by:p.id,byName:'이름 없는 발행인',time:c.label(s),headline:String(a.headline).trim(),article:String(a.article).trim(),photo:{...copy(photo),byName:'이름 없는 사진사'}};
  (s.newspapers??=[]).push(paper);
  const facts=`${c.places[photo.place].name} · ${photo.time}. ${photo.subjects.map(o=>o.name+' — '+o.condition).join('; ')}.${photo.moments.length?' '+photo.moments.join(' '):''}`;
  // A published photograph is evidence; the caption/editorial is somebody's claim.
- for(const o of s.players){c.learn(s,o.id,facts,photo.target,`${p.name}이 공개한 사진 · 촬영 당시 장면`,'evidence',photo.id);c.learn(s,o.id,paper.headline+'\n'+paper.article,photo.target,p.name+'의 신문 기사','claim',paper.id);}
- c.emit(s,s.players.map(o=>o.id),'notice',`${p.name}이 사진을 실은 신문을 배포했습니다. “${paper.headline}”`,{newspaper:paper.id,place:null});
+ for(const o of s.players){c.learn(s,o.id,facts,photo.target,'신문에 실린 사진 · 촬영 당시 장면','evidence',photo.id);c.learn(s,o.id,paper.headline+'\n'+paper.article,photo.target,'신문 기사','claim',paper.id);}
+ c.emit(s,s.players.map(o=>o.id),'notice',`누군가 사진을 실은 신문을 배포했습니다. “${paper.headline}”`,{newspaper:paper.id,place:null});
 }
 function choices(s,p){if(p.role!=='reporter'||!p.items.camera)return [];
  const list=s.players.filter(t=>t.id!==p.id&&t.location===p.location&&C().visible(s,p,t)).map(t=>({type:'photograph',target:t.id,label:t.name+'의 모습 촬영'}));
