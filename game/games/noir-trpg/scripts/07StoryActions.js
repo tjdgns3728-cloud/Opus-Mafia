@@ -7,6 +7,7 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town')return []
  if(slot==='small'){
   if(p.location==='chapel'&&z(s).signals.some(e=>e.kind==='candles'))add('inspectSignal','촛대 배치를 살핀다');
   if(p.location==='home'){add('searchHouse','내 집에 남은 물건을 살핀다',{house:p.id});for(const e of z(s).executions)if(e.day<s.day)add('searchHouse',C().find(s,e.target).name+'의 빈집을 살핀다',{house:e.target});}
+  for(const n of Object.values(z(s).npcs).filter(n=>n.hp>0&&n.bleeding&&n.location===p.location&&s.turn!==2))add('bandageNpc',n.name+' 지혈',{npc:n.id});
   for(const a of z(s).artifacts.filter(a=>accessible(s,p,a)&&a.owner!==p.id))add('inspectArtifact','현장의 '+(a.title||'물건')+'을 살핀다',{artifact:a.id});
   return out;
  }
@@ -27,7 +28,7 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town')return []
  for(const n of Object.values(z(s).npcs).filter(n=>n.hp>0)){
   const here=n.location===p.location&&(s.turn!==2||p.location!=='home'||p.houseId==='npc:'+n.id),raid=p.team==='mafia'&&s.turn===2&&n.location==='home';
   if(here||raid)for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))add('attackNpc',(raid?n.name+'의 집 습격':n.name+' 공격')+' · '+C().weapons[w].name,{npc:n.id,weapon:w,raid});
-  if(here&&s.turn!==2){if(n.hp<10&&p.items.medicine)add('healNpc',n.name+' 치료',{npc:n.id});if(n.bleeding)add('bandageNpc',n.name+' 지혈',{npc:n.id});if(['guard','jailor','sheriff'].includes(p.role))add('guardNpc',n.name+' 곁에서 지키기',{npc:n.id,hint:n.name+'을 따라다니며 지킵니다. 같은 곳에서 누가 '+n.name+'을 공격하면 피해를 4까지 막아 줍니다.'+(n.id==='doyle'?' 도일이 협박이나 돈에 넘어가기도 어려워집니다.':'')});if(n.hp<10&&n.location!=='clinic')add('escortNpc',n.name+'을 진료소로 부축',{npc:n.id});}
+  if(here&&s.turn!==2){if(n.hp<10&&p.items.medicine)add('healNpc',n.name+' 치료',{npc:n.id});if(['guard','jailor','sheriff'].includes(p.role))add('guardNpc',n.name+' 곁에서 지키기',{npc:n.id,hint:n.name+'을 따라다니며 지킵니다. 같은 곳에서 누가 '+n.name+'을 공격하면 피해를 4까지 막아 줍니다.'+(n.id==='doyle'?' 도일이 협박이나 돈에 넘어가기도 어려워집니다.':'')});if(n.hp<10&&n.location!=='clinic')add('escortNpc',n.name+'을 진료소로 부축',{npc:n.id});}
   if(p.team==='mafia'&&here&&s.turn!==2&&n.id!=='doyle'&&!n.recruited){const why=n.name+'을 마피아 편으로 끌어들입니다(설득 판정). 끌어들인 사람이 살아 있는 동안, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다. 같은 자리의 사람은 당신이 무언가를 권하는 모습을 봅니다.'+(n.protected?' 지금은 곁에서 지키는 사람이 있어 어렵습니다.':'');add('recruitNpc',n.name+' 끌어들이기',{npc:n.id,hint:why});if(p.money>=2)add('recruitNpcPaid',n.name+'에게 돈을 쥐여 주며 끌어들이기 · 2',{npc:n.id,hint:why+' 돈 2를 쓰는 대신 판정이 3만큼 쉬워집니다.'});}
   if(p.team==='mafia'&&(here||raid)&&!n.threatened)add('threatNpc',n.name+'에게 협박 쪽지 전달',{npc:n.id,raid});
  }

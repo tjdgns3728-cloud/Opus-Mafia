@@ -36,7 +36,7 @@ const weapons={fist:{name:'맨손',die:2,base:0,bleed:false},club:{name:'곤봉'
 const stats={fight:'전투',observe:'관찰',agility:'민첩',medical:'치료',persuade:'설득'};
 const config={townMoney:1,mafiaMoney:3,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:40,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:60,voteSeconds:60,medicalDifficulty:11,heal:3,healBase:1,healDoctor:2,healClinic:1,criticalHP:2,bleedLoss:1};
 const narrative=()=>root.NoirNarrative||(typeof require==='function'?require('./01Narrative.js'):null),press=()=>root.NoirPress||(typeof require==='function'?require('./02Press.js'):null);
-const big=['photograph','publish','scene','move','attack','heal','jail','recruit','bandage','give','share','file','wait','attempt'];
+const big=['photograph','publish','scene','move','attack','heal','jail','recruit','give','share','file','wait','attempt'];
 const small=['scene','buy','evidence','observe','investigate','hide','bandage','unhide','wait','attempt'];
 const find=(s,id)=>s.players.find(p=>p.id===id),alive=s=>s.players.filter(p=>p.hp>0),label=s=>`${s.day}일째 ${s.turn===2?'밤':'낮 '+(s.turn+1)}`;
 const clone=x=>JSON.parse(JSON.stringify(x)),die=(rng,n)=>1+Math.min(n-1,Math.floor(rng()*n));
@@ -103,7 +103,7 @@ function validate(s,id,a,slot){const p=find(s,id);if(!p||p.hp<=0||s.turn===2&&p.
  if(a.type==='file'&&(p.location!=='hall'||p.filedDay===caseDay(s)||!t||t.hp<=0||t.id===id||!String(a.reason||'').trim()))return '회관에서 하루 한 번, 살아 있는 상대와 고발 이유를 정해 신청하세요.';
  if(a.type==='buy'&&s.scenario?.continuation?.stock===0)return '진료소 붕대가 모두 떨어졌습니다.';
  if(a.type==='buy'&&(p.location!=='clinic'||a.item!=='bandage'||p.money<(s.cfg?.bandagePrice??config.bandagePrice)))return '진료소에서 소지금으로 붕대를 살 수 있습니다.';
- if(a.type==='bandage'&&(!t.bleeding||slot==='small'&&t.id!==id))return '작은 행동은 자기 지혈만 가능합니다. 타인 지혈은 큰 행동입니다.';
+ if(a.type==='bandage'&&!t.bleeding)return '피를 흘리지 않는 사람입니다.';
  if(a.type==='give'&&!p.items[a.item==='medicine'?'medicine':'bandage'])return a.item==='medicine'?'건넬 치료제가 없습니다.':'건넬 붕대가 없습니다.';
  if(a.type==='share'&&!p.known.some(k=>k.id===a.fact))return '자신이 아는 기록만 공유할 수 있습니다.';
  return null;
@@ -189,7 +189,7 @@ function smallAction(s,id,a,rng){if(!['small','plan'].includes(s.stage))return '
  if(r.success)for(const e of fresh.slice(-3))learn(s,id,named?`${e.time}, 이곳의 공격 흔적에서 ${t.name}과 연결되는 증거를 확인했습니다.`:`${e.time}, 이곳에서 다툰 흔적을 확인했습니다. 흔적만으로 누가 공격했는지는 알 수 없습니다.`,named?t.id:null,source,'evidence',e.id);
  const text=!r.success?'흔적을 충분히 구분하지 못했습니다. 증거가 없거나 상대가 무죄라는 뜻은 아닙니다.':fresh.length?'실제 남아 있던 흔적을 확인해 수첩에 기록했습니다.':events.length?'확인한 흔적 외에 새로운 증거는 찾지 못했습니다.':'현장을 살폈지만 이곳에서 범행과 연결할 증거는 확인하지 못했습니다. 상대 진영이나 무죄가 확정되는 것은 아닙니다.';
  emit(s,[id],'check',s.scenario&&r.success&&!events.length?'눈에 띄는 전투 흔적은 없습니다. 이 장소에 남은 다른 기록도 살펴봅니다.':text,{roll:r});if(!named)root.NoirScenarios?.inspect(s,p,r);}
- else if(a.type==='bandage')bandage(s,p,t,rng,true);
+ else if(a.type==='bandage')bandage(s,p,t,rng,t.id===p.id);
  else if(a.type==='buy'){if(s.scenario?.continuation)s.scenario.continuation.stock--;p.money-=s.cfg.bandagePrice;p.items.bandage=(p.items.bandage||0)+1;emit(s,[id],'preparation',`진료소에서 붕대 하나를 구입했습니다. 소지금 ${s.cfg.bandagePrice} 지출 · 남은 소지금 ${p.money}. 지혈용이며 체력을 회복하지 않습니다.`);}
  else if(a.type==='scene'){root.NoirScenarios?.resolve(s,p,a,rng);}
  else if(a.type==='observe'){const r=check(p,'observe',rng,{label:'주변 보기',terms:sightTerms(s,p)}),discovered=[];
@@ -214,8 +214,8 @@ function accept(s,id,offerId,yes,factId){const p=find(s,id),o=s.offers.find(o=>o
  if(yes){p.team='mafia';narrate(s,id,'마피아 편에 합류했습니다. 직업·능력치·소지품은 그대로입니다.');emit(s,alive(s).filter(p=>p.team==='mafia').map(p=>p.id),'notice',`${p.name}이 같은 편이 되었습니다.`);}else narrate(s,o.from,'상대가 제안을 거절했습니다.');o.done=true;finish(s);return null;}
 function choices(s,id,slot){const p=find(s,id);if(!p||!canAct(s,p)&&!(slot==='small'&&p.jailEpoch===s.epoch&&!(s.turn===2&&p.team==='town')))return [];
  const list=[],add=(a,title)=>{if(!validate(s,id,a,slot))list.push({...a,label:title});},near=alive(s).filter(t=>sameSpace(s,t,p)&&visible(s,p,t));
- if(slot==='big'){for(const [place,pl] of Object.entries(places))add({type:'move',place},'이동 · '+pl.name);for(const t of near){if(t.id!==id){for(const w of Object.keys(weapons))add({type:'attack',target:t.id,weapon:w},t.name+' 공격 · '+weapons[w].name);add({type:'jail',target:t.id},t.name+' 구금');/* 플레이어 영입은 보류(2026-11-14) */add({type:'give',target:t.id,item:'bandage'},t.name+'에게 붕대 건네기');add({type:'give',target:t.id,item:'medicine'},t.name+'에게 치료제 건네기');if(t.bleeding)add({type:'bandage',target:t.id},t.name+' 지혈');}if(t.hp<10)add({type:'heal',target:t.id},t.name+' 치료');}}
- else{add({type:'observe'},'주변 보기');add({type:'evidence'},'이 장소 조사하기');add({type:'buy',item:'bandage'},`붕대 구매 · ${s.cfg?.bandagePrice||1}`);add({type:'hide'},'주변에 몸을 숨긴다');if(p.hidden)add({type:'unhide'},'몸을 드러낸다');for(const t of near){if(t.id!==id)add({type:'investigate',target:t.id},t.name+' 흔적 조사');if(t.id===id&&t.bleeding)add({type:'bandage',target:t.id},'자기 지혈');}}
+ if(slot==='big'){for(const [place,pl] of Object.entries(places))add({type:'move',place},'이동 · '+pl.name);for(const t of near){if(t.id!==id){for(const w of Object.keys(weapons))add({type:'attack',target:t.id,weapon:w},t.name+' 공격 · '+weapons[w].name);add({type:'jail',target:t.id},t.name+' 구금');/* 플레이어 영입은 보류(2026-11-14) */add({type:'give',target:t.id,item:'bandage'},t.name+'에게 붕대 건네기');add({type:'give',target:t.id,item:'medicine'},t.name+'에게 치료제 건네기');}if(t.hp<10)add({type:'heal',target:t.id},t.name+' 치료');}}
+ else{add({type:'observe'},'주변 보기');add({type:'evidence'},'이 장소 조사하기');add({type:'buy',item:'bandage'},`붕대 구매 · ${s.cfg?.bandagePrice||1}`);add({type:'hide'},'주변에 몸을 숨긴다');if(p.hidden)add({type:'unhide'},'몸을 드러낸다');for(const t of near){if(t.id!==id)add({type:'investigate',target:t.id},t.name+' 흔적 조사');if(t.bleeding)add({type:'bandage',target:t.id},t.id===id?'자기 지혈':t.name+' 지혈');}}
  if(slot==='big')for(const a of press().choices(s,p))add(a,a.label);
  for(const a of root.NoirScenarios?.choices(s,p,slot)||[])add(a,a.label);
  add({type:'wait'},'행동을 마친다');return list;
