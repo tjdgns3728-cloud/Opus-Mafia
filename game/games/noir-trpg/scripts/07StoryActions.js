@@ -14,11 +14,11 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town')return []
  for(const a of ownArtifacts(s,p)){if(['note','extra','paper','threat'].includes(a.kind))add('burnArtifact',(a.title||'보관한 종이')+' 태우기',{artifact:a.id});for(const t of peopleHere(s,p))add('giveArtifact',(a.title||'보관한 물건')+'을 '+t.name+'에게 건네기',{artifact:a.id,target:t.id});}
  if(p.items.notebook){for(const t of peopleHere(s,p))add('giveNotebook','리스의 수첩을 '+t.name+'에게 건네기',{target:t.id});}
  if(p.team==='mafia'){
-  if(p.location==='chapel'){add('bell','교회 종으로 세 번 신호');if(s.day>=4&&s.turn!==2)add('candles','촛대 셋을 삼각형으로 놓기');}
+  // 종 세 번, 촛대, 분필 표시는 아무것도 바꾸지 않는 행동이라 선택지에서 뺐다.
   if(p.location==='tavern'&&s.day>=2)for(const t of C().alive(s).filter(t=>t.id!==p.id))add('forgeExtra',t.name+'을 지목하는 호외 쓰기',{target:t.id});
   if(p.location==='hall')for(const a of ownArtifacts(s,p).filter(a=>a.kind==='extra'))add('postExtra','작성한 호외를 회관 벽에 붙이기',{artifact:a.id});
   if(s.turn===2){if(p.items.pistol&&p.reesePistol)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plantGun',t.name+'의 장작더미에 권총 놓기',{target:t.id});if(!z(s).flags.reesePapersTaken&&p.location==='home')add('reesePapers','리스의 빈집에서 남은 종이 가져오기');
-   for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('chalk',t.name+'의 문에 분필 표시',{target:t.id});
+   
   }
   if(p.money>=2)for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&!s.offers.some(o=>o.to===t.id&&!o.done)))add('paidOffer',t.name+'에게 돈을 넣은 영입 쪽지 · 2',{target:t.id});
   if(p.location==='home'&&s.turn!==2&&z(s).flags.childSpoke&&!z(s).flags.childProtected)add('silenceChild','아이의 보호자에게 입단속 요구');
