@@ -61,7 +61,7 @@ function text(s,p,raw){const x=q(s),z=d(s),lastExec=z.executions.at(-1),fake=z.p
 function announce(s,p){const z=d(s),visible=active(s,p),pending=visible.filter(a=>!z.incidents[a.id].seen.includes(p.id));const def=pending[0];if(!def)return false;z.incidents[def.id].seen.push(p.id);(z.incidents[def.id].intros??={})[p.id]=text(s,p,def.intro);emit(s,[p.id],text(s,p,def.intro),{incident:def.id,source:def.source+':'+def.sourceLine});return true;}
 function incidentChoices(s,p,slot){const out=[];for(const def of active(s,p)){for(const o of def.options){if(!(o.slot===slot||slot==='small'&&o.slot==='free')||d(s).incidents[def.id].answered?.includes(p.id+':'+o.key))continue;out.push({type:'scene',sceneKey:'incident',incident:def.id,branch:o.key,label:o.label,hint:text(s,p,def.intro),target:null});}}return out;}
 function incidentOption(s,p,a){const def=active(s,p).find(e=>e.id===a.incident),o=def?.options.find(o=>o.key===a.branch);return def&&o?{def,o}:null;}
-function effectError(s,p,key){if(key==='pay1'&&p.money<1||key==='pay2'&&p.money<2||key==='fundUnion'&&p.money<4)return '소지금이 부족합니다.';if(key==='donateBandage'&&!p.items.bandage)return '건넬 붕대가 없습니다.';if(key==='bandageMiner'&&!npc(s,'miner').bleeding)return '지금 그 광부는 출혈 중이 아닙니다.';return null;}
+function effectError(s,p,key){if(key==='pay1'&&p.money<1||key==='pay2'&&p.money<2||key==='fundUnion'&&p.money<3)return '소지금이 부족합니다.';if(key==='donateBandage'&&!p.items.bandage)return '건넬 붕대가 없습니다.';if(key==='bandageMiner'&&!npc(s,'miner').bleeding)return '지금 그 광부는 출혈 중이 아닙니다.';return null;}
 function effect(s,p,key){const z=d(s),x=q(s),f=z.flags;if(!key)return;
  if(key==='minerEntered'){f.minerEntered=true;Object.assign(npc(s,'miner'),{hp:2,bleeding:true,location:'warehouse',injuredEpoch:s.epoch});unlock(s,'trapped');return;}
  if(key==='rescueMiner'){npc(s,'miner').location='clinic';f.minerRescued=true;unlock(s,'minerClinic');return;}
@@ -78,7 +78,7 @@ function effect(s,p,key){const z=d(s),x=q(s),f=z.flags;if(!key)return;
  if(key==='removeExtra'){const e=z.printed.find(e=>e.posted&&!e.removed);if(e){e.removed=true;artifact(s,{kind:'extra',owner:p.id,text:e.headline+' — 출처가 없는 호외',forged:true});}return;}
  if(key==='revealCart'){if(!p.storyKnown.includes('cart'))p.storyKnown.push('cart');return;}
  if(key==='escortDoyle'){p.storyTravel='warehouse';x.doyle.protected=true;x.doyle.escort=p.id;return;}
- if(key==='fundUnion'){p.money-=4;f.unionFunded=true;x.mineClosed=false;return;}
+ if(key==='fundUnion'){p.money-=3;f.unionFunded=true;x.mineClosed=false;return;}
  if(key==='newLeader'){f.newLeader=true;f.reopenTomorrow=s.day+1;return;}
  if(key==='moveMine'){p.storyTravel='warehouse';return;}
  if(key==='pay1'||key==='pay2'){p.money-=key==='pay1'?1:2;return;}
