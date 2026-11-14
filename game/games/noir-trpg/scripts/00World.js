@@ -125,8 +125,8 @@ function raidNoticed(s,t,ids,rng){s.raidSeen??={};const key=s.epoch+':'+t.id;if(
 // 장소 사이 거리(1 가까움, 2 중간, 3 멂). 회관이 가운데, 갱도는 동쪽 끝, 진료소는 북쪽 마을 끝, 술집은 서쪽, 교회는 남쪽, 주택가는 서남쪽.
 const DIST={hall:{warehouse:2,tavern:1,clinic:2,chapel:1,home:1},warehouse:{tavern:3,clinic:2,chapel:2,home:3},tavern:{clinic:2,chapel:2,home:1},clinic:{chapel:3,home:3},chapel:{home:1}};
 function distance(a,b){if(a===b)return 0;return DIST[a]?.[b]??DIST[b]?.[a]??3;}
-// 소리가 닿는 거리: 총성·비명은 1, 폭발은 2.
-const HEAR={gun:1,fight:1,blast:2};
+// 소리가 닿는 거리: 총성은 1, 폭발은 2, 비명·다투는 소리는 같은 장소(0)에서만.
+const HEAR={gun:1,fight:0,blast:2};
 function noise(s,src,text,kind='fight',skipNear=false){const range=HEAR[kind]??1,place=src.location,near=[],far=[];for(const o of alive(s)){if(sameSpace(s,o,src))continue;const d=distance(o.location,place);if(d>range)continue;(d===0?near:far).push(o.id);}if(near.length&&!skipNear)emit(s,near,'environment','가까운 집에서 '+text);if(far.length)emit(s,far,'environment',places[place].direction+' 쪽에서 '+text);}
 function finish(s){if(s.scenario?.hazardPending)return null;if(s.result)return s.result;const live=alive(s),mafia=live.filter(p=>p.team==='mafia'),union=mafia.length?Object.values(s.scenario?.continuation?.npcs||{}).filter(n=>n.hp>0&&(n.recruited||n.id==='doyle'&&n.cowed)).length:0;let r=null;if(!live.length)r={team:'none',text:'살아남은 주민이 없습니다.'};else if((mafia.length+union)*2>=live.length)r={team:'mafia',text:'마피아 편이 생존자의 절반 이상이 되어 마을을 장악했습니다.'};else if(!mafia.length)r={team:'town',text:'마을에 남은 마피아가 없어 시민 편이 승리했습니다.'};else if(s.day>s.cfg.days||elapsed(s)>=s.cfg.hardSeconds*1000)r={team:'town',text:'외부 경찰과 판사가 도착했습니다. 장악에 실패한 마피아를 제압하고 시민 편이 승리했습니다.'};if(r){if(root.NoirScenarios)r.text=root.NoirScenarios.ending(s,r);s.result={...r,seconds:Math.floor(elapsed(s)/1000),wallSeconds:Math.floor((Date.now()-s.startedAt)/1000)};s.stage='end';emit(s,s.players.map(p=>p.id),'ending',r.text);}return r;}
 // 살리기 성공 확률. 의사는 90%, 다른 사람은 치료 능력치에 따라(2→10%, 5→35%).
