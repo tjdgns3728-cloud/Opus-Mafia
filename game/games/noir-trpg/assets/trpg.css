@@ -174,3 +174,4 @@ button.term-player:focus-visible{outline:1px solid #e1c28d;outline-offset:2px}
 .shop{width:100%;border-collapse:collapse;margin:6px 0;font:13px 'Malgun Gothic',sans-serif}
 .shop th,.shop td{border-bottom:1px solid #3e3e3d;padding:5px 6px;text-align:left}
 .shop th{color:#bca574;font-weight:700}
+.scene-image.scene-6,.press-photo-image.scene-6{background-image:url('/project/assets/hideout.png');background-size:cover;background-position:center}
