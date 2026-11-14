@@ -129,3 +129,18 @@ button.term-player:focus-visible{outline:1px solid #e1c28d;outline-offset:2px}
 
 /* Black Ridge local conversations */
 .npc-talks{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.npc-talks button{font-size:12px;padding:5px 9px;color:#b9ac94;background:#1d1b19;border:1px solid #514939}.actions:has([data-do="hazard"]){border-color:#9c7850}
+/* 대화: 이름 색으로 NPC와 플레이어를 구분한다. */
+.said{font-weight:700;font-style:normal;font-family:'Malgun Gothic',sans-serif}
+.said-npc,.said-npc .term,.speaker.said-npc,.speaker.said-npc .term{color:#7fc4b8;font-style:normal;font-family:'Malgun Gothic',sans-serif}
+.said-player,.said-player .term-player,.speaker.said-player,.speaker.said-player .term-player{color:#e8c070}
+/* 이야기 글을 크게. */
+.line p{font-size:17px;line-height:1.85}
+.speech{font-size:17px;line-height:1.75}
+.line small,.speech small{font-size:12px}
+/* 왼쪽 목록: 위쪽 버튼으로 플레이어와 NPC를 바꿔 본다. */
+.people-tabs{display:flex;gap:5px;margin:8px 0 10px}
+.people-tabs button{flex:1;padding:8px 6px;font-size:14px;font-family:'Batang',serif;border-color:#4a443b;color:#b9ac94;background:#1d1b19}
+.people-tabs [aria-selected="true"]{background:#5a4431;border-color:#b49a6f;color:#f1debd}
+.npc-card{cursor:default}
+.npc-label{color:#7fc4b8;font-family:'Malgun Gothic',sans-serif;font-weight:700;font-size:14px}
+.person.out-of-sight{opacity:.6}

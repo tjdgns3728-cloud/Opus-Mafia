@@ -10,13 +10,13 @@ const places={
 };
 const roles={
  godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 높은 설득으로 영입을 제안할 수 있지만 상대의 동의가 필요합니다. 공격과 피해는 다른 인물과 같은 판정 규칙을 따릅니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1,bandage:2}},
- mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 싸움 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 다른 사람의 행동을 대신 소비하지 않으며 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1,bandage:2}},
+ mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 전투 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 다른 사람의 행동을 대신 소비하지 않으며 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1,bandage:2}},
  consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 작은 행동으로 같은 장소의 인물을 조사해 실제 사건 기록을 확인합니다. 확인하지 않은 직업이나 개인 기록은 알 수 없습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1,bandage:2}},
  kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 강제 대화나 기록 공개는 요구하지 않습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:4},items:{club:1,bandage:2}},
- guard:{name:'퇴역군인',desc:'싸움에 익숙하며 곤봉과 붕대를 갖고 시작합니다.',stats:{fight:9,observe:6,agility:4,medical:4,persuade:4},items:{club:1,bandage:2}},
+ guard:{name:'퇴역군인',desc:'전투에 익숙하며 곤봉과 붕대를 갖고 시작합니다.',stats:{fight:9,observe:6,agility:4,medical:4,persuade:4},items:{club:1,bandage:2}},
  courier:{name:'배달원',desc:'민첩과 관찰이 장점입니다. 이동 횟수나 시간은 다른 주민과 같습니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1,bandage:2}},
  detective:{name:'탐정',desc:'관찰과 설득이 장점입니다. 실제 현장 흔적을 조사하며 보안관 전용 행동은 사용할 수 없습니다.',stats:{fight:4,observe:10,agility:6,medical:3,persuade:7},items:{knife:1,bandage:2}},
- mechanic:{name:'정비공',desc:'싸움과 손을 쓰는 처치에 익숙하며 곤봉을 갖고 시작합니다.',stats:{fight:7,observe:6,agility:6,medical:6,persuade:3},items:{club:1,bandage:2}},
+ mechanic:{name:'정비공',desc:'전투와 손을 쓰는 처치에 익숙하며 곤봉을 갖고 시작합니다.',stats:{fight:7,observe:6,agility:6,medical:6,persuade:3},items:{club:1,bandage:2}},
  pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 의사가 아니므로 체력 회복 치료는 할 수 없습니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:6},items:{knife:1,bandage:4}},
  lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다. 재판의 동의·표결 규칙은 다른 주민과 같습니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1,bandage:2}},
 
@@ -32,7 +32,7 @@ const rolePools={mafia:['godfather','mafioso','consigliere','kidnapper'],town:['
 for(const role of Object.values(roles))role.team??='town';
 const canInvestigate=p=>['sheriff','consigliere'].includes(p.role),canJail=p=>['jailor','kidnapper'].includes(p.role);
 const weapons={fist:{name:'맨손',die:2,bleed:false},club:{name:'곤봉',die:4,bleed:true},knife:{name:'단검',die:6,bleed:true},pistol:{name:'권총',die:8,bleed:true}};
-const stats={fight:'싸움',observe:'관찰',agility:'민첩',medical:'처치',persuade:'설득'};
+const stats={fight:'전투',observe:'관찰',agility:'민첩',medical:'치료',persuade:'설득'};
 const config={startingMoney:8,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:120,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:120,voteSeconds:60,medicalDifficulty:11,heal:3,criticalHP:2,bleedLoss:1};
 const narrative=()=>root.NoirNarrative||(typeof require==='function'?require('./01Narrative.js'):null),press=()=>root.NoirPress||(typeof require==='function'?require('./02Press.js'):null);
 const big=['photograph','publish','scene','move','attack','heal','jail','recruit','bandage','give','share','file','wait','attempt'];
