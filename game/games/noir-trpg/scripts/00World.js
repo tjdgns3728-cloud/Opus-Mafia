@@ -12,7 +12,7 @@ const places={
 const roles={
  godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 설득이 높아 해먼드나 광부를 끌어들이고, 도일을 협박하거나 돈으로 넘기는 일을 잘합니다. 끌어들인 사람 하나는 이기는 조건을 셀 때 마피아 한 명으로 셉니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1}},
  mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 전투 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 다른 사람의 행동을 대신 소비하지 않으며 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1}},
- consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 작은 행동으로 같은 장소의 인물을 조사해 실제 사건 기록을 확인합니다. 확인하지 않은 직업이나 개인 기록은 알 수 없습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1}},
+ consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 인물 조사에 익숙해 조사 판정에 +3을 받습니다. 확인하지 않은 직업이나 개인 기록은 알 수 없습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1}},
  kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 강제 대화나 기록 공개는 요구하지 않습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:4},items:{club:1}},
  guard:{name:'퇴역군인',desc:'전투에 익숙하며 곤봉과 붕대를 갖고 시작합니다.',stats:{fight:9,observe:6,agility:4,medical:4,persuade:4},items:{club:1,bandage:1}},
  courier:{name:'배달원',desc:'은신과 관찰이 장점입니다. 이동 횟수나 시간은 다른 주민과 같습니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1}},
@@ -21,7 +21,7 @@ const roles={
  pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 붕대로는 피를 멎게 할 뿐이고, 잃은 체력은 치료제가 있어야 돌아옵니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:6},items:{knife:1,bandage:4}},
  lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다. 재판의 동의·표결 규칙은 다른 주민과 같습니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1}},
 
- sheriff:{name:'보안관',desc:'작은 행동으로 같은 장소의 인물을 조사합니다. 그가 남긴 실제 사건 기록을 확인하며 진영을 마법처럼 알아내지는 않습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1}},
+ sheriff:{name:'보안관',desc:'관찰이 뛰어나고 인물 조사에 익숙해 조사 판정에 +3을 받습니다. 몸 상태와 싸움의 흔적을 확인할 뿐, 진영을 마법처럼 알아내지는 않습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1}},
  doctor:{name:'의사',desc:'치료제로 잃은 체력을 돌립니다(체력 3, 진료소에서는 4). 치료제를 다른 사람에게 건넬 수 있지만, 의사가 아닌 사람은 진료소에서만 쓸 수 있고 조금만 돌아옵니다. 치료제는 한정되어 있습니다.',stats:{fight:3,observe:6,agility:5,medical:10,persuade:5},items:{knife:1,bandage:3,medicine:3}},
  jailor:{name:'간수',desc:'같은 장소의 상대를 하루 한 번 구금할 수 있습니다. 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 작은 행동과 말하기는 가능합니다.',stats:{fight:9,observe:5,agility:4,medical:3,persuade:5},items:{club:1}},
  reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다. 사진의 장면과 기자의 주장은 구분됩니다.',stats:{fight:3,observe:9,agility:6,medical:3,persuade:8},items:{knife:1,camera:1}},
@@ -38,7 +38,7 @@ const stats={fight:'전투',observe:'관찰',agility:'은신',medical:'치료',p
 const config={townMoney:1,mafiaTalkSeconds:30,mafiaMoney:3,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:40,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:60,voteSeconds:60,medicalDifficulty:11,heal:3,healBase:1,healDoctor:2,healClinic:1,criticalHP:2,bleedLoss:1};
 const narrative=()=>root.NoirNarrative||(typeof require==='function'?require('./01Narrative.js'):null),press=()=>root.NoirPress||(typeof require==='function'?require('./02Press.js'):null);
 const big=['photograph','publish','scene','move','attack','track','heal','revive','jail','recruit','give','share','file','wait','attempt'];
-const small=['scene','buy','evidence','observe','investigate','hide','bandage','unhide','wait','attempt','disguise','examine'];
+const small=['scene','buy','evidence','observe','investigate','hide','bandage','unhide','wait','attempt','disguise'];
 const find=(s,id)=>s.players.find(p=>p.id===id),alive=s=>s.players.filter(p=>p.hp>0),label=s=>`${s.day}일째 ${s.turn===2?'밤':'낮 '+(s.turn+1)}`;
 const clone=x=>JSON.parse(JSON.stringify(x)),die=(rng,n)=>1+Math.min(n-1,Math.floor(rng()*n));
 
@@ -107,16 +107,16 @@ function validate(s,id,a,slot){const p=find(s,id);if(!p||p.hp<=0||slot==='big'&&
  if(a.type==='disguise'){const t=find(s,a.target);if(p.team!=='mafia')return '마피아 편만 변장할 수 있습니다.';if(p.disguiseDay===s.day)return '변장은 하루에 한 번만 할 수 있습니다.';if(!t||t.hp<=0||t.id===id||t.team==='mafia')return '변장할 시민을 고르세요.';if(sameSpace(s,p,t))return `진짜 ${t.name}이 이 자리에 있어 변장할 수 없습니다.`;return null;}
  if(a.type==='revive'){const t=find(s,a.target);return t&&t.downed&&t.id!==id&&sameSpace(s,p,t)?null:'같은 장소에 쓰러진 사람이 있어야 합니다.';}
  if(a.type==='track'&&s.turn===2)return '밤에는 추적할 수 없습니다.';
- const t=find(s,a.target),need=['attack','track','heal','jail','recruit','investigate','bandage','give','examine'].includes(a.type);
+ const t=find(s,a.target),need=['attack','track','heal','jail','recruit','investigate','bandage','give'].includes(a.type);
  const raid=a.type==='attack'&&s.turn===2&&p.team==='mafia'&&t?.location==='home'&&a.nightRaid,letter=a.type==='recruit'&&p.team==='mafia'&&a.anonymous;
  if(need&&(!t||t.hp<=0||(!raid&&!letter&&(!visible(s,p,t)||!sameSpace(s,p,t)))))return '같은 장소에서 확인할 수 있는 살아 있는 대상이 필요합니다.';
- if(['attack','track','jail','recruit','investigate','examine'].includes(a.type)&&t.id===id)return '자기 자신을 대상으로 삼을 수 없습니다.';
+ if(['attack','track','jail','recruit','investigate'].includes(a.type)&&t.id===id)return '자기 자신을 대상으로 삼을 수 없습니다.';
  if(a.type==='move'&&(!places[a.place]||places[a.place].secret||a.place===p.location))return '다른 이동 장소를 선택하세요.';
  if(a.type==='attack'&&(!weapons[a.weapon]||(a.weapon!=='fist'&&!p.items[a.weapon])))return '소지한 무기를 선택하세요.';
  if(a.type==='attack'&&a.weapon==='pistol'&&!p.items.ammo)return '탄약이 없습니다.';
  if(a.type==='heal'&&!p.items.medicine)return '체력을 돌리는 치료에는 치료제가 있어야 합니다. 붕대로는 지혈만 할 수 있습니다.';
  if(a.type==='heal'&&p.role!=='doctor'&&p.location!=='clinic')return '의사가 아니면 진료소에서만 치료할 수 있습니다.';
- if(a.type==='investigate'&&!canInvestigate(p))return '보안관과 조언자의 직업 행동입니다.';
+ 
  if(a.type==='jail'&&(!canJail(p)||p.jailDay===s.day))return '간수와 납치범은 하루 한 번 구금할 수 있습니다.';
  if(a.type==='recruit'&&(p.team!=='mafia'||t.team==='mafia'))return '다른 편의 상대에게만 영입을 제안할 수 있습니다.';
  if(a.type==='file'&&a.facts&&(!Array.isArray(a.facts)||a.facts.length>5||a.facts.some(id=>!p.known.some(k=>k.id===id))))return '자신이 아는 기록을 최대 다섯 개 선택하세요.';
@@ -234,16 +234,15 @@ function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const a
 }
 function smallAct(s,id,a,rng){const prev=s.actionContext;s.actionContext=a.type!=='wait';try{return smallAction(s,id,a,rng);}finally{s.actionContext=prev;}}
 function smallAction(s,id,a,rng){if(!['small','plan'].includes(s.stage))return '행동 선택 시간이 아닙니다.';const p=find(s,id);let err=validate(s,id,a,'small');if(err&&p?.jailEpoch===s.epoch){const old=p.jailEpoch;p.jailEpoch=0;err=validate(s,id,a,'small');p.jailEpoch=old;}if(err)return err;if(a.type==='move'){const old=p.location,night=s.turn===2;p.nightMoveEpoch=s.epoch;p.location=a.place;p.houseId=null;p.hidden=false;p.spotted=[];narrate(s,id,places[old].name+'에서 '+places[a.place].name+([0,8].includes((places[a.place].name.charCodeAt(places[a.place].name.length-1)-44032)%28)?'로':'으로')+' 옮겼습니다. '+(night?'밤의':'아침의')+' 첫 이동은 행동을 쓰지 않습니다. 큰 행동과 작은 행동이 그대로 남아 있습니다.');for(const o of alive(s).filter(o=>o.id!==id&&sameSpace(s,o,p)))emit(s,[o.id],'story',nameFor(s,o,p)+'이 '+places[a.place].name+'에 들어섭니다.');checkDisguises(s);root.NoirScenarios?.arrival?.(s,p);return null;}p.used.small=true;const t=find(s,a.target);
- if(a.type==='examine'){const r=check(p,'observe',rng,{label:'상태 살피기',dc:12,terms:sightTerms(s,p)}),tn=nameFor(s,p,t),st=[t.bleeding&&'출혈',t.tired&&'피곤함'].filter(Boolean);if(r.success){(p.statusSeen??={})[t.id]={...(p.statusSeen[t.id]||{}),day:s.day,bleeding:!!t.bleeding,tired:!!t.tired,hidden:!!t.hidden};learn(s,id,tn+'의 몸 상태: '+(st.length?st.join(', '):'눈에 띄는 이상 없음')+'.',idFor(s,p,t),'직접 살핌','observed');}emit(s,[id],'check',r.success?tn+'의 상태를 살폈습니다. '+(st.length?st.join(', '):'눈에 띄는 이상은 없습니다')+'.':tn+'의 상태를 제대로 살피지 못했습니다.',{roll:r});return null;}
  if(a.type==='disguise'){p.disguise={as:t.id,epoch:s.epoch};p.disguiseDay=s.day;narrate(s,id,`${t.name}처럼 옷차림과 걸음걸이를 꾸몄습니다. 이번 턴이 끝날 때까지 다른 사람 눈에 ${t.name}으로 보입니다. 눈썰미 좋은 사람은 알아챌 수 있고, 진짜 ${t.name}과 마주치면 바로 들통납니다.`);return null;}
  if(a.type==='hide'){const pl=places[p.location],terms=[];if(pl.cover)terms.push({label:'주변 엄폐물',value:pl.cover});if(pl.light>0)terms.push({label:'밝은 실내',value:-2});if(s.turn===2)terms.push({label:'밤의 어둠',value:2});
  const r=check(p,'agility',rng,{label:'숨기',dc:12,terms});p.hidden=r.success;p.stealth=r.total;p.spotted=[];
  if(p.hidden)for(const o of alive(s).filter(o=>o.id!==id&&sameSpace(s,o,p))){const passive=5+o.stats.observe+sightTerms(s,o).reduce((n,t)=>n+t.value,0);if(passive>=r.total){p.spotted.push(o.id);noteStatus(s,[o.id],p,{hidden:true});learn(s,o.id,`${p.name}이 엄폐물 뒤로 숨는 모습을 확인했습니다.`,id,'직접 관찰');}}
  emit(s,[id],'check',r.success?'몸을 엄폐물 뒤로 숨겼습니다. 누가 숨는 모습을 봤는지는 알 수 없습니다. 발견하지 못한 상대에게만 기습 준비가 적용됩니다.':'몸을 충분히 가리지 못해 모습이 드러나 있습니다.',{roll:r});}
- else if(a.type==='evidence'||a.type==='investigate'){if(a.type==='evidence'&&root.NoirScenarios?.investigate(s,p,rng))return null;const named=a.type==='investigate';if(!named){root.NoirScenarios?.inspect(s,p,null);const hiddenTrace=s.events.some(e=>e.type==='attack'&&e.location===p.location)||s.scenario?.documents.some(d=>d.location===p.location);if(s.scenario&&!hiddenTrace){p.used.small=false;emit(s,[id],'check','이곳에는 지금 더 살필 것이 없습니다. 작은 행동은 쓰이지 않았습니다. 다른 행동을 고를 수 있습니다.',{authored:true});return null;}}const r=check(p,'observe',rng,{label:named?'인물 흔적 조사':'현장 증거 조사',dc:named?16:12,terms:sightTerms(s,p)}),events=s.events.filter(e=>e.type==='attack'&&e.location===p.location&&(!named||e.actor===t.id));
+ else if(a.type==='evidence'||a.type==='investigate'){if(a.type==='evidence'&&root.NoirScenarios?.investigate(s,p,rng))return null;const named=a.type==='investigate';if(!named){root.NoirScenarios?.inspect(s,p,null);const hiddenTrace=s.events.some(e=>e.type==='attack'&&e.location===p.location)||s.scenario?.documents.some(d=>d.location===p.location);if(s.scenario&&!hiddenTrace){p.used.small=false;emit(s,[id],'check','이곳에는 지금 더 살필 것이 없습니다. 작은 행동은 쓰이지 않았습니다. 다른 행동을 고를 수 있습니다.',{authored:true});return null;}}const ago=e=>(s.day*3+s.turn)-(e.day*3+e.turn),r=check(p,'observe',rng,{label:named?'인물 조사':'현장 증거 조사',dc:named?14:12,terms:[...sightTerms(s,p),...(named&&canInvestigate(p)?[{label:'조사에 익숙한 직업',value:3}]:[])]}),events=s.events.filter(e=>e.type==='attack'&&(named?e.actor===t.id&&(e.location===p.location||ago(e)<=3):e.location===p.location));
  const source=named?roles[p.role].name+' 현장 조사':'현장 흔적 조사',fresh=events.filter(e=>!p.known.some(k=>k.event===e.id&&k.source===source));
- if(named&&r.success){(p.statusSeen??={})[t.id]={day:s.day,bleeding:!!t.bleeding,tired:!!t.tired,hidden:!!t.hidden};const st=[t.bleeding&&'출혈',t.tired&&'피곤함'].filter(Boolean);learn(s,id,`${nameFor(s,p,t)}의 몸 상태: ${st.length?st.join(', '):'눈에 띄는 이상 없음'}.`,idFor(s,p,t),source,'observed');}
- if(r.success)for(const e of fresh.slice(-3))learn(s,id,named?`${e.time}, 이곳의 공격 흔적에서 ${t.name}과 연결되는 증거를 확인했습니다.`:`${e.time}, 이곳에서 다툰 흔적을 확인했습니다. 흔적만으로 누가 공격했는지는 알 수 없습니다.`,named?t.id:null,source,'evidence',e.id);
+ if(named&&r.success){const hurt=s.events.some(e=>e.type==='attack'&&e.target===t.id&&ago(e)<=3);if(hurt)learn(s,id,`${nameFor(s,p,t)}의 몸에 최근 공격당한 상처가 있습니다.`,idFor(s,p,t),source,'observed');(p.statusSeen??={})[t.id]={day:s.day,bleeding:!!t.bleeding,tired:!!t.tired,hidden:!!t.hidden};const st=[t.bleeding&&'출혈',t.tired&&'피곤함'].filter(Boolean);learn(s,id,`${nameFor(s,p,t)}의 몸 상태: ${st.length?st.join(', '):'눈에 띄는 이상 없음'}.`,idFor(s,p,t),source,'observed');}
+ if(r.success)for(const e of fresh.slice(-3))learn(s,id,named?(e.location===p.location?`${e.time}, 이곳의 공격 흔적에서 ${nameFor(s,p,t)}과 연결되는 증거를 확인했습니다.`:`${e.time} 무렵 ${nameFor(s,p,t)}이 누군가와 싸운 흔적이 옷과 손에 남아 있습니다.`):`${e.time}, 이곳에서 다툰 흔적을 확인했습니다. 흔적만으로 누가 공격했는지는 알 수 없습니다.`,named?t.id:null,source,'evidence',e.id);
  const text=!r.success?'흔적을 충분히 구분하지 못했습니다. 증거가 없거나 상대가 무죄라는 뜻은 아닙니다.':fresh.length?'실제 남아 있던 흔적을 확인해 수첩에 기록했습니다.':events.length?'확인한 흔적 외에 새로운 증거는 찾지 못했습니다.':'현장을 살폈지만 이곳에서 범행과 연결할 증거는 확인하지 못했습니다. 상대 진영이나 무죄가 확정되는 것은 아닙니다.';
  emit(s,[id],'check',s.scenario&&r.success&&!events.length?'눈에 띄는 전투 흔적은 없습니다. 이 장소에 남은 다른 기록도 살펴봅니다.':text,{roll:r});if(!named)root.NoirScenarios?.inspect(s,p,r);}
  else if(a.type==='bandage')bandage(s,p,t,rng,t.id===p.id);
@@ -273,7 +272,7 @@ function choices(s,id,slot){const p=find(s,id);if(!p||!canAct(s,p)&&!(slot==='sm
  if(s.turn===2&&p.team==='town')return slot==='big'?[{type:'sleep',label:'잠자기 · 피곤함이 풀리고, 습격받지 않으면 체력 1 회복'},{type:'watch',label:'불침번 서기 · 습격해 오면 맞서 겨룸 · 다음 날 피곤함'},{type:'shelter',label:'집 안에 숨기 · 습격자가 찾아내야 공격 가능 · 다음 날 피곤함'}].filter(a=>!validate(s,id,a,'big')):[];
  const list=[],add=(a,title)=>{if(!validate(s,id,a,slot))list.push({...a,label:title});},near=alive(s).filter(t=>sameSpace(s,t,p)&&visible(s,p,t));
  if(slot==='big'){for(const [place,pl] of Object.entries(places))add({type:'move',place},'이동 · '+pl.name);for(const t of near){if(t.id!==id){for(const w of Object.keys(weapons))add({type:'attack',target:t.id,weapon:w},nameFor(s,p,t)+' 공격 · '+weapons[w].name);add({type:'track',target:t.id},nameFor(s,p,t)+' 추적하기');add({type:'jail',target:t.id},nameFor(s,p,t)+' 구금');/* 플레이어 영입은 보류(2026-11-14) */add({type:'give',target:t.id,item:'bandage'},nameFor(s,p,t)+'에게 붕대 건네기');add({type:'give',target:t.id,item:'medicine'},nameFor(s,p,t)+'에게 치료제 건네기');}if(t.hp<maxHp(t))add({type:'heal',target:t.id},nameFor(s,p,t)+' 치료');}for(const d of s.players.filter(d=>d.downed&&d.id!==id&&sameSpace(s,d,p)))add({type:'revive',target:d.id},d.name+' 살리기 · 성공 '+reviveChance(p)+'%');}
- else{if(p.team==='mafia')for(const t of alive(s).filter(t=>t.team!=='mafia'&&t.id!==id))add({type:'disguise',target:t.id},nameFor(s,p,t)+'처럼 변장');add({type:'observe'},'주변 보기');add({type:'evidence'},'이 장소 조사하기');add({type:'buy',item:'bandage'},`붕대 구매 · ${s.cfg?.bandagePrice||1}`);add({type:'hide'},'주변에 몸을 숨긴다');if(p.hidden)add({type:'unhide'},'몸을 드러낸다');for(const t of near){if(t.id!==id)add({type:'examine',target:t.id},nameFor(s,p,t)+' 상태 살피기');if(t.id!==id)add({type:'investigate',target:t.id},nameFor(s,p,t)+' 흔적 조사');if(t.bleeding)add({type:'bandage',target:t.id},t.id===id?'자기 지혈':nameFor(s,p,t)+' 지혈');}}
+ else{if(p.team==='mafia')for(const t of alive(s).filter(t=>t.team!=='mafia'&&t.id!==id))add({type:'disguise',target:t.id},nameFor(s,p,t)+'처럼 변장');add({type:'observe'},'주변 보기');add({type:'evidence'},'이 장소 조사하기');add({type:'buy',item:'bandage'},`붕대 구매 · ${s.cfg?.bandagePrice||1}`);add({type:'hide'},'주변에 몸을 숨긴다');if(p.hidden)add({type:'unhide'},'몸을 드러낸다');for(const t of near){if(t.id!==id)add({type:'investigate',target:t.id},nameFor(s,p,t)+' 조사하기');if(t.bleeding)add({type:'bandage',target:t.id},t.id===id?'자기 지혈':nameFor(s,p,t)+' 지혈');}}
  if(slot==='big')for(const a of press().choices(s,p))add(a,a.label);
  for(const a of root.NoirScenarios?.choices(s,p,slot)||[])add(a,a.label);
  add({type:'wait'},'행동을 마친다');return list;
