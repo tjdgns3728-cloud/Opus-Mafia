@@ -17,11 +17,11 @@ const roles={
  courier:{name:'배달원',desc:'민첩과 관찰이 장점입니다. 이동 횟수나 시간은 다른 주민과 같습니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1,bandage:2}},
  detective:{name:'탐정',desc:'관찰과 설득이 장점입니다. 실제 현장 흔적을 조사하며 보안관 전용 행동은 사용할 수 없습니다.',stats:{fight:4,observe:10,agility:6,medical:3,persuade:7},items:{knife:1,bandage:2}},
  mechanic:{name:'정비공',desc:'전투와 손을 쓰는 처치에 익숙하며 곤봉을 갖고 시작합니다.',stats:{fight:7,observe:6,agility:6,medical:6,persuade:3},items:{club:1,bandage:2}},
- pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 의사가 아니므로 체력 회복 치료는 할 수 없습니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:6},items:{knife:1,bandage:4}},
+ pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 붕대로 치료할 수 있지만 의사만큼 회복시키지는 못합니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:6},items:{knife:1,bandage:4}},
  lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다. 재판의 동의·표결 규칙은 다른 주민과 같습니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1,bandage:2}},
 
  sheriff:{name:'보안관',desc:'작은 행동으로 같은 장소의 인물을 조사합니다. 그가 남긴 실제 사건 기록을 확인하며 진영을 마법처럼 알아내지는 않습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1,bandage:2}},
- doctor:{name:'의사',desc:'큰 행동으로 같은 장소의 부상자를 치료합니다. 체력 회복은 의사만 가능합니다. 치료제는 한정되어 있습니다.',stats:{fight:3,observe:6,agility:5,medical:10,persuade:5},items:{knife:1,bandage:3,medicine:3}},
+ doctor:{name:'의사',desc:'큰 행동으로 같은 장소의 부상자를 치료합니다. 치료는 누구나 할 수 있지만 의사가 하면 체력이 더 많이 돌아옵니다. 치료제는 한정되어 있습니다.',stats:{fight:3,observe:6,agility:5,medical:10,persuade:5},items:{knife:1,bandage:3,medicine:3}},
  jailor:{name:'간수',desc:'같은 장소의 상대를 하루 한 번 구금할 수 있습니다. 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 작은 행동과 말하기는 가능합니다.',stats:{fight:9,observe:5,agility:4,medical:3,persuade:5},items:{club:1,bandage:2}},
  reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다. 사진의 장면과 기자의 주장은 구분됩니다.',stats:{fight:3,observe:9,agility:6,medical:3,persuade:8},items:{knife:1,bandage:2,camera:1}},
  dockworker:{name:'항만 노동자',desc:'힘과 현장 경험이 장점입니다. 직업은 진영을 보장하지 않습니다.',stats:{fight:7,observe:5,agility:5,medical:3,persuade:4},items:{club:1,bandage:2}},
@@ -33,7 +33,7 @@ for(const role of Object.values(roles))role.team??='town';
 const canInvestigate=p=>['sheriff','consigliere'].includes(p.role),canJail=p=>['jailor','kidnapper'].includes(p.role);
 const weapons={fist:{name:'맨손',die:2,bleed:false},club:{name:'곤봉',die:4,bleed:true},knife:{name:'단검',die:6,bleed:true},pistol:{name:'권총',die:8,bleed:true}};
 const stats={fight:'전투',observe:'관찰',agility:'민첩',medical:'치료',persuade:'설득'};
-const config={startingMoney:8,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:120,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:120,voteSeconds:60,medicalDifficulty:11,heal:3,criticalHP:2,bleedLoss:1};
+const config={startingMoney:8,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:120,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:120,voteSeconds:60,medicalDifficulty:11,heal:3,healBase:1,healDoctor:2,healClinic:1,criticalHP:2,bleedLoss:1};
 const narrative=()=>root.NoirNarrative||(typeof require==='function'?require('./01Narrative.js'):null),press=()=>root.NoirPress||(typeof require==='function'?require('./02Press.js'):null);
 const big=['photograph','publish','scene','move','attack','heal','jail','recruit','bandage','give','share','file','wait','attempt'];
 const small=['scene','buy','evidence','observe','investigate','hide','bandage','unhide','wait','attempt'];
@@ -88,7 +88,7 @@ function validate(s,id,a,slot){const p=find(s,id);if(!p||p.hp<=0||s.turn===2&&p.
  if(a.type==='move'&&(!places[a.place]||a.place===p.location))return '다른 이동 장소를 선택하세요.';
  if(a.type==='attack'&&(!weapons[a.weapon]||(a.weapon!=='fist'&&!p.items[a.weapon])))return '소지한 무기를 선택하세요.';
  if(a.type==='attack'&&a.weapon==='pistol'&&!p.items.ammo)return '탄약이 없습니다.';
- if(a.type==='heal'&&(p.role!=='doctor'||!p.items.medicine))return '치료제와 의사 직업이 필요합니다.';
+ if(a.type==='heal'&&!(p.role==='doctor'?p.items.medicine:p.items.bandage))return '치료하려면 의사는 치료제가, 다른 사람은 붕대가 있어야 합니다.';
  if(a.type==='investigate'&&!canInvestigate(p))return '보안관과 조언자의 직업 행동입니다.';
  if(a.type==='jail'&&(!canJail(p)||p.jailDay===s.day))return '간수와 납치범은 하루 한 번 구금할 수 있습니다.';
  if(a.type==='recruit'&&(p.team!=='mafia'||t.team==='mafia'))return '다른 편의 상대에게만 영입을 제안할 수 있습니다.';
@@ -128,7 +128,7 @@ function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const a
  if(a.type==='attack'){const r=attackRoll(s,p,t,a,rng);p.hidden=false;p.spotted=[];if(a.weapon==='pistol')p.items.ammo--;const event=recordEvent(s,'attack',id,t.id,`${p.name}이 ${t.name}을 ${r.weapon}으로 공격했습니다.`);const seen=witness(s,event,id,t.id,rng);attacks.push({p,t,r,seen,event});noise(s,p.location,a.weapon==='pistol'?'총성이 들렸습니다.':'비명과 다투는 소리가 들렸습니다.');}
 
  else if(a.type==='scene'){root.NoirScenarios?.resolve(s,p,a,rng);}
- else if(a.type==='heal'){p.items.medicine--;const before=t.hp;t.hp=Math.min(10,t.hp+s.cfg.heal);t.bleeding=false;const text=`${p.name}이 ${t.name}의 상처를 처치했습니다. 체력 ${before} → ${t.hp}, 출혈이 멎었습니다.`;emit(s,localIds(s,p),'story',text);recordEvent(s,'heal',id,t.id,text);}
+ else if(a.type==='heal'){const doc=p.role==='doctor',clinic=p.location==='clinic';if(doc)p.items.medicine--;else p.items.bandage--;const before=t.hp;t.hp=Math.min(10,t.hp+s.cfg.healBase+(doc?s.cfg.healDoctor:0)+(clinic?s.cfg.healClinic:0));t.bleeding=false;const text=`${p.name}이 ${doc?'치료제':'붕대'}로 ${t.name}의 상처를 치료했습니다${clinic?' (진료소)':''}. 체력 ${before} → ${t.hp}, 출혈이 멎었습니다.`;emit(s,localIds(s,p),'story',text);recordEvent(s,'heal',id,t.id,text);}
 
  else if(a.type==='jail'){p.jailDay=s.day;const r=opposed(p,'fight',t,'agility',rng);if(r.success){t.jailEpoch=s.epoch+1;t.hidden=false;narrate(s,t.id,'상대에게 제지당했습니다. 다음 턴의 큰 행동을 할 수 없습니다. 작은 행동과 말하기는 가능합니다.');}emit(s,localIds(s,p),'check',`${p.name}이 ${t.name}을 붙잡으려 했습니다. ${r.success?'상대의 움직임을 제지했습니다. 다음 턴의 큰 행동이 제한됩니다.':r.tie?'힘이 팽팽히 맞서 구금하지 못했습니다.':'상대가 붙잡는 손을 피했습니다.'}`,{roll:r});}
  else if(a.type==='recruit')recruit(s,p,t,a,rng);

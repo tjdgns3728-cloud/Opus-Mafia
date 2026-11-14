@@ -26,7 +26,7 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town')return []
  for(const n of Object.values(z(s).npcs).filter(n=>n.hp>0)){
   const here=n.location===p.location&&(s.turn!==2||p.location!=='home'||p.houseId==='npc:'+n.id),raid=p.team==='mafia'&&s.turn===2&&n.location==='home';
   if(here||raid)for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))add('attackNpc',(raid?n.name+'의 집 습격':n.name+' 공격')+' · '+C().weapons[w].name,{npc:n.id,weapon:w,raid});
-  if(here&&s.turn!==2){if(n.hp<10&&p.role==='doctor'&&p.items.medicine)add('healNpc',n.name+' 치료',{npc:n.id});if(n.bleeding)add('bandageNpc',n.name+' 지혈',{npc:n.id});if(['guard','jailor','sheriff'].includes(p.role))add('guardNpc',n.name+' 곁에서 지키기',{npc:n.id});if(n.hp<10&&n.location!=='clinic')add('escortNpc',n.name+'을 진료소로 부축',{npc:n.id});}
+  if(here&&s.turn!==2){if(n.hp<10&&(p.role==='doctor'?p.items.medicine:p.items.bandage))add('healNpc',n.name+' 치료',{npc:n.id});if(n.bleeding)add('bandageNpc',n.name+' 지혈',{npc:n.id});if(['guard','jailor','sheriff'].includes(p.role))add('guardNpc',n.name+' 곁에서 지키기',{npc:n.id});if(n.hp<10&&n.location!=='clinic')add('escortNpc',n.name+'을 진료소로 부축',{npc:n.id});}
   if(p.team==='mafia'&&(here||raid)&&!n.threatened)add('threatNpc',n.name+'에게 협박 쪽지 전달',{npc:n.id,raid});
  }
  return out;
@@ -58,7 +58,7 @@ function resolveAction(s,p,a,rng){const err=validAction(s,p,a,['inspectSignal','
   C().emit(s,allOther(s,ids),'environment',(s.turn===2?'주택가':C().places[p.location].name)+' 쪽에서 '+(a.weapon==='pistol'?'총성이':'다투는 소리와 비명이')+' 들렸습니다. 누군지는 이곳에서 확인할 수 없습니다.');if(n.hp===0){n.bleeding=false;n.diedEpoch=s.epoch;st.flags[n.id+'Dead']=true;}else if(n.hp<10)n.needsClinic=true;
   if(a.weapon==='pistol'&&r.damage>0)D.artifact(s,{kind:'bullet',title:'총격 흔적',where:n.location,text:n.name+'이 총에 맞은 자리에 탄환 흔적이 있다. 리스의 총이라는 결론은 권총 실물과 다른 근거가 있어야 비교할 수 있다.'});
  }
- if(a.verb==='healNpc'){const before=n.hp;p.items.medicine--;n.hp=Math.min(10,n.hp+s.cfg.heal);n.bleeding=false;D.localAct(s,p,p.name+'이 치료제를 사용해 '+n.name+'의 상처를 처치합니다. 몸을 조금 가눌 수 있게 됩니다.');C().emit(s,[p.id],'notice','치료 체력 '+before+' → '+n.hp,{actionRecord:true});}
+ if(a.verb==='healNpc'){const before=n.hp,doc=p.role==='doctor';if(doc)p.items.medicine--;else p.items.bandage--;n.hp=Math.min(10,n.hp+s.cfg.healBase+(doc?s.cfg.healDoctor:0)+(p.location==='clinic'?s.cfg.healClinic:0));n.bleeding=false;D.localAct(s,p,p.name+'이 '+(doc?'치료제':'붕대')+'를 사용해 '+n.name+'의 상처를 치료합니다. 몸을 조금 가눌 수 있게 됩니다.');C().emit(s,[p.id],'notice','치료 체력 '+before+' → '+n.hp,{actionRecord:true});}
  if(a.verb==='bandageNpc'){const kit=p.items.bandage>0;if(kit)p.items.bandage--;const r=C().check(p,'medical',rng,{label:n.name+' 지혈',dc:s.cfg.medicalDifficulty,edge:kit?1:-1,terms:p.location==='clinic'?[{label:'진료소 처치대',value:2}]:[]});if(r.success)n.bleeding=false;D.localAct(s,p,p.name+'이 '+n.name+'의 상처를 압박합니다. '+(r.success?'출혈이 멎습니다.':'피가 계속 배어 나옵니다.'));C().emit(s,[p.id],'check','지혈은 체력을 회복하지 않습니다.',{roll:r,authored:true});}
  if(a.verb==='escortNpc'){n.escort=p.id;p.storyTravel='clinic';D.localAct(s,p,p.name+'이 '+n.name+'을 부축해 진료소로 향합니다. 치료나 지혈은 따로 해야 합니다.');}
  if(a.verb==='guardNpc'){n.escort=p.id;n.protected=true;D.localAct(s,p,p.name+'이 '+n.name+' 곁을 지키기로 합니다. 같은 장소에 있을 때만 직접 상황을 볼 수 있습니다.');}
