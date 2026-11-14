@@ -171,3 +171,6 @@ button.term-player:focus-visible{outline:1px solid #e1c28d;outline-offset:2px}
 .night-move div{display:flex;flex-wrap:wrap;gap:6px}
 .my-acts{display:block;margin-top:4px;font:700 11px/1.5 'Malgun Gothic',sans-serif;color:#e1c28d}
 .extend-time{margin-left:8px;padding:3px 8px;font:700 12px 'Malgun Gothic',sans-serif}
+.shop{width:100%;border-collapse:collapse;margin:6px 0;font:13px 'Malgun Gothic',sans-serif}
+.shop th,.shop td{border-bottom:1px solid #3e3e3d;padding:5px 6px;text-align:left}
+.shop th{color:#bca574;font-weight:700}

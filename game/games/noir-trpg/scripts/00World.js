@@ -9,22 +9,22 @@ const places={
  home:{name:'주택가',short:'주거지',direction:'서남쪽 주택가',photo:5,light:0,cover:1,text:'주민들이 머무는 주택가입니다. 창문 너머로 눈 쌓인 길이 보입니다.'}
 };
 const roles={
- godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 설득이 높아 해먼드나 광부를 끌어들이고, 도일을 협박하거나 돈으로 넘기는 일을 잘합니다. 끌어들인 사람 하나는 이기는 조건을 셀 때 마피아 한 명으로 셉니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1,bandage:2}},
- mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 전투 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 다른 사람의 행동을 대신 소비하지 않으며 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1,bandage:2}},
- consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 작은 행동으로 같은 장소의 인물을 조사해 실제 사건 기록을 확인합니다. 확인하지 않은 직업이나 개인 기록은 알 수 없습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1,bandage:2}},
- kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 강제 대화나 기록 공개는 요구하지 않습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:4},items:{club:1,bandage:2}},
- guard:{name:'퇴역군인',desc:'전투에 익숙하며 곤봉과 붕대를 갖고 시작합니다.',stats:{fight:9,observe:6,agility:4,medical:4,persuade:4},items:{club:1,bandage:2}},
- courier:{name:'배달원',desc:'민첩과 관찰이 장점입니다. 이동 횟수나 시간은 다른 주민과 같습니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1,bandage:2}},
- detective:{name:'탐정',desc:'관찰과 설득이 장점입니다. 실제 현장 흔적을 조사하며 보안관 전용 행동은 사용할 수 없습니다.',stats:{fight:4,observe:10,agility:6,medical:3,persuade:7},items:{knife:1,bandage:2}},
- mechanic:{name:'정비공',desc:'전투와 손을 쓰는 처치에 익숙하며 곤봉을 갖고 시작합니다.',stats:{fight:7,observe:6,agility:6,medical:6,persuade:3},items:{club:1,bandage:2}},
+ godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 설득이 높아 해먼드나 광부를 끌어들이고, 도일을 협박하거나 돈으로 넘기는 일을 잘합니다. 끌어들인 사람 하나는 이기는 조건을 셀 때 마피아 한 명으로 셉니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1}},
+ mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 전투 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 다른 사람의 행동을 대신 소비하지 않으며 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1}},
+ consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 작은 행동으로 같은 장소의 인물을 조사해 실제 사건 기록을 확인합니다. 확인하지 않은 직업이나 개인 기록은 알 수 없습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1}},
+ kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 강제 대화나 기록 공개는 요구하지 않습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:4},items:{club:1}},
+ guard:{name:'퇴역군인',desc:'전투에 익숙하며 곤봉과 붕대를 갖고 시작합니다.',stats:{fight:9,observe:6,agility:4,medical:4,persuade:4},items:{club:1,bandage:1}},
+ courier:{name:'배달원',desc:'민첩과 관찰이 장점입니다. 이동 횟수나 시간은 다른 주민과 같습니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1}},
+ detective:{name:'탐정',desc:'관찰과 설득이 장점입니다. 실제 현장 흔적을 조사하며 보안관 전용 행동은 사용할 수 없습니다.',stats:{fight:4,observe:10,agility:6,medical:3,persuade:7},items:{knife:1}},
+ mechanic:{name:'정비공',desc:'전투와 손을 쓰는 처치에 익숙하며 곤봉을 갖고 시작합니다.',stats:{fight:7,observe:6,agility:6,medical:6,persuade:3},items:{club:1}},
  pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 붕대로 치료할 수 있지만 의사만큼 회복시키지는 못합니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:6},items:{knife:1,bandage:4}},
- lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다. 재판의 동의·표결 규칙은 다른 주민과 같습니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1,bandage:2}},
+ lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다. 재판의 동의·표결 규칙은 다른 주민과 같습니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1}},
 
- sheriff:{name:'보안관',desc:'작은 행동으로 같은 장소의 인물을 조사합니다. 그가 남긴 실제 사건 기록을 확인하며 진영을 마법처럼 알아내지는 않습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1,bandage:2}},
+ sheriff:{name:'보안관',desc:'작은 행동으로 같은 장소의 인물을 조사합니다. 그가 남긴 실제 사건 기록을 확인하며 진영을 마법처럼 알아내지는 않습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1}},
  doctor:{name:'의사',desc:'큰 행동으로 같은 장소의 부상자를 치료합니다. 치료는 누구나 할 수 있지만 의사가 하면 체력이 더 많이 돌아옵니다. 치료제는 한정되어 있습니다.',stats:{fight:3,observe:6,agility:5,medical:10,persuade:5},items:{knife:1,bandage:3,medicine:3}},
- jailor:{name:'간수',desc:'같은 장소의 상대를 하루 한 번 구금할 수 있습니다. 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 작은 행동과 말하기는 가능합니다.',stats:{fight:9,observe:5,agility:4,medical:3,persuade:5},items:{club:1,bandage:2}},
- reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다. 사진의 장면과 기자의 주장은 구분됩니다.',stats:{fight:3,observe:9,agility:6,medical:3,persuade:8},items:{knife:1,bandage:2,camera:1}},
- dockworker:{name:'항만 노동자',desc:'힘과 현장 경험이 장점입니다. 직업은 진영을 보장하지 않습니다.',stats:{fight:7,observe:5,agility:5,medical:3,persuade:4},items:{club:1,bandage:2}},
+ jailor:{name:'간수',desc:'같은 장소의 상대를 하루 한 번 구금할 수 있습니다. 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 작은 행동과 말하기는 가능합니다.',stats:{fight:9,observe:5,agility:4,medical:3,persuade:5},items:{club:1}},
+ reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다. 사진의 장면과 기자의 주장은 구분됩니다.',stats:{fight:3,observe:9,agility:6,medical:3,persuade:8},items:{knife:1,camera:1}},
+ dockworker:{name:'항만 노동자',desc:'힘과 현장 경험이 장점입니다. 직업은 진영을 보장하지 않습니다.',stats:{fight:7,observe:5,agility:5,medical:3,persuade:4},items:{club:1}},
  shopkeeper:{name:'잡화상',desc:'물자와 협상에 익숙합니다. 붕대를 다른 사람에게 건넬 수 있습니다.',stats:{fight:4,observe:6,agility:5,medical:4,persuade:8},items:{knife:1,bandage:4}}
 };
 // Initial affiliation only. A later, voluntary recruitment changes team but keeps the job.
@@ -32,7 +32,7 @@ const rolePools={mafia:['godfather','mafioso','consigliere','kidnapper'],town:['
 for(const role of Object.values(roles))role.team??='town';
 const canInvestigate=p=>['sheriff','consigliere'].includes(p.role),canJail=p=>['jailor','kidnapper'].includes(p.role);
 // 피해 주사위는 '기본값 + 작은 주사위'로 굴린다. 평균은 예전(4면·6면·8면)과 같고 결과의 폭만 좁다.
-const weapons={fist:{name:'맨손',die:2,base:0,bleed:false},club:{name:'곤봉',die:2,base:1,bleed:true},knife:{name:'단검',die:4,base:1,bleed:true},pistol:{name:'권총',die:4,base:2,bleed:true}};
+const weapons={fist:{name:'맨손',die:2,base:0,bleed:false},club:{name:'곤봉',die:2,base:1,bleed:false},knife:{name:'단검',die:4,base:1,bleed:true},pistol:{name:'권총',die:4,base:2,bleed:true}};
 const stats={fight:'전투',observe:'관찰',agility:'민첩',medical:'치료',persuade:'설득'};
 const config={townMoney:1,mafiaMoney:3,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:40,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:60,voteSeconds:60,medicalDifficulty:11,heal:3,healBase:1,healDoctor:2,healClinic:1,criticalHP:2,bleedLoss:1};
 const narrative=()=>root.NoirNarrative||(typeof require==='function'?require('./01Narrative.js'):null),press=()=>root.NoirPress||(typeof require==='function'?require('./02Press.js'):null);
@@ -154,7 +154,7 @@ function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const a
  }
  s.actionContext=false;
  // Every declared attack is evaluated before any casualties; no first-input advantage.
- for(const {p,t,r,seen,event} of attacks){const before=t.hp;t.hp=Math.max(0,t.hp-r.damage);if(r.damage&&t.hp>0&&t.hp<=s.cfg.criticalHP)t.bleeding=true;
+ for(const {p,t,r,seen,event} of attacks){const before=t.hp;t.hp=Math.max(0,t.hp-r.damage);/* 맨손과 곤봉 같은 둔기는 피를 내지 않는다 */if(r.damage&&t.hp>0&&t.hp<=s.cfg.criticalHP&&Object.values(weapons).find(w=>w.name===r.weapon)?.bleed)t.bleeding=true;
  for(const viewerId of [...new Set([...seen,t.id])]){const viewer=find(s,viewerId),seesAttacker=seen.includes(viewerId),seesTarget=visible(s,viewer,t),pov=viewerId===p.id?'attacker':viewerId===t.id?'target':'witness';
  const facts={place:p.location,pov,attacker:seesAttacker?p.name:null,target:seesTarget?t.name:null,weaponKnown:seesAttacker,weapon:r.weapon,ambush:r.ambush,publicAttack:r.publicAttack,dark:r.dark,defenseType:r.defenseType,damage:r.damage,reduction:r.reduction,after:t.hp,bleeding:t.bleeding,visibleWitnesses:seen.filter(w=>w!==p.id&&w!==t.id&&visible(s,p,find(s,w))).map(w=>find(s,w).name)};
  const text=seesTarget?narrative().combat(facts):`${p.name}이 모습이 잘 보이지 않는 쪽으로 공격을 뻗는다. 그 너머에서 어떤 일이 일어났는지는 확인할 수 없다.`;
