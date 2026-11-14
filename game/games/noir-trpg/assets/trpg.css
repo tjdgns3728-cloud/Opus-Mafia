@@ -165,3 +165,9 @@ button.term-player:focus-visible{outline:1px solid #e1c28d;outline-offset:2px}
 #story-scroll .person-detail.guess-mafia{border-left:4px solid #a0524a;padding-left:10px}
 #story-scroll .person-detail.guess-town{border-left:4px solid #7d9a62;padding-left:10px}
 .guess-tag{display:inline-block;margin-left:6px;padding:0 5px;border:1px solid #8a7a60;border-radius:3px;color:#cbb894;font:700 11px 'Malgun Gothic',sans-serif;vertical-align:middle}
+/* 마피아의 밤 이동 버튼 */
+.night-move{margin:6px 0;padding:8px 10px;border:1px solid #9a453b;background:#2a1716;border-radius:4px}
+.night-move b{display:block;font:700 13px 'Malgun Gothic',sans-serif;color:#f3d6c8;margin-bottom:6px}
+.night-move div{display:flex;flex-wrap:wrap;gap:6px}
+.my-acts{display:block;margin-top:4px;font:700 11px/1.5 'Malgun Gothic',sans-serif;color:#e1c28d}
+.extend-time{margin-left:8px;padding:3px 8px;font:700 12px 'Malgun Gothic',sans-serif}

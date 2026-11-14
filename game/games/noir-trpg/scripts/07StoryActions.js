@@ -21,13 +21,14 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town')return []
   if(s.turn===2){if(p.items.pistol&&p.reesePistol)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plantGun',t.name+'의 장작더미에 권총 놓기',{target:t.id});
    
   }
-  if(p.money>=2)for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&!s.offers.some(o=>o.to===t.id&&!o.done)))add('paidOffer',t.name+'에게 돈을 넣은 영입 쪽지 · 2',{target:t.id});
+  /* 플레이어 영입은 보류(2026-11-14) */
   if(p.location==='home'&&s.turn!==2&&z(s).flags.childSpoke&&!z(s).flags.childProtected)add('silenceChild','아이의 보호자에게 입단속 요구');
  }
  for(const n of Object.values(z(s).npcs).filter(n=>n.hp>0)){
   const here=n.location===p.location&&(s.turn!==2||p.location!=='home'||p.houseId==='npc:'+n.id),raid=p.team==='mafia'&&s.turn===2&&n.location==='home';
   if(here||raid)for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))add('attackNpc',(raid?n.name+'의 집 습격':n.name+' 공격')+' · '+C().weapons[w].name,{npc:n.id,weapon:w,raid});
   if(here&&s.turn!==2){if(n.hp<10&&(p.role==='doctor'?p.items.medicine:p.items.bandage))add('healNpc',n.name+' 치료',{npc:n.id});if(n.bleeding)add('bandageNpc',n.name+' 지혈',{npc:n.id});if(['guard','jailor','sheriff'].includes(p.role))add('guardNpc',n.name+' 곁에서 지키기',{npc:n.id,hint:n.name+'을 따라다니며 지킵니다. 같은 곳에서 누가 '+n.name+'을 공격하면 피해를 4까지 막아 줍니다.'+(n.id==='doyle'?' 도일이 협박이나 돈에 넘어가기도 어려워집니다.':'')});if(n.hp<10&&n.location!=='clinic')add('escortNpc',n.name+'을 진료소로 부축',{npc:n.id});}
+  if(p.team==='mafia'&&here&&s.turn!==2&&n.id!=='doyle'&&!n.recruited){const why=n.name+'을 마피아 편으로 끌어들입니다(설득 판정). 끌어들인 사람이 살아 있는 동안, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다. 같은 자리의 사람은 당신이 무언가를 권하는 모습을 봅니다.'+(n.protected?' 지금은 곁에서 지키는 사람이 있어 어렵습니다.':'');add('recruitNpc',n.name+' 끌어들이기',{npc:n.id,hint:why});if(p.money>=2)add('recruitNpcPaid',n.name+'에게 돈을 쥐여 주며 끌어들이기 · 2',{npc:n.id,hint:why+' 돈 2를 쓰는 대신 판정이 3만큼 쉬워집니다.'});}
   if(p.team==='mafia'&&(here||raid)&&!n.threatened)add('threatNpc',n.name+'에게 협박 쪽지 전달',{npc:n.id,raid});
  }
  return out;
@@ -62,6 +63,7 @@ function resolveAction(s,p,a,rng){const err=validAction(s,p,a,['inspectSignal','
  if(a.verb==='healNpc'){const before=n.hp,doc=p.role==='doctor';if(doc)p.items.medicine--;else p.items.bandage--;n.hp=Math.min(10,n.hp+s.cfg.healBase+(doc?s.cfg.healDoctor:0)+(p.location==='clinic'?s.cfg.healClinic:0));n.bleeding=false;D.localAct(s,p,p.name+'이 '+(doc?'치료제':'붕대')+'를 사용해 '+n.name+'의 상처를 치료합니다. 몸을 조금 가눌 수 있게 됩니다.');C().emit(s,[p.id],'notice','치료 체력 '+before+' → '+n.hp,{actionRecord:true});}
  if(a.verb==='bandageNpc'){const kit=p.items.bandage>0;if(kit)p.items.bandage--;const r=C().check(p,'medical',rng,{label:n.name+' 지혈',dc:s.cfg.medicalDifficulty,edge:kit?1:-1,terms:p.location==='clinic'?[{label:'진료소 처치대',value:2}]:[]});if(r.success)n.bleeding=false;D.localAct(s,p,p.name+'이 '+n.name+'의 상처를 압박합니다. '+(r.success?'출혈이 멎습니다.':'피가 계속 배어 나옵니다.'));C().emit(s,[p.id],'check','지혈은 체력을 회복하지 않습니다.',{roll:r,authored:true});}
  if(a.verb==='escortNpc'){n.escort=p.id;p.storyTravel='clinic';D.localAct(s,p,p.name+'이 '+n.name+'을 부축해 진료소로 향합니다. 치료나 지혈은 따로 해야 합니다.');}
+ if(a.verb==='recruitNpc'||a.verb==='recruitNpcPaid'){const paid=a.verb==='recruitNpcPaid';if(paid)p.money-=2;const g=n.escort&&C().find(s,n.escort),terms=[...(paid?[{label:'돈을 쥐여 줌',value:3}]:[]),...(n.protected&&g&&g.hp>0?[{label:'곁에서 지키는 사람',value:-3}]:[])],r=C().check(p,'persuade',rng,{label:n.name+' 끌어들이기',dc:n.id==='mayor'?17:15,terms});if(r.success){n.recruited=true;n.recruitedBy=p.id;}D.localAct(s,p,p.name+'이 '+n.name+'에게 다가가 낮은 목소리로 무언가를 권합니다.'+(paid?' 손에 무언가를 쥐여 줍니다.':''));C().emit(s,[p.id],'check',r.success?n.name+'이 고개를 끄덕입니다. 이제 당신들 편입니다. 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다.':n.name+'이 고개를 젓습니다. "그런 말은 못 들은 걸로 하겠소."',{roll:r,authored:true,actionRecord:true});if(r.success)for(const o of C().alive(s).filter(o=>o.team==='mafia'&&o.id!==p.id))D.emit(s,[o.id],n.name+'이 우리 편이 되었습니다. 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다.');}
  if(a.verb==='guardNpc'){n.escort=p.id;n.protected=true;D.localAct(s,p,p.name+'이 '+n.name+' 곁을 지키기로 합니다. 같은 장소에 있을 때만 직접 상황을 볼 수 있습니다.');}
  if(a.verb==='threatNpc'){n.threatened=true;D.artifact(s,{kind:'threat',title:n.name+'에게 온 협박장',where:'home:npc:'+n.id,npc:n.id,text:n.id==='mayor'?'회관 문을 닫으라는 협박장. 보낸 이름은 없다.':'노조를 넘기지 않으면 노조원들을 해치겠다는 협박장. 보낸 이름은 없다.',public:false});D.emit(s,[p.id],n.name+'에게 이름 없는 협박을 남겼습니다. 상대가 공개하기 전에는 다른 주민이 이 내용을 모릅니다.',{actionRecord:true});}
  D.refreshIncidents(s);return null;

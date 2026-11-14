@@ -4,7 +4,7 @@
   "smallSeconds": 35,
   "planSeconds": 60,
   "reactionSeconds": 15,
-  "trialSeconds": 120,
+  "trialSeconds": 60,
   "voteSeconds": 60,
   "medicalDifficulty": 11,
   "heal": 3,

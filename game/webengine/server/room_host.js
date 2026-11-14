@@ -236,6 +236,8 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
         return {name: p.name};
       },
       closePhase() { finish(false); },
+      // The open timed phase ends `seconds` later than planned. false when no timed phase is open.
+      extendPhase(seconds) { const p = R.phase, add = Number(seconds) || 0; if (!p || p.closed || p.endsAt == null || add <= 0) return false; if (p.cancel) p.cancel(); p.endsAt += add; p.seconds += add; p.cancel = engine.timer.after(Math.max(0.01, p.endsAt - engine.time), () => finish(true)); bump(); return true; },
       // An event for some seats only ("all", one id, or a list). Kept in order; a seat that comes back gets its own again.
       tell(to, body) { event("tell", targets(to), {data: clone(body)}); },
       // Back to the waiting room with the same seats and keys (after end): the game's state is emptied, earlier events
