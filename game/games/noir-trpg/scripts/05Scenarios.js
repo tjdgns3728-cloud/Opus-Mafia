@@ -84,12 +84,12 @@ const WHY={inspect:'이 장소에 남은 것을 살핍니다. 알아낸 것은 �
  ignite:'도화선에 불을 붙입니다. 갱도에 있는 사람이 모두 죽습니다. 당신도 15초 안에 빠져나오지 않으면 죽습니다.',
  plant:'그 사람의 집에 폭약 하나를 놓습니다. 폭약이 그 집에서 나오면 집주인이 의심받습니다.',
  disarm:'도화선을 끊고 폭약을 거둡니다. 성공하면 이 폭약은 터지지 않습니다.',
- protect:'도일 곁에 서겠다고 약속합니다. 도일이 협박이나 돈에 넘어가기 어려워집니다.',
- threaten:'성공하면 도일이 노조를 넘기고 갱도가 다시 열립니다. 실패해도 협박한 사실은 남아, 도일이 나중에 사람들에게 알릴 수 있습니다.',
- bribe:'돈 4를 씁니다. 성공하면 도일이 노조를 넘기고 갱도가 다시 열립니다.',
+ protect:'도일 곁에 서겠다고 약속합니다. 도일이 협박이나 돈에 넘어가기 어려워집니다. 도일이 넘어가면 마피아가 한 명 더 있는 것으로 세어지니, 지켜야 할 사람입니다.',
+ threaten:'성공하면 도일이 노조를 넘깁니다. 광부들이 마피아 편에 서서, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다. 실패해도 협박한 사실은 남아, 도일이 나중에 사람들에게 알릴 수 있습니다.',
+ bribe:'돈 4를 씁니다. 성공하면 도일이 노조를 넘깁니다. 광부들이 마피아 편에 서서, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다.',
  disclose:'도일이 협박받은 사실을 사람들에게 알리게 합니다. 누가 협박했는지 찾는 실마리가 됩니다.'};
 function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town')return [];const q=s.scenario,a=[],add=(key,label,target)=>a.push({type:'scene',sceneKey:key,label,target,hint:WHY[key]||''});
- if(slot==='small'){if(clues(s,p).length)add('inspect','이 장소의 단서 조사');if(p.team==='mafia'&&erasable(s,p).length)add('erase','이 장소의 흔적 지우기 · '+ERASABLE[erasable(s,p)[0]]);return a;}
+ if(slot==='small'){if(p.team==='mafia'&&erasable(s,p).length)add('erase','이 장소의 흔적 지우기 · '+ERASABLE[erasable(s,p)[0]]);return a;}
  if(visibleBombs(s,p).length)add('take','발견한 폭약 가져가기');
  if(p.items.dynamite){if(p.location==='hall')add('secure','폭약을 회관에 맡기기');if(p.location==='chapel')add('bury','폭약을 종탑 아래 묻기');if(p.location==='warehouse'){add('cart','폭약을 수레에 숨기기');if(p.team==='mafia'&&!['lit','exploded'].includes(q.fuse?.status))add('arm','갱도에 폭약 설치하기');}if(p.team==='mafia'&&s.turn===2)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plant',t.name+'의 집에 폭약 하나 놓기',t.id);}
  if(['armed','extinguished'].includes(q.fuse?.status)&&p.location==='warehouse'&&p.storyKnown.some(k=>k.startsWith('fuse:')))add('disarm','발견한 도화선 끊고 폭약 회수');
