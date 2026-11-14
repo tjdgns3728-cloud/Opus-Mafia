@@ -31,7 +31,8 @@ const roles={
 const rolePools={mafia:['godfather','mafioso','consigliere','kidnapper'],town:['sheriff','doctor','jailor','guard','detective','reporter','lawyer','pharmacist']};
 for(const role of Object.values(roles))role.team??='town';
 const canInvestigate=p=>['sheriff','consigliere'].includes(p.role),canJail=p=>['jailor','kidnapper'].includes(p.role);
-const weapons={fist:{name:'맨손',die:2,bleed:false},club:{name:'곤봉',die:4,bleed:true},knife:{name:'단검',die:6,bleed:true},pistol:{name:'권총',die:8,bleed:true}};
+// 피해 주사위는 '기본값 + 작은 주사위'로 굴린다. 평균은 예전(4면·6면·8면)과 같고 결과의 폭만 좁다.
+const weapons={fist:{name:'맨손',die:2,base:0,bleed:false},club:{name:'곤봉',die:2,base:1,bleed:true},knife:{name:'단검',die:4,base:1,bleed:true},pistol:{name:'권총',die:4,base:2,bleed:true}};
 const stats={fight:'전투',observe:'관찰',agility:'민첩',medical:'치료',persuade:'설득'};
 const config={startingMoney:8,bandagePrice:1,days:5,hardSeconds:3000,planSeconds:60,gatheringSeconds:40,resultSeconds:0,reactionSeconds:15,smallSeconds:35,trialSeconds:120,voteSeconds:60,medicalDifficulty:11,heal:3,healBase:1,healDoctor:2,healClinic:1,criticalHP:2,bleedLoss:1};
 const narrative=()=>root.NoirNarrative||(typeof require==='function'?require('./01Narrative.js'):null),press=()=>root.NoirPress||(typeof require==='function'?require('./02Press.js'):null);
@@ -123,8 +124,8 @@ function announceClashes(s){root.NoirScenarios?.prepareRaids(s);const attacks=Ob
  if(lines.length)emit(s,[viewer.id],'confrontation',lines.join('\n'));else if(!viewer.bot)emit(s,[viewer.id],'transition','선택한 행동을 함께 처리하고 있습니다. 직접 보고 들은 결과가 정리될 때까지 기다립니다.');}return attacks.length;}
 function attackRoll(s,p,t,a,rng){const place=places[p.location],context=s.declaredCombat?.epoch===s.epoch&&s.declaredCombat.values[p.id+'>'+t.id]||combatContext(s,p,t,a.weapon),env=context.env,def=s.reactions[t.id]||t.defense,ds=def==='block'?t.stats.fight:t.stats.agility,defEnv=def==='dodge'?place.cover:0;
  const ac=check(p,'fight',rng,{label:'공격',terms:context.terms}),dc=check(t,def==='block'?'fight':'agility',rng,{label:'대응',terms:defEnv?[{label:'엄폐물을 이용한 회피',value:defEnv}]:[]}),ar=ac.roll,dr=dc.roll;
- const attack=ac.total,defense=dc.total,diff=attack-defense,w=weapons[a.weapon]||weapons.fist,raw=die(rng,w.die),bonus=Math.min(4,Math.floor(p.stats.fight/2)),reduction=diff<0?6:diff<=2?3:0,hitDamage=context.ambush&&a.weapon==='pistol'&&diff<0?0:Math.max(0,raw+bonus-reduction),damage=a.weapon==='pistol'&&hitDamage>0?Math.max(5,hitDamage):hitDamage;
- return {minimumDamage:a.weapon==='pistol'&&damage>0?5:0,ambush:context.ambush,publicAttack:context.publicAttack,dark:context.dark,attack,defense,damage,raw,bonus,reduction,attackRoll:ar,defenseRoll:dr,env,defEnv,defenseType:def,weapon:w.name,die:w.die,attackStat:p.stats.fight,defenseStat:ds,envReason:context.terms.map(x=>x.label+' '+(x.value>0?'+':'')+x.value).join(' / ')||'공격 환경 보정 없음',defReason:defEnv?'엄폐물을 이용한 회피 +'+defEnv:'방어 환경 보정 없음'};
+ const attack=ac.total,defense=dc.total,diff=attack-defense,w=weapons[a.weapon]||weapons.fist,raw=(w.base||0)+die(rng,w.die),bonus=Math.min(4,Math.floor(p.stats.fight/2)),reduction=diff<0?6:diff<=2?3:0,hitDamage=context.ambush&&a.weapon==='pistol'&&diff<0?0:Math.max(0,raw+bonus-reduction),damage=a.weapon==='pistol'&&hitDamage>0?Math.max(5,hitDamage):hitDamage;
+ return {minimumDamage:a.weapon==='pistol'&&damage>0?5:0,ambush:context.ambush,publicAttack:context.publicAttack,dark:context.dark,attack,defense,damage,raw,bonus,reduction,attackRoll:ar,defenseRoll:dr,env,defEnv,defenseType:def,weapon:w.name,die:w.die,base:w.base||0,attackStat:p.stats.fight,defenseStat:ds,envReason:context.terms.map(x=>x.label+' '+(x.value>0?'+':'')+x.value).join(' / ')||'공격 환경 보정 없음',defReason:defEnv?'엄폐물을 이용한 회피 +'+defEnv:'방어 환경 보정 없음'};
 }
 function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const acts=Object.entries(s.plans).filter(([id,a])=>{const reason=validate(s,id,a,'big');if(reason)narrate(s,id,'선택한 큰 행동을 실행하지 못했습니다: '+reason);return !reason;});
  // Resolve confrontations at the shared starting positions before survivors travel.
