@@ -63,7 +63,8 @@ function create(seats,rng,settings={}){
  if(root.NoirScenarios)root.NoirScenarios.start(s,rng);else emit(s,ids,'story','마피아의 습격에 주민들이 회관에 모여 투표로 범인을 가려내기로 했습니다. 다섯째 날 밤이 지나면 외부 경찰과 판사가 도착합니다.');return s;
 }
 function emit(s,to,kind,text,extra={}){if(s.actionContext&&!['speech','environment','death'].includes(kind))extra={actionRecord:true,...extra};text=korean(s,text);const locations=[...new Set(to.map(id=>find(s,id)?.location).filter(Boolean))];const e={place:locations.length===1?locations[0]:null,i:++s.serial,to:[...new Set(to)],kind,text,time:label(s),epoch:s.epoch,...extra};s.feed.push(e);return e;}
-function korean(s,text){let t=String(text);for(const p of [...s.players].sort((a,b)=>b.name.length-a.name.length)){const c=p.name.charCodeAt(p.name.length-1),tail=c>=44032&&c<=55203?(c-44032)%28:1;for(const [a,b] of [['이','가'],['을','를'],['은','는'],['과','와']])for(const used of [a,b])t=t.split(p.name+used+' ').join(p.name+(tail?a:b)+' ');}return t;}
+// 이름 뒤의 조사를 받침에 맞춘다. 플레이어 이름과 NPC 이름 모두에 적용한다.
+function korean(s,text){let t=String(text);const names=[...s.players.map(p=>p.name),'해먼드','도일','리스','간호사','광부','술집 주인'].filter(Boolean).sort((a,b)=>b.length-a.length);for(const name of names){const c=name.charCodeAt(name.length-1),tail=c>=44032&&c<=55203?(c-44032)%28:1;for(const [a,b] of [['이','가'],['을','를'],['은','는'],['과','와']])for(const used of [a,b])t=t.split(name+used+' ').join(name+(tail?a:b)+' ');}return t;}
 function learn(s,id,text,about,source,kind='observed',event=null){text=korean(s,text);const p=find(s,id);if(!p)return;const n={id:'k'+(++s.serial),text,about:about||null,source,kind,time:label(s),event};p.known.push(n);return n;}
 function sameSpace(s,a,b){return a.location===b.location&&(s.turn!==2||a.location!=='home'||(a.houseId||a.id)===(b.houseId||b.id));}
 function visible(s,viewer,p){return p.id===viewer.id||sameSpace(s,viewer,p)&&(!p.hidden||(p.spotted||[]).includes(viewer.id)||s.stage==='trial'||s.stage==='vote');}
