@@ -57,31 +57,51 @@ function nextChapter(s){const q=s.scenario;if(s.day>5)return false;
  if(s.day===5&&s.turn===0)story(s,C().alive(s).map(p=>p.id),'끊긴 선로 너머에서 작업하는 소리가 바람을 타고 들려옵니다. 내일 아침이면 외부 사람들이 도착합니다. 오늘이 마을 안에서 결정을 내릴 마지막 날입니다.');
  for(const p of C().alive(s))arrival(s,p);return true;
 }
-function clues(s,p){const q=s.scenario,list=[];const add=(key,text)=>{if(!p.storyKnown.includes(key))list.push({key,text});};
- if(p.items.notebook){add('keys','리스의 수첩에는 화약고 열쇠 소유자로 해먼드와 도일, 번져 읽을 수 없는 이름 하나가 적혀 있다. 누가 범행했는지는 이 명단만으로 알 수 없다.');if(p.storyKnown.includes('keys'))add('payday','리스 수첩의 찢긴 마지막 장 아래에서 눌린 글씨 "임금날 — 술집 뒤"를 읽었다.');}
- if(p.location==='warehouse'&&count(s,'armed'))add('fuse:'+count(s,'armed'),'갱도 버팀목에서 광차 쪽으로 이어지는 도화선을 찾아냈다. 끝에는 폭약 '+count(s,'armed')+'개가 설치되어 있다.');
- if(p.location==='warehouse'){add('butt','화약고 문틀 밑에 끝을 비틀어 만 담배꽁초가 떨어져 있다. 리스가 담배를 마는 버릇과 같다. 언제 떨어진 것인지는 알 수 없다.');add('lock','화약고 자물쇠에 억지로 부순 흠집은 없다. 열쇠를 썼는지 다른 방법인지는 아직 모른다.');if(q.mineClosed||q.announced)add('six','화약고 장부와 빈 칸을 대조했다. 폭약 여섯 개가 사라졌다.');if(count(s,'cart'))add('cart','갱도 옆 수레의 덮개 아래에서 폭약 '+count(s,'cart')+'개를 확인했다. 누가 옮겼는지는 직접 보지 못했다.');}
- if(p.location==='chapel')add('cache:'+count(s,'chapel'),count(s,'chapel')?'종탑 아래 흙을 걷자 기름종이에 싸인 폭약 '+count(s,'chapel')+'개가 나왔다. 묻은 사람은 보지 못했다.':'종탑 아래를 살폈다. 파헤친 자리와 기름종이 자국은 있지만 지금 폭약은 없다.');
- if(p.location==='clinic')add('oilpaper','리스의 외투 주머니에서 흙 묻은 기름종이 조각을 꺼냈다. 겉모습만으로 누구의 물건인지 알 수 없다.');
- if(p.location==='home'){add('footprints','리스가 쓰러진 골목에 서로 크기가 다른 발자국 두 줄이 남아 있다. 주인이 누구인지는 확인하지 못했다.');if(p.role==='guard')add('knot','아이가 주운 끈의 매듭은 군에서 도화선을 묶을 때 쓰던 모양이다. 이 매듭만으로 특정인을 지목할 수 없다.');if(count(s,'home:'+p.id))add('planted:'+s.epoch,'자기 집 안에서 자신이 둔 적 없는 폭약 '+count(s,'home:'+p.id)+'개를 발견했다. 가져온 사람은 보지 못했다.');}
- if(p.location==='tavern')add('ledger','술집 뒤 노조 장부에 "후원자 제안 — 거절. 다시 올 것."이라고 적혀 있다. 제안자의 이름은 없다.');
+// 지울 수 있는 흔적(마피아만 지울 수 있다)
+const ERASABLE={butt:'화약고 문틀 밑의 담배꽁초',footprints:'골목의 발자국',oilpaper:'외투 주머니의 기름종이',ledger:'노조 장부의 그 줄'};
+function erasable(s,p){const q=s.scenario,here={warehouse:['butt'],home:['footprints'],clinic:['oilpaper'],tavern:['ledger']}[p.location]||[];return here.filter(k=>!q.erased?.[k]);}
+// 단서는 '무엇이 있다'에서 끝나지 않고 '그래서 무엇을 알 수 있고 어디를 보면 되는가'까지 적는다.
+function clues(s,p){const q=s.scenario,list=[];const add=(key,text)=>{if(!p.storyKnown.includes(key)&&!q.erased?.[key.split(':')[0]])list.push({key,text});};
+ if(p.items.notebook){add('keys','리스의 수첩에 화약고 열쇠를 가진 사람이 적혀 있다: 해먼드, 도일, 번져서 읽을 수 없는 이름 하나. 화약고가 부서지지 않았다면 이 셋 가운데 누군가의 열쇠로 열린 것이다. 그 열쇠가 지금 누구 손에 있는지가 범인에게 닿는 길이다.');if(p.storyKnown.includes('keys'))add('payday','수첩의 찢긴 장 아래에 눌린 글씨가 있다: "임금날 — 술집 뒤". 리스는 술집 뒤에서 무언가를 보았거나 보려 했다. 술집에 가서 살펴볼 수 있다.');}
+ if(p.location==='warehouse'&&count(s,'armed'))add('fuse:'+count(s,'armed'),'갱도 버팀목에서 광차 쪽으로 이어지는 도화선을 찾았다. 끝에 폭약 '+count(s,'armed')+'개가 설치되어 있다. 큰 행동으로 도화선을 끊으면 이 폭약은 터지지 않는다. 불이 붙으면 이 자리의 사람은 모두 죽는다.');
+ if(p.location==='warehouse'){add('butt','화약고 문틀 밑에 끝을 비틀어 만 담배꽁초가 있다. 리스의 것이다. 리스는 죽기 전에 여기에 왔다. 그가 여기서 무엇을 알아냈는지는 그가 남긴 물건에 있다: 외투는 진료소에, 수첩은 그의 동료 보안관에게 있다.');add('lock','화약고 자물쇠에 부순 자국이 없다. 열쇠로 연 것이다. 바깥 사람이 아니라 열쇠를 가졌거나 훔칠 수 있는 사람의 짓이다. 열쇠를 가진 사람의 이름은 리스의 수첩에 있다.');if(q.mineClosed||q.announced)add('six','장부와 빈 칸을 맞춰 보았다. 폭약 여섯 개가 없다. 갱도에 설치해 터뜨리면 그 자리의 사람이 모두 죽는 양이다. 여섯 개를 모두 찾아 회관에 맡기면 갱도가 다시 열린다.');if(count(s,'cart'))add('cart','수레 덮개 아래에 폭약 '+count(s,'cart')+'개가 있다. 큰 행동으로 가져갈 수 있다. 회관에 맡기면 그만큼은 아무도 쓰지 못한다.');}
+ if(p.location==='chapel')add('cache:'+count(s,'chapel'),count(s,'chapel')?'종탑 아래 흙을 걷어 내자 기름종이에 싸인 폭약 '+count(s,'chapel')+'개가 나왔다. 큰 행동으로 가져갈 수 있다. 회관에 맡기면 그만큼은 아무도 쓰지 못한다. 묻은 사람은 이것을 가지러 다시 올 것이다.':'종탑 아래에 파헤친 자리와 기름종이 자국이 있다. 폭약이 여기 있다가 옮겨졌다. 옮길 만한 곳은 갱도의 수레나 누군가의 집이다.');
+ if(p.location==='clinic')add('oilpaper','리스의 외투 주머니에서 흙 묻은 기름종이 조각이 나왔다. 폭약을 싸는 종이다. 리스는 죽기 전에 폭약 꾸러미가 있던 곳에 손을 댔다. 종이에 흙이 묻어 있으니 폭약은 땅에 묻혀 있었다.');
+ if(p.location==='home'){add('footprints','리스가 쓰러진 골목에 발자국이 두 줄 있다. 하나는 크고 깊고, 하나는 작고 얕다. 리스를 죽인 사람은 혼자가 아니라 둘이다. 몸집이 큰 사람과 작은 사람이다.');if(p.role==='guard')add('knot','아이가 주운 끈의 매듭은 군대에서 도화선을 묶을 때 쓰는 매듭이다. 폭약을 다뤄 본 사람이 묶었다. 이 골목에서 주웠으니, 폭약을 든 사람이 리스가 죽은 이 골목을 지나갔다.');if(count(s,'home:'+p.id))add('planted:'+s.epoch,'내 집 안에 내가 둔 적 없는 폭약 '+count(s,'home:'+p.id)+'개가 있다. 누군가 나를 범인으로 몰려고 놓고 갔다. 남이 찾아내기 전에 큰 행동으로 가져가 회관에 맡기면 의심을 피할 수 있다.');}
+ if(p.location==='tavern')add('ledger','술집 뒤 노조 장부에 이런 줄이 있다: "후원자 제안 — 거절. 다시 올 것." 누군가 노조에 돈을 내밀었고 도일이 거절했다. 그 사람은 도일을 다시 찾아올 것이다. 도일 곁을 지켜보면 누구인지 볼 수 있다.');
  return list;
 }
 function investigate(s,p,rng){const entries=clues(s,p);if(!entries.length)return false;const r=C().check(p,'observe',rng,{label:'현장 단서 조사',dc:12,terms:s.turn===2?[{label:'밤의 어둠',value:-2}]:[]});const clue=entries[0];if(r.success){know(s,p,clue.key,clue.text);if(p.personalLead&&!p.personalLead.isGuidance&&p.location===p.personalLead.place)p.personalLead.done=true;}C().emit(s,[p.id],'check',root.NoirNarrative.investigation(clue,r.success),{roll:r,authored:true,actionRecord:true});return true;}
 function visibleBombs(s,p){return s.scenario.bombs.filter(b=>b.where===p.location&&p.storyKnown.some(k=>k.startsWith('cache:'))||b.where==='cart'&&p.location==='warehouse'&&p.storyKnown.includes('cart')||b.where==='home:'+p.id&&p.location==='home'&&p.storyKnown.some(k=>k.startsWith('planted:'))||b.where===p.location&&p.team==='mafia'&&b.where==='chapel');}
-function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town')return [];const q=s.scenario,a=[],add=(key,label,target)=>a.push({type:'scene',sceneKey:key,label,target});
- if(slot==='small'){if(clues(s,p).length)add('inspect','이 장소의 단서 조사');return a;}
+// 행동을 고르는 창에 나오는 한 줄: 이 행동을 하면 무엇을 얻고 무엇을 거는가.
+const WHY={inspect:'이 장소에 남은 것을 살핍니다. 알아낸 것은 수첩에 남고, 재판을 신청할 때 근거로 낼 수 있습니다.',
+ erase:'이 장소의 흔적 하나를 없앱니다. 그 뒤로는 아무도 그 흔적을 찾지 못합니다. 같은 자리에 있는 사람은 당신이 무언가를 치우는 것을 봅니다.',
+ take:'폭약을 손에 넣습니다. 그다음 회관에 맡기거나, 숨기거나, 설치할 수 있습니다. 들고 있는 것을 남이 보면 의심받습니다.',
+ secure:'회관에 맡긴 폭약은 아무도 쓰지 못합니다. 여섯 개가 모두 모이면 갱도가 다시 열립니다.',
+ bury:'폭약을 종탑 아래에 숨깁니다. 누군가 이곳을 조사하면 찾아낼 수 있습니다.',
+ cart:'폭약을 수레 덮개 아래에 숨깁니다. 누군가 이곳을 조사하면 찾아낼 수 있습니다.',
+ arm:'폭약을 갱도에 설치합니다. 나중에 불을 붙이면 그 자리에 있는 사람이 모두 죽습니다. 설치한 도화선은 남이 찾아 끊을 수 있습니다.',
+ ignite:'도화선에 불을 붙입니다. 갱도에 있는 사람이 모두 죽습니다. 당신도 15초 안에 빠져나오지 않으면 죽습니다.',
+ plant:'그 사람의 집에 폭약 하나를 놓습니다. 폭약이 그 집에서 나오면 집주인이 의심받습니다.',
+ disarm:'도화선을 끊고 폭약을 거둡니다. 성공하면 이 폭약은 터지지 않습니다.',
+ protect:'도일 곁에 서겠다고 약속합니다. 도일이 협박이나 돈에 넘어가기 어려워집니다.',
+ threaten:'성공하면 도일이 노조를 넘기고 갱도가 다시 열립니다. 실패해도 협박한 사실은 남아, 도일이 나중에 사람들에게 알릴 수 있습니다.',
+ bribe:'돈 4를 씁니다. 성공하면 도일이 노조를 넘기고 갱도가 다시 열립니다.',
+ disclose:'도일이 협박받은 사실을 사람들에게 알리게 합니다. 누가 협박했는지 찾는 실마리가 됩니다.'};
+function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town')return [];const q=s.scenario,a=[],add=(key,label,target)=>a.push({type:'scene',sceneKey:key,label,target,hint:WHY[key]||''});
+ if(slot==='small'){if(clues(s,p).length)add('inspect','이 장소의 단서 조사');if(p.team==='mafia'&&erasable(s,p).length)add('erase','이 장소의 흔적 지우기 · '+ERASABLE[erasable(s,p)[0]]);return a;}
  if(visibleBombs(s,p).length)add('take','발견한 폭약 가져가기');
  if(p.items.dynamite){if(p.location==='hall')add('secure','폭약을 회관에 맡기기');if(p.location==='chapel')add('bury','폭약을 종탑 아래 묻기');if(p.location==='warehouse'){add('cart','폭약을 수레에 숨기기');if(p.team==='mafia'&&!['lit','exploded'].includes(q.fuse?.status))add('arm','갱도에 폭약 설치하기');}if(p.team==='mafia'&&s.turn===2)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plant',t.name+'의 집에 폭약 하나 놓기',t.id);}
  if(['armed','extinguished'].includes(q.fuse?.status)&&p.location==='warehouse'&&p.storyKnown.some(k=>k.startsWith('fuse:')))add('disarm','발견한 도화선 끊고 폭약 회수');
  if(q.fuse?.status==='armed'&&count(s,'armed')>0&&p.location==='warehouse'&&p.team==='mafia')add('ignite','설치한 폭약의 도화선 점화');
  if(p.location===q.doyle.location&&q.doyle.hp>0&&s.turn!==2){if(!q.doyle.protected)add('protect','도일이 버티도록 보호 약속하기');if(p.team==='mafia'&&!q.doyle.cowed){add('threaten','도일에게 노조를 넘기라고 협박');if(p.money>=4)add('bribe','도일에게 운영 자금 제안 · 4');}if(q.doyle.threatened&&!q.doyle.disclosed)add('disclose','도일에게 협박장을 공개하자고 설득');}
- if(s.turn===2&&p.team==='mafia')for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&t.location==='home'))for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))a.push({type:'attack',nightRaid:true,target:t.id,weapon:w,label:t.name+'의 집 습격 · '+C().weapons[w].name});
- if(p.team==='mafia')for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&!s.offers.some(o=>o.to===t.id&&!o.done)))a.push({type:'recruit',anonymous:true,target:t.id,reason:'함께 살아남읍시다. 동의한다면 답장을 주시오.',label:t.name+'에게 익명 영입 쪽지'});
+ if(s.turn===2&&p.team==='mafia')for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&t.location==='home'))for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))a.push({type:'attack',nightRaid:true,target:t.id,weapon:w,label:t.name+'의 집 습격 · '+C().weapons[w].name,hint:'그 집에 들어가 공격합니다. 시민이 한 명 줄면 마피아 편이 절반에 가까워집니다. 총을 쏘면 다른 집에서 어느 집인지 듣습니다.'});
+ if(p.team==='mafia')for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&!s.offers.some(o=>o.to===t.id&&!o.done)))a.push({type:'recruit',anonymous:true,target:t.id,reason:'함께 살아남읍시다. 동의한다면 답장을 주시오.',label:t.name+'에게 익명 영입 쪽지',hint:'받는 사람이 받아들이면 마피아 편이 한 명 늘어납니다. 마피아 편이 살아 있는 사람의 절반이 되면 이깁니다. 거절한 사람은 쪽지를 증거로 갖게 됩니다.'});
  return a;
 }
 function validate(s,p,a,slot){return choices(s,p,slot).some(o=>o.type===a.type&&o.sceneKey===a.sceneKey&&o.target===a.target)?null:'지금 이 장소와 조건에서는 할 수 없는 일입니다.';}
-function resolve(s,p,a,rng){const q=s.scenario,d=q.doyle;const err=validate(s,p,a,a.sceneKey==='inspect'?'small':'big');if(err){story(s,[p.id],err,{actionRecord:true});return;}if(a.sceneKey==='inspect'){root.NoirScenarios.investigate(s,p,rng);return;}
+function resolve(s,p,a,rng){const q=s.scenario,d=q.doyle;const err=validate(s,p,a,['inspect','erase'].includes(a.sceneKey)?'small':'big');if(err){story(s,[p.id],err,{actionRecord:true});return;}if(a.sceneKey==='inspect'){root.NoirScenarios.investigate(s,p,rng);return;}
+ if(a.sceneKey==='erase'){const k=erasable(s,p)[0];(q.erased??={})[k]=true;if(!p.storyKnown.includes(k))p.storyKnown.push(k);story(s,[p.id],ERASABLE[k]+((ERASABLE[k].charCodeAt(ERASABLE[k].length-1)-44032)%28?'을':'를')+' 없앴습니다. 이제 이곳을 조사해도 그 흔적은 나오지 않습니다.',{actionRecord:true});const seen=local(s,p).filter(o=>o.id!==p.id&&C().visible(s,o,p));for(const o of seen){story(s,[o.id],p.name+'이 '+C().places[p.location].name+'에서 무언가를 치우는 것을 봤습니다. 무엇이었는지는 보지 못했습니다.');C().learn(s,o.id,p.name+'이 '+C().places[p.location].name+'에서 무언가를 치우는 것을 봤다.',p.id,'직접 목격','observed');}return;}
  if(a.sceneKey==='take'){const bs=visibleBombs(s,p);bs.forEach(b=>b.where='carry:'+p.id);localAction(s,p,p.name+'이 발견한 폭약 '+bs.length+'개를 챙깁니다. 빈 자리에는 포장지 자국만 남습니다.');}
  if(['secure','bury','cart','arm'].includes(a.sceneKey)){const bs=q.bombs.filter(b=>b.where==='carry:'+p.id),dest={secure:'secured',bury:'chapel',cart:'cart',arm:'armed'}[a.sceneKey];bs.forEach(b=>b.where=dest);if(a.sceneKey==='secure'){q.secured=count(s,'secured')===6;localAction(s,p,p.name+'이 폭약 '+bs.length+'개를 회관에 맡깁니다. 해먼드가 수를 확인한 뒤 상자를 봉인합니다. 회수된 폭약은 모두 '+count(s,'secured')+'개입니다.');}else if(a.sceneKey==='arm'){q.fuse={status:'armed',by:p.id};localAction(s,p,p.name+'이 갱도 안쪽에 폭약을 설치합니다. 아직 도화선에 불을 붙이지 않았습니다.');}else localAction(s,p,p.name+'이 폭약 '+bs.length+'개를 '+(a.sceneKey==='cart'?'수레 덮개 아래 감춥니다.':'종탑 아래 흙으로 덮습니다.'));}
  if(a.sceneKey==='plant'){const b=q.bombs.find(b=>b.where==='carry:'+p.id),t=C().find(s,a.target);b.where='home:'+t.id;story(s,[p.id],t.name+'의 집에 폭약 하나를 놓고 돌아왔습니다. 누군가 발견하기 전에는 다른 주민에게 이 사실이 전해지지 않습니다.',{actionRecord:true});C().recordEvent(s,'plant',p.id,t.id,'폭약을 놓은 행동','home');}
