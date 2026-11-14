@@ -6,7 +6,7 @@
     "작성": "claude-sonnet-5-5",
     "올림": "claude-opus-5-5",
     "검토": "claude-sonnet-5-5",
-    "실행": "gpt-6-luna"
+    "실행": "gpt-6-sol"
   },
   "사다리": {
     "규칙": [
@@ -26,7 +26,7 @@
       "claude-haiku-5-5"
     ],
     "실행": [
-      "gpt-6-luna"
+      "gpt-6-sol"
     ]
   },
   "가격": {
@@ -43,6 +43,10 @@
       5
     ],
     "gpt-6-luna": [
+      0.1,
+      0.5
+    ],
+    "gpt-6-sol": [
       0.1,
       0.5
     ]
@@ -75,6 +79,6 @@
       }
     }
   },
-  "가격_근거": "https://developers.openai.com/api/docs/models/gpt-6-luna — 2026-11-12 확인, 입력/출력 100만 토큰당 USD; GPT 구독의 실제 결제액이 아님. 캐시 할인 미적용 내부 환산.",
-  "표시이름": "ChatGPT 구독 · GPT-6 Luna"
+  "가격_근거": "https://developers.openai.com/api/docs/models/gpt-6-luna — 2026-11-12 확인, 입력/출력 100만 토큰당 USD; GPT 구독의 실제 결제액이 아님. 캐시 할인 미적용 내부 환산. gpt-6-sol의 값은 확인하지 못해 한도 계산용으로 luna와 같게 둔 임시값이다(2026-11-14).",
+  "표시이름": "ChatGPT 구독 · GPT-6 Sol"
 }
