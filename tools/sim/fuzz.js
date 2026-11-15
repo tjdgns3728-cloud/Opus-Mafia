@@ -3,7 +3,7 @@ const path=require('path');const dir=path.join(path.resolve(process.argv[2]||'.'
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow'])require(path.join(dir,f+'.js'));
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,ST=globalThis.NoirStory;
 const games=Number(process.argv[3]||10),seatsN=Number(process.argv[4]||8);
-const issues=new Map();const partCheck=(where,txt)=>{for(const m of String(txt).matchAll(/([가-힣])(을|를)(?=[\s.,!?"'”]|$)/g)){if(['마을','가을','고을'].includes(m[1]+m[2]))continue;const c=m[1].charCodeAt(0)-44032,bat=c%28!==0;if((m[2]==='를'&&bat)||(m[2]==='을'&&!bat))note('조사 틀림('+where+')',m[1]+m[2]+' · '+txt);}};const note=(kind,detail)=>{const k=kind+' | '+detail.slice(0,160);issues.set(k,(issues.get(k)||0)+1);};
+const issues=new Map();const partCheck=(where,txt)=>{for(const m of String(txt).matchAll(/([가-힣])(을|를)(?=[\s.,!?"'”]|$)/g)){if(['마을','가을','고을'].includes(m[1]+m[2]))continue;const c=m[1].charCodeAt(0)-44032,bat=c%28!==0;if((m[2]==='를'&&bat)||(m[2]==='을'&&!bat))note('조사 틀림('+where+')',m[1]+m[2]+' · '+txt);}};const roCheck=(where,txt)=>{for(const m of String(txt).matchAll(/([가-힣]+?)(으로|로)(?=[\s.,!?"'”]|$)/g)){const w=m[1],last=w.slice(-1);if(['선로','통로','경로','진로','항로','철로','활로'].some(x=>(w+m[2]).endsWith(x)))continue;const c=last.charCodeAt(0)-44032;if(c<0||c>11171)continue;const t=c%28;if(m[2]==='으로'&&(t===0||t===8))note('조사 틀림('+where+')',w+m[2]+' · '+txt);if(m[2]==='로'&&t!==0&&t!==8)note('조사 틀림('+where+')',w+m[2]+' · '+txt);}};const note=(kind,detail)=>{const k=kind+' | '+detail.slice(0,160);issues.set(k,(issues.get(k)||0)+1);};
 const used=new Map();
 for(let g=0;g<games;g++){let seed=1000+g*37;const rng=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};const pick=a=>a[Math.floor(rng()*a.length)];
  const seats=Array.from({length:seatsN},(_,i)=>({id:'p'+i,name:['가람','나래','다온','라희','마루','바다','사랑','아라','자두','차오','하랑','타미'][i],bot:true}));
@@ -23,7 +23,7 @@ for(let g=0;g<games;g++){let seed=1000+g*37;const rng=()=>{seed=(seed*16807)%214
  for(const p of s.players){const mine=s.feed.filter(e=>e.to.includes(p.id));let prev='';
   for(const e of mine){const t=String(e.text||'');
    if(/undefined|NaN|\[object|null(?![가-힣])/.test(t))note('빈 값이 들어간 글',t);
-   partCheck('글',t);
+   partCheck('글',t);roCheck('글',t);
    if(t&&t===prev&&e.kind!=='speech')note('같은 글 연속',t);prev=t;
    if(/\$\{/.test(t))note('코드가 그대로 나온 글',t);if(/[^.]\.\.(?!\.)/.test(t))note('마침표 두 번',t);}
   const dead=s.feed.find(e=>e.kind==='death'&&e.who===p.id);if(dead&&p.hp>0)note('죽었다는 글 뒤 살아 있음',p.name);
