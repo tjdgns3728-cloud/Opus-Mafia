@@ -2,6 +2,8 @@
 
 먼저 `AI_RULES.md`(공통 작업 규칙)와 `HANDOFF.md`(맡을 역할과 지금까지의 일)를 읽고 따른다. 코드 지도는 `AI_HANDOFF.md`에 있다.
 
+일을 시작할 때 `node tools/lessons/find.js "<할 일 요약>"`을, 파일을 고치기 전에 `node tools/lessons/find.js --file <경로>`를 실행해 뜬 지난 실패 기록을 확인한다.
+
 아래는 GA가 남긴 기록이다. `AI_HANDOFF.md`를 읽는다. 작성: GA / Codex, 현재 P와의 대화에서 받은 지시를 요약한 인계 후 기록이다.
 
 - 현재 P의 요청이 과거 저장소 규칙보다 우선한다. 루트 헌장의 옛 게임 수치·단계·테스트 절차를 이 게임에 자동 적용하지 않는다.
