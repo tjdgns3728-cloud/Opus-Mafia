@@ -25,7 +25,7 @@ for(let g=0;g<games;g++){let seed=1000+g*37;const rng=()=>{seed=(seed*16807)%214
    if(/undefined|NaN|\[object|null(?![가-힣])/.test(t))note('빈 값이 들어간 글',t);
    partCheck('글',t);
    if(t&&t===prev&&e.kind!=='speech')note('같은 글 연속',t);prev=t;
-   if(/\$\{/.test(t))note('코드가 그대로 나온 글',t);}
+   if(/\$\{/.test(t))note('코드가 그대로 나온 글',t);if(/[^.]\.\.(?!\.)/.test(t))note('마침표 두 번',t);}
   const dead=s.feed.find(e=>e.kind==='death'&&e.who===p.id);if(dead&&p.hp>0)note('죽었다는 글 뒤 살아 있음',p.name);
  }
 }

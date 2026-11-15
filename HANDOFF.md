@@ -44,6 +44,6 @@
 ## 7. 실행과 확인
 - 실행: `game\play.cmd` (1번 AI와 함께 / 2번 사람끼리). Python 3.11+, Node.js 필요.
 - AI 없이 서버만: `cd game/webengine` 후 `python -m server.play --game ../games/noir-trpg --port 8868 --ai off`, 브라우저에서 `http://127.0.0.1:8868/`.
-- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`, 이야기 상태 `arc_test.js --show`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
+- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`, 이야기 상태 `arc_test.js --show`, 시험 플레이 수정 `playfix3_test.js`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
 - 시작 이야기 확인: `node tools/check_intro.js` — 8인·12인 판을 만들어 직업마다 시작 글이 나오는지 출력한다.
 - 사용자가 지금 플레이 중인 서버·방은 끄거나 바꾸지 않는다. AI 모드 실행은 구독 사용량이 드니 사용자 요청이 있을 때만.
