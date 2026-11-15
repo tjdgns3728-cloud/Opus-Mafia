@@ -17,7 +17,8 @@ function guard(s,def){const x=q(s),z=d(s),f=z.flags;switch(def.guard){
  case 'mineClosed':return x.mineClosed;
  case 'minerEntered':return !!f.minerEntered&&npc(s,'miner').hp>0;
  case 'minerInClinic':return npc(s,'miner').location==='clinic'&&npc(s,'miner').hp>0&&npc(s,'miner').bleeding;
- case 'doyleAlive':return aliveNpc(x.doyle)&&x.doyle.location===def.place;
+ case 'chapelSpot':return (x.spots||['chapel']).includes('chapel');
+  case 'doyleAlive':return aliveNpc(x.doyle)&&x.doyle.location===def.place;
  case 'mayorAlive':return aliveNpc(x.mayor)&&x.mayor.location===def.place;
  case 'burnHome':return z.actions.some(a=>a.type==='burn'&&a.place==='home'&&s.epoch-a.epoch<=2);
  case 'burnChapel':return z.actions.some(a=>a.type==='burn'&&a.place==='chapel'&&s.epoch-a.epoch<=2);

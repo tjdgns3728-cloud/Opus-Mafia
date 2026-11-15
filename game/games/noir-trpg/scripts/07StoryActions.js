@@ -8,7 +8,7 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town'||slot==='
   if(p.location==='chapel'&&z(s).signals.some(e=>e.kind==='candles'))add('inspectSignal','촛대 배치를 살핀다');
   if(p.location==='home'){add('searchHouse','내 집에 남은 물건을 살핀다',{house:p.id});for(const e of z(s).executions)if(e.day<s.day)add('searchHouse',C().find(s,e.target).name+'의 빈집을 살핀다',{house:e.target});}
   for(const n of Object.values(z(s).npcs).filter(n=>n.hp>0&&n.bleeding&&n.location===p.location&&s.turn!==2&&(p.items.bandage>0||p.location==='clinic')))add('bandageNpc',n.name+' 지혈',{npc:n.id});
-  for(const a of z(s).artifacts.filter(a=>accessible(s,p,a)&&a.owner!==p.id))add('inspectArtifact','현장의 '+C().pp((a.title||'물건'),'을','를')+' 살핀다',{artifact:a.id});
+  /* 이미 살펴본 물건은 다시 살피지 않는다(한 번 본 것은 수첩에 있다) */for(const a of z(s).artifacts.filter(a=>accessible(s,p,a)&&a.owner!==p.id&&!p.directorKnown?.includes('artifact:'+a.id)))add('inspectArtifact','현장의 '+C().pp((a.title||'물건'),'을','를')+' 살핀다',{artifact:a.id});
   return out;
  }
  for(const a of z(s).artifacts.filter(a=>accessible(s,p,a)&&!a.owner))add('takeArtifact',(a.title||'남겨진 물건')+' 챙기기',{artifact:a.id});
@@ -43,7 +43,7 @@ function resolveAction(s,p,a,rng){const err=validAction(s,p,a,['inspectSignal','
  if(a.verb==='inspectSignal'){const msg='촛대 셋이 삼각형으로 놓여 있습니다.'+(p.team==='mafia'?' 당신들 편이 정해 둔 교회 집결 신호입니다.':' 누가 놓았는지, 무엇을 뜻하는지는 배열만으로 알 수 없습니다.');D.emit(s,[p.id],msg,{actionRecord:true});D.observed(s,p,msg,null,'evidence','candles:'+st.signals.length);return null;}
  if(a.verb==='bell'){st.signals.push({kind:'bell',by:p.id,epoch:s.epoch,day:s.day});D.localAct(s,p,p.name+'이 종줄을 세 번 당깁니다. 소리가 마을 지붕 위로 번집니다.');C().emit(s,C().alive(s).filter(o=>o.location!=='chapel').map(o=>o.id),'environment','교회 쪽에서 종이 세 번 울렸습니다. 여기서는 누가 울렸는지 보이지 않습니다.');for(const o of C().alive(s).filter(o=>o.team==='mafia'))D.emit(s,[o.id],'세 번의 종소리입니다. 같은 편의 교회 집결 신호지만, 실제로 갈지는 각자 정해야 합니다.');}
  if(a.verb==='candles'){st.signals.push({kind:'candles',by:p.id,epoch:s.epoch,day:s.day});D.localAct(s,p,p.name+'이 제단의 촛대 셋을 삼각형으로 옮겨 놓습니다.');}
- if(a.verb==='forgeExtra'){D.artifact(s,{kind:'extra',title:'작성한 호외',owner:p.id,forged:true,target:t.id,text:'호외 — 폭약을 훔친 자, '+t.name+'. 믿을 만한 사람이 보았다는 주장이나 목격자 이름과 사진은 없음.'});D.emit(s,[p.id],t.name+'의 이름을 넣어 호외를 썼습니다. 아직 붙이지 않았으므로 다른 주민은 이 내용을 모릅니다.',{actionRecord:true});}
+ if(a.verb==='forgeExtra'){D.artifact(s,{kind:'extra',title:'작성한 호외',owner:p.id,forged:true,target:t.id,text:'호외 — 폭약을 훔친 자, '+t.name+'. 믿을 만한 사람이 보았다는 주장이나 목격자 이름과 사진은 없음.'});D.emit(s,[p.id],(z(s).artifacts.filter(x=>x.owner===p.id&&x.forged&&x.target===t.id&&!x.posted&&!x.destroyed).length>1?t.name+'의 이름을 넣은 호외를 한 장 더 썼습니다.':t.name+'의 이름을 넣어 호외를 썼습니다.')+' 아직 붙이지 않았으므로 다른 주민은 이 내용을 모릅니다.',{actionRecord:true});}
  if(a.verb==='postExtra'){art.taken=true;st.printed.push({id:art.id,headline:art.text,writer:p.id,target:art.target,posted:true,removed:false,day:s.day,epoch:s.epoch});D.localAct(s,p,p.name+'이 회관 벽에 호외를 붙입니다. "'+art.text+'"');D.refreshIncidents(s);}
  if(a.verb==='plantGun'){const ammo=p.items.ammo||0;p.items.pistol--;p.items.ammo=0;p.reesePistol=false;D.artifact(s,{kind:'gun',reese:true,title:'장작더미의 권총',where:'home:'+t.id,ammo,plantedBy:p.id,text:'리스의 이니셜이 있는 권총'});D.emit(s,[p.id],t.name+'의 장작더미에 권총과 남은 탄환을 숨겼습니다. 이제 당신 품에는 그 권총이 없습니다.',{actionRecord:true});}
  if(a.verb==='chalk'){D.artifact(s,{kind:'mark',title:'분필 표시',where:'home:'+t.id,text:'문에 분필 가로줄 하나가 있다. 누가 어떤 뜻으로 그렸는지는 보지 못했다.',by:p.id});D.emit(s,[p.id],t.name+'의 문에 분필 표시를 남겼습니다. 표시 자체로 누군가의 진영이 바뀌거나 범행이 입증되지는 않습니다.',{actionRecord:true});}

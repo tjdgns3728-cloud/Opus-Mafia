@@ -14,16 +14,16 @@ const role=(s,r)=>s.players.find(p=>p.role===r);
 {const s=game();const gf=role(s,'godfather'),mf=role(s,'mafioso');advance(s,{day:2,turn:0},s=>{if(s.day===1&&s.turn===0)for(const b of s.scenario.bombs)b.where='carry:'+gf.id;});
  const t=s.feed.filter(e=>e.to.includes(mf.id)&&e.source==='story/story_jobs.md'&&parseInt(e.time,10)===2).map(e=>e.text).join('\n');
  ok(/대놓고 칼을 꺼내면/.test(t),'대행자: 둘째 날 아침에 기본 안내가 먼저 나옴');
- advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)===3&&/종탑 아래를 떠났습니다\. 지금 .*의 품에 6개/.test(e.text)),'대행자: 셋째 날 아침에 폭약이 지금 누구 품에 있는지 나옴');}
+ advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)===3&&/자리를 옮겼습니다\. 지금 .*의 품에 6개/.test(e.text)),'대행자: 셋째 날 아침에 폭약이 지금 누구 품에 있는지 나옴');}
 // 2. 아침에 아무도 없을 때 생긴 장면(도일의 협박장 공개)은 그 턴에 그곳에 오는 사람이 본다
 {const s=game();advance(s,{day:1,turn:1});s.scenario.doyle.threatened=true;advance(s,{day:2,turn:0});const p=s.players.find(p=>p.team==='town');ok(!seen(s,p,/도일이 협박장을 꺼냅니다/),'아침에 집에 있던 사람은 아직 못 봄');p.location='hall';S.arrival(s,p);ok(seen(s,p,/도일이 협박장을 꺼냅니다/),'아침에 회관으로 온 사람은 도일의 협박장 공개를 봄');S.arrival(s,p);ok(count(s,p,/도일이 협박장을 꺼냅니다/)===1,'한 번만 봄');}
 // 3. 같은 편이 폭약을 꺼내면 바로 알린다 / 쓰러지면서 떨어뜨려도 알린다
-{const s=game();const gf=role(s,'godfather'),mf=role(s,'mafioso');gf.location='chapel';s.turn=1;s.stage='plan';const err=S.resolve(s,gf,{type:'scene',sceneKey:'take'},s.rng);ok(!err&&seen(s,mf,/같은 편 .*작은 교회에서 폭약 6개를 꺼냈습니다/),'같은 편이 폭약을 꺼내면 대행자가 바로 앎');gf.location='hall';gf.hp=0;S.fallen(s,gf);ok(seen(s,mf,/쓰러지면서 품에 있던 폭약 6개가 마을 회관에 남았습니다/),'같은 편이 쓰러지며 폭약을 떨어뜨린 곳을 앎');}
+{const s=game();const gf=role(s,'godfather'),mf=role(s,'mafioso');gf.location='chapel';s.scenario.bombs.forEach((b,i)=>b.where=i<2?'chapel':'hideout');s.turn=1;s.stage='plan';const err=S.resolve(s,gf,{type:'scene',sceneKey:'take'},s.rng);ok(!err&&seen(s,mf,/같은 편 .*작은 교회에서 폭약 2개를 꺼냈습니다/),'같은 편이 폭약을 꺼내면 대행자가 바로 앎');gf.location='hall';gf.hp=0;S.fallen(s,gf);ok(seen(s,mf,/쓰러지면서 품에 있던 폭약 2개가 마을 회관에 남았습니다/),'같은 편이 쓰러지며 폭약을 떨어뜨린 곳을 앎');}
 // 4. 마피아가 혼자 남으면 '같은 편과 모였습니다', '30초 의논'이 나오지 않는다
 {const s=game();const gf=role(s,'godfather'),mf=role(s,'mafioso');gf.hp=0;C.death?.(s,gf,'시험');advance(s,{day:1,turn:2});const night=s.feed.filter(e=>e.to.includes(mf.id)&&/창문이 하나씩 어두워집니다/.test(e.text)).at(-1)?.text||'';ok(/같은 편은 이제 없습니다/.test(night)&&!/같은 편과 모였습니다/.test(night),'혼자 남은 마피아의 밤 글');}
 // 5. 아이가 같은 말을 두 번 하지 않는다
-{const s=game();const p=s.players.find(p=>p.team==='town');advance(s,{day:1,turn:1});p.location='home';S.arrival(s,p);ok(seen(s,p,/뭔가를 묻는 걸 봤어/),'첫날 주택가: 아이의 첫마디');advance(s,{day:2,turn:0});p.location='home';S.arrival(s,p);ok(!seen(s,p,/맨발의 아이가 소매를 잡습니다/),'둘째 날 주택가: 같은 내용의 사건 글이 다시 나오지 않음');
- const s2=game();const p2=s2.players.find(p=>p.team==='town');advance(s2,{day:2,turn:0});p2.location='home';S.arrival(s2,p2);ok(count(s2,p2,/뭔가를 묻는 걸 봤어/)===1,'둘째 날 처음 주택가에 오면 아이의 말이 한 번만 나옴');}
+{const s=game();s.scenario.spots=['chapel','cart'];const p=s.players.find(p=>p.team==='town');advance(s,{day:1,turn:1});p.location='home';S.arrival(s,p);ok(seen(s,p,/뭔가를 묻는 걸 봤어/),'첫날 주택가: 아이의 첫마디');advance(s,{day:2,turn:0});p.location='home';S.arrival(s,p);ok(!seen(s,p,/맨발의 아이가 소매를 잡습니다/),'둘째 날 주택가: 같은 내용의 사건 글이 다시 나오지 않음');
+ const s2=game();s2.scenario.spots=['chapel','cart'];const p2=s2.players.find(p=>p.team==='town');advance(s2,{day:2,turn:0});p2.location='home';S.arrival(s2,p2);ok(count(s2,p2,/뭔가를 묻는 걸 봤어/)===1,'둘째 날 처음 주택가에 오면 아이의 말이 한 번만 나옴');}
 // 6. 재판 신청 이유 끝에 마침표가 두 번 찍히지 않는다
 {const s=game();const a=s.players.find(p=>p.team==='town'),t=s.players.find(p=>p.id!==a.id);s.stage='plan';const err=C.queue(s,a.id,{type:'file',target:t.id,reason:'단검으로 공격했습니다.'});if(!err){C.resolveBig(s,s.rng);}const note=s.feed.filter(e=>/공식 재판 신청/.test(e.text)).at(-1)?.text;ok(note?!/[^.]\.\.(?!\.)/.test(note):true,'재판 신청 글에 마침표 두 번 없음'+(note?'':' (신청 글을 만들지 못해 건너뜀: '+err+')'));}
 // 7. 자기 상처를 치료하면 '자기 상처'

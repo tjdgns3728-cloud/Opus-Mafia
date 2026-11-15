@@ -19,7 +19,7 @@ for(const role of ['detective','godfather']){const pa=A.players.find(p=>p.role==
  ok(ta&&tb&&ta!==tb,role+': 셋째 날 아침 글이 판 상태에 따라 다름');
  if(show)console.log('\n── '+C.roles[role].name+' · 셋째 날 아침 ──\n[폭약을 못 찾은 판]\n'+ta+'\n\n[첫날 폭약을 찾아 맡긴 판]\n'+tb+'\n');}
 // 2. 폭약을 다 찾은 판에서는 '아직 안 나왔다', '갱도가 닫혔다'는 직업 글이 나오지 않는다
-{const bad=B.feed.filter(e=>e.source==='story/story_jobs.md'&&/아직 나오지 않았|갱도가 닫혔습니다|갱도가 닫힌 지/.test(e.text));ok(!bad.length,'폭약을 다 찾은 판에서 폭약이 아직 없다는 직업 글이 없음'+(bad.length?' · '+bad[0].text.slice(0,80):''));}
+{const bad=B.feed.filter(e=>e.source==='story/story_jobs.md'&&/여섯 개는 아직|갱도가 닫혔습니다|갱도가 닫힌 지/.test(e.text));ok(!bad.length,'폭약을 다 찾은 판에서 폭약이 아직 없다는 직업 글이 없음'+(bad.length?' · '+bad[0].text.slice(0,80):''));}
 // 3. 같은 상황 글은 한 번만, 새로 할 이야기가 없는 아침에는 보내지 않는다
 {const C2=advance(game(11),{day:7,turn:1});let dup=0,empty=0;for(const p of C2.players){const t=C2.feed.filter(e=>e.to.includes(p.id)&&e.source==='story/story_jobs.md').map(e=>e.text.split('\n').slice(1).join('\n'));if(new Set(t).size!==t.length)dup++;}
  const days=new Set(C2.feed.filter(e=>e.source==='story/story_jobs.md').map(dayOf).filter(d=>d>=2));for(let d=2;d<=7;d++)if(!days.has(d))empty++;
