@@ -192,3 +192,5 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 .term-tip-npc{border-left-color:#d9906a}.term-tip-npc b{color:#d9906a}
 .term-tip-item{border-left-color:#c3aed4}.term-tip-item b{color:#c3aed4}
 .term-tip-clue{border-left-color:#d2bfab}.term-tip-clue b{color:#d2bfab}
+
+.ending h1+p{white-space:pre-line}

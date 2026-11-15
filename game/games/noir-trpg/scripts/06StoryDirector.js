@@ -26,7 +26,7 @@ function guard(s,def){const x=q(s),z=d(s),f=z.flags;switch(def.guard){
  case 'caseExists':return s.cases.length>0;
  case 'stockLow':return z.stock<=3;
  case 'travelerLeft':return !!f.travelerLeft&&!f.travelerStayed;
- case 'mayorUnderPressure':return aliveNpc(x.mayor)&&x.mayor.location===def.place&&s.day>=3&&bombCount(s)>0;
+ case 'mayorUnderPressure':return aliveNpc(x.mayor)&&x.mayor.location===def.place&&x.announced&&(x.announcedDay??s.day)<s.day&&bombCount(s)>0;
  case 'fakePosted':return z.printed.some(a=>a.posted&&!a.removed);
  case 'missingBombs':return bombCount(s)>0&&!x.exploded;
  case 'economyChanged':return x.mineClosed||x.doyle.cowed||!aliveNpc(x.doyle)||f.unionFunded;
@@ -38,7 +38,7 @@ function guard(s,def){const x=q(s),z=d(s),f=z.flags;switch(def.guard){
  case 'fuseExtinguished':return x.fuse?.status==='extinguished'||!!f.extinguishedBy;
  default:return true;
 }}
-function refreshIncidents(s){const z=d(s);for(const def of defs()){const st=z.incidents[def.id];if(st?.done||st?.open)continue;if(s.turn===2||s.day<def.day||s.day===def.day&&s.turn<def.turn||!guard(s,def))continue;z.incidents[def.id]={...st,open:true,opened:s.epoch,seen:st?.seen||[],unlocked:st?.unlocked||false};}}
+function refreshIncidents(s){const z=d(s);for(const def of defs()){const st=z.incidents[def.id];if(st?.done||st?.open)continue;if(s.turn===2||(def.final?s.day<(s.cfg?.days||7):s.day<def.day)||s.day===def.day&&s.turn<def.turn||!guard(s,def))continue;z.incidents[def.id]={...st,open:true,opened:s.epoch,seen:st?.seen||[],unlocked:st?.unlocked||false};}}
 function active(s,p){if(s.turn===2)return [];return defs().filter(a=>{const st=d(s).incidents[a.id];if(a.id==='keyAtMine'&&(!aliveNpc(q(s).mayor)||q(s).mayor.location!=='warehouse'))return false;if(a.id==='doyleConfides'&&(!aliveNpc(q(s).doyle)||q(s).doyle.location!=='warehouse'))return false;return st?.open&&!st.done&&a.place===p.location&&guard(s,a);});}
 function unlock(s,id){if(!id)return;const st=d(s).incidents[id]??={seen:[]};st.unlocked=true;refreshIncidents(s);}
 function named(s,id){return C().find(s,id)?.name||npc(s,id)?.name||'그 사람';}

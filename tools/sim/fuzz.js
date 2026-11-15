@@ -8,7 +8,7 @@ const used=new Map();
 for(let g=0;g<games;g++){let seed=1000+g*37;const rng=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};const pick=a=>a[Math.floor(rng()*a.length)];
  const seats=Array.from({length:seatsN},(_,i)=>({id:'p'+i,name:['가람','나래','다온','라희','마루','바다','사랑','아라','자두','차오','하랑','타미'][i],bot:true}));
  let s;try{s=C.create(seats,rng);S.start(s);S.afterGathering?.(s);}catch(e){note('시작 오류',e.message);continue;}
- for(let step=0;step<16&&!s.result;step++){
+ for(let step=0;step<(s.cfg?.days||7)*3+3&&!s.result;step++){
   s.stage='plan';s.plans={};
   for(const p of C.alive(s)){
    try{const small=[...C.choices(s,p.id,'small'),...(S.choices(s,p,'small')||[])].filter(a=>a.type!=='wait');if(small.length&&rng()<0.8){for(const o of small)partCheck('선택지',o.label||'');const a=pick(small);used.set('작은:'+(a.verb||a.sceneKey||a.type),(used.get('작은:'+(a.verb||a.sceneKey||a.type))||0)+1);const err=C.smallAct(s,p.id,a,rng);if(err&&!/이미|시간|생략/.test(err))note('작은 행동 거부',(a.label||a.type)+' → '+err);}}catch(e){note('작은 행동 오류',e.message+' @'+e.stack.split('\n')[1]);}

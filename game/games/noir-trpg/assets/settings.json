@@ -1,6 +1,6 @@
 {
-  "days": 5,
-  "hardSeconds": 3000,
+  "days": 7,
+  "hardSeconds": 2400,
   "smallSeconds": 35,
   "planSeconds": 60,
   "reactionSeconds": 15,

@@ -6,8 +6,8 @@ const run=seed=>new Promise(ok=>{const p=spawn(process.execPath,[path.join(__dir
  res.sort((a,b)=>a.seed-b.seed);
  for(const r of res)console.log(r.error?`seed ${r.seed}: 오류 ${r.error}`:`seed ${String(r.seed).padEnd(5)} ${r.ended?(r.winner==='mafia'?'마피아 승':'시민 승  '):'끝나지 않음'} | 끝난 때 ${r.time} | 생존 ${r.alive}/${r.seats} (마피아 ${r.mafiaAlive}/${r.mafiaTotal}) | 사람 자리: ${r.humanTeam==='mafia'?'마피아':'시민'} ${r.humanRole} ${r.humanAlive?'생존':'사망'}`);
  const done=res.filter(r=>r.ended),m=done.filter(r=>r.winner==='mafia').length,t=done.filter(r=>r.winner==='town').length;
- const early=done.filter(r=>r.day<6).length,hm=done.filter(r=>r.humanTeam==='mafia');
+ const early=done.filter(r=>r.day<=7).length,hm=done.filter(r=>r.humanTeam==='mafia');
  console.log(`\n합계: ${res.length}판 중 끝난 판 ${done.length} | 마피아 승 ${m} (${done.length?Math.round(100*m/done.length):0}%) · 시민 승 ${t} (${done.length?Math.round(100*t/done.length):0}%)`);
- console.log(`닷새를 다 채우기 전에 끝난 판: ${early} | 끝날 때 평균 생존자 ${(done.reduce((a,r)=>a+r.alive,0)/Math.max(1,done.length)).toFixed(1)}명 / ${seats}명 | 사람 자리가 죽은 판: ${done.filter(r=>!r.humanAlive).length}`);
+ console.log(`일곱째 날 밤 전에 끝난 판: ${early} | 끝날 때 평균 생존자 ${(done.reduce((a,r)=>a+r.alive,0)/Math.max(1,done.length)).toFixed(1)}명 / ${seats}명 | 사람 자리가 죽은 판: ${done.filter(r=>!r.humanAlive).length}`);
  console.log(`사람 자리가 마피아였던 판 ${hm.length} (그중 마피아 승 ${hm.filter(r=>r.winner==='mafia').length})`);
 })();

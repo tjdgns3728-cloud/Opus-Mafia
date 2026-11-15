@@ -17,7 +17,7 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town'||slot==='
  if(!z(s).flags.reesePapersTaken&&p.location==='home'&&(s.turn!==2||p.team==='mafia'))add('reesePapers','리스의 빈집에서 남은 종이 가져오기',{hint:p.team==='mafia'?'리스가 죽기 전에 적어 둔 종이를 먼저 치웁니다. 가져가면 시민은 이 종이를 찾을 수 없습니다.':'리스가 죽기 전에 적어 둔 종이를 찾습니다. 그가 그날 밤 본 것이 적혀 있을 수 있습니다. 찾은 내용은 수첩에 남습니다.'});
  if(p.team==='mafia'){
   // 종 세 번, 촛대, 분필 표시는 아무것도 바꾸지 않는 행동이라 선택지에서 뺐다.
-  if(p.location==='tavern'&&s.day>=2)for(const t of C().alive(s).filter(t=>t.id!==p.id))add('forgeExtra',C().pp(t.name,'을','를')+' 지목하는 호외 쓰기',{target:t.id});
+  if(p.location==='tavern'&&s.scenario?.announced)for(const t of C().alive(s).filter(t=>t.id!==p.id))add('forgeExtra',C().pp(t.name,'을','를')+' 지목하는 호외 쓰기',{target:t.id});
   if(p.location==='hall')for(const a of ownArtifacts(s,p).filter(a=>a.kind==='extra'))add('postExtra','작성한 호외를 회관 벽에 붙이기',{artifact:a.id});
   if(s.turn===2){if(p.items.pistol&&p.reesePistol)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plantGun',t.name+'의 장작더미에 권총 놓기',{target:t.id});
    
