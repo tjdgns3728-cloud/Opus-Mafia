@@ -1,0 +1,1 @@
+﻿const fs=require('fs');const [,,file,...lines]=process.argv;const L=fs.readFileSync(file,'utf8').split('\n');for(const n of lines)console.log('['+n+'] '+L[Number(n)-1].slice(0,Number(process.env.W||2500)));
