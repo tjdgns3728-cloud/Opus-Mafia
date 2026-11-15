@@ -198,3 +198,9 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 .action-deck.move-first .choice-row{justify-content:center}
 .action-deck.move-first button{font-size:16px;padding:10px 24px;border-color:var(--gold);color:var(--gold)}
 .action-deck.move-first button:hover{background:#bca57422}
+.npc-card[data-do]{cursor:pointer}
+.npc-photo{width:36px;height:45px;flex:none;object-fit:cover;border-radius:2px;box-shadow:0 1px 4px #0008}
+.npc-card.out-of-sight .npc-photo{filter:brightness(.55) grayscale(.4)}
+.term-tip.with-photo{display:flex;gap:12px;align-items:flex-start;max-width:min(380px,calc(100vw - 16px))}
+.tip-photo{width:112px;height:140px;flex:none;border-radius:2px;box-shadow:0 2px 10px #000a}
+.tip-text{min-width:0}
