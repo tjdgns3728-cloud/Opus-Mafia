@@ -180,3 +180,15 @@ button.term-player:focus-visible{outline:1px solid #e1c28d;outline-offset:2px}
 .resident-hp.bar-bleed i{background:#d4483b!important;animation:bleedpulse 1.1s ease-in-out infinite}.resident-hp.bar-tired i{background:#8f6fc9!important}@keyframes bleedpulse{50%{opacity:.45}}
 .hp-number .dead-tag{font-size:13px;color:#e0796d}.hp-number .downed-tag{font-size:13px;color:#f0b050}.person.dead{filter:grayscale(1);opacity:.45}.person.dead .player-label,.npc-card.dead .npc-label{text-decoration:line-through}
 .status-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}.st{font-style:normal;font-size:11px;font-weight:700;line-height:16px;padding:0 6px;border-radius:3px;border:1px solid}.st-bleed{color:#ff8d80;border-color:#8a3a33;background:#3a1a17}.st-tired{color:#d8bcff;border-color:#6b5590;background:#2a2236}.st-hidden{color:#d0d0d0;border-color:#6a6a6a;background:#262626}.st-disguise{color:#ffc27a;border-color:#8a5d2a;background:#33251a}.st-jailed{color:#e6c79a;border-color:#7a6040;background:#2e2619}.st-hurt{color:#e8c070;border-color:#7a6040;background:#2e2619}
+button.term-npc,button.term-item,button.term-clue{display:inline;border:0;border-radius:0;margin:0;background:transparent;vertical-align:baseline;text-align:inherit;white-space:normal;cursor:pointer;box-shadow:none;font-size:inherit;line-height:inherit}
+button.term-npc,button.term-clue{padding:0}
+button.term-item{background:#9c7dad18;padding:0 2px}
+button.term-npc:hover,button.term-item:hover,button.term-clue:hover{filter:brightness(1.25)}
+button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:focus-visible{outline:1px solid currentColor;outline-offset:2px}
+.term-tip{position:fixed;z-index:1000;max-width:min(300px,calc(100vw - 16px));background:#1c1a17;color:#e1ddd3;border:1px solid #5a5146;border-left:3px solid #d2bfab;border-radius:4px;padding:10px 12px;box-shadow:0 8px 30px #000a;font:14px/1.65 'Malgun Gothic',sans-serif}
+.term-tip b{font-size:15px;margin-right:8px}
+.term-tip small{font-size:12px;opacity:.75}
+.term-tip p{margin:6px 0 0}
+.term-tip-npc{border-left-color:#d9906a}.term-tip-npc b{color:#d9906a}
+.term-tip-item{border-left-color:#c3aed4}.term-tip-item b{color:#c3aed4}
+.term-tip-clue{border-left-color:#d2bfab}.term-tip-clue b{color:#d2bfab}
