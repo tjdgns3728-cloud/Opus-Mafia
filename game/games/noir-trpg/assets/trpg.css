@@ -196,3 +196,5 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 .ending h1+p{white-space:pre-line}
 .action-deck.move-first{display:flex;align-items:center;justify-content:center;min-height:96px}
 .action-deck.move-first .choice-row{justify-content:center}
+.action-deck.move-first button{font-size:16px;padding:10px 24px;border-color:var(--gold);color:var(--gold)}
+.action-deck.move-first button:hover{background:#bca57422}
