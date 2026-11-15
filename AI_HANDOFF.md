@@ -38,15 +38,15 @@
 
 |파일|역할|
 |---|---|
-|[00World.js](game/games/noir-trpg/scripts/00World.js)|공유 상태, 직업·능력·체력, 행동·대결·목격, 개인별 view, 재판·승패|
+|[00World.js](game/games/noir-trpg/scripts/00World.js)|공유 상태, 직업·능력·체력, 행동·대결·목격, 개인별 view(복면 조직원은 같은 편에게만), 관전(`watchable`·`canWatch`), 재판·승패|
 |[01Narrative.js](game/games/noir-trpg/scripts/01Narrative.js)|확정된 판정 결과를 행동·상황 문장으로 표현|
 |[02Press.js](game/games/noir-trpg/scripts/02Press.js)|기자 사진, 기사·사진의 구분과 발행|
 |[04Incidents.js](game/games/noir-trpg/scripts/04Incidents.js)|39개 사건 노드의 날짜·장소·조건·선택·원고 줄|
 |[05Scenarios.js](game/games/noir-trpg/scripts/05Scenarios.js)|기본 도입·리스·도일·폭약6개·야간 습격·폭발 대응|
 |[06StoryDirector.js](game/games/noir-trpg/scripts/06StoryDirector.js)|조건부 사건 발생·후속·개인 기록|
-|[07StoryActions.js](game/games/noir-trpg/scripts/07StoryActions.js)|유품·수첩·종이·협박·돈·NPC 행동|
-|[08StoryFlow.js](game/games/noir-trpg/scripts/08StoryFlow.js)|장소 도착, 낮밤 전환, NPC 상태, 재판·신문·폭발 이후|
-|[10Session.js](game/games/noir-trpg/scripts/10Session.js)|공유 단계·시간·AI 요청·행동 제출 연결|
+|[07StoryActions.js](game/games/noir-trpg/scripts/07StoryActions.js)|유품·수첩·종이·협박·돈·NPC 행동, 끌어들이기(`RECRUIT` 표), 얼굴을 가린 조직원 부르기(`callMasked`)|
+|[08StoryFlow.js](game/games/noir-trpg/scripts/08StoryFlow.js)|장소 도착, 낮밤 전환, NPC 일정(`post`·`nightPost`), 끌어들인 사람의 아침 소식(`informantNews`), 재판·신문·폭발 이후|
+|[10Session.js](game/games/noir-trpg/scripts/10Session.js)|공유 단계·시간·AI 요청·행동 제출 연결. 자리가 새 인물을 맡으면 `seatAs`로 화면·행동·말을 그 인물에게 돌림|
 |[15Audio.js](game/games/noir-trpg/scripts/15Audio.js)|오디오. 배경MP3는 개인 파일이라 게시에서 제외|
 |[20Interface.js](game/games/noir-trpg/scripts/20Interface.js)|화면, 개인 기록, 채팅, 행동·대화 선택, 재판 UI|
 |[server/play.py](game/webengine/server/play.py), [server/room_host.js](game/webengine/server/room_host.js)|HTTP 서버와 Node의 공유 게임방|
