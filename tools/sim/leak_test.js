@@ -31,9 +31,9 @@ const bare=r=>r.secret&&!('stat' in r)&&!('total' in r)&&!('roll' in r)&&!('roll
  C.smallAct(s,a.id,{type:'investigate',target:b.id},hi);/* 조사는 작은 행동 */
  ok(look(s,a,b).hp===4,'조사에 성공하면 그때의 체력으로 갱신 (보이는 값 '+look(s,a,b).hp+')');
  b.hp=2;ok(look(s,a,b).hp===4,'조사 뒤에 바뀐 체력은 다시 조사하기 전까지 모름');}
-{const s=fresh();const town=s.players.filter(p=>p.team==='town'),[t,w]=town,m=s.players.find(p=>p.role==='mafioso');
- const far=town.find(p=>p.id!==t.id&&p.id!==w.id);far.location='warehouse';/* 공격 전에 다른 곳에 가 있던 사람 */
- s.plans={[m.id]:{type:'attack',target:t.id,weapon:'fist'}};C.resolveBig(s,hi);
+{/* 확인하려는 것은 "맞는 것을 본 사람이 체력을 아는가"라서, 공격이 실제로 들어간 판을 찾는다(직업·능력치 배정에 따라 막힐 수 있음) */let s,t,w,m,far;for(let i=0;i<30;i++){s=fresh();const town=s.players.filter(p=>p.team==='town');[t,w]=town;m=s.players.find(p=>p.role==='mafioso');
+ far=town.find(p=>p.id!==t.id&&p.id!==w.id);far.location='warehouse';/* 공격 전에 다른 곳에 가 있던 사람 */
+ s.plans={[m.id]:{type:'attack',target:t.id,weapon:'fist'}};C.resolveBig(s,hi);if(t.hp<10)break;}
  ok(t.hp<10,'공격이 들어감 (체력 '+t.hp+')');
  ok(look(s,m,t).hp===t.hp,'공격한 사람은 맞은 사람의 체력을 앎');
  const seen=C.view(s,w.id).feed.some(e=>/공격/.test(String(e.text)));
