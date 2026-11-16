@@ -16,21 +16,21 @@ const places={
 };
 const roles={
  godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 설득이 높아 마을 사람들을 끌어들이고, 도일을 협박하거나 돈으로 넘기는 일을 잘합니다. 해먼드를 끌어들이거나 도일을 넘기면 이기는 조건을 셀 때 마피아 한 명으로 셉니다. 다른 사람을 끌어들이면 그가 보고 들은 것을 매일 아침 전해 줍니다. 끌어들이기에 두 번 성공할 때마다, 죽은 같은 편이 있으면 마을 밖에서 얼굴을 가린 조직원을 부릅니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1}},
- mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 전투 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 다른 사람의 행동을 대신 소비하지 않으며 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1}},
- consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 인물 조사에 익숙해 조사 판정에 +3을 받습니다. 확인하지 않은 직업이나 개인 기록은 알 수 없습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1}},
- kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 강제 대화나 기록 공개는 요구하지 않습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:4},items:{club:1}},
+ mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 전투 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1}},
+ consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 인물 조사에 익숙해 조사 판정에 +3을 받습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1}},
+ kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:4},items:{club:1}},
  masked:{name:'복면 조직원',team:'mafia',hidden:true,desc:'끌어들인 사람들을 통해 마을 밖에서 부른 조직원입니다. 얼굴을 천으로 가렸고 마을 사람 명단에 없습니다. 낮에는 본거지에 숨어 있고 밤에만 같은 편과 함께 움직입니다. 재판에 오르지 않지만, 불침번에게 맞서다 다치거나 죽을 수 있습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:2},items:{knife:1}},
  guard:{name:'퇴역군인',desc:'전투에 익숙하며 곤봉과 붕대를 갖고 시작합니다.',stats:{fight:9,observe:6,agility:4,medical:4,persuade:4},items:{club:1,bandage:1}},
- courier:{name:'배달원',desc:'은신과 관찰이 장점입니다. 이동 횟수나 시간은 다른 주민과 같습니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1}},
+ courier:{name:'배달원',desc:'은신과 관찰이 장점입니다.',stats:{fight:4,observe:7,agility:9,medical:3,persuade:5},items:{knife:1}},
  detective:{name:'탐정',desc:'관찰과 설득이 장점입니다. 실제 현장 흔적을 조사하며 보안관 전용 행동은 사용할 수 없습니다.',stats:{fight:4,observe:10,agility:6,medical:3,persuade:7},items:{knife:1}},
  mechanic:{name:'정비공',desc:'전투와 손을 쓰는 처치에 익숙하며 곤봉을 갖고 시작합니다.',stats:{fight:7,observe:6,agility:6,medical:6,persuade:3},items:{club:1}},
  pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 붕대로는 피를 멎게 할 뿐이고, 잃은 체력은 치료제가 있어야 돌아옵니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:6},items:{knife:1,bandage:4}},
- lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다. 재판의 동의·표결 규칙은 다른 주민과 같습니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1}},
+ lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1}},
 
- sheriff:{name:'보안관',desc:'관찰이 뛰어나고 인물 조사에 익숙해 조사 판정에 +3을 받습니다. 몸 상태와 싸움의 흔적을 확인할 뿐, 진영을 마법처럼 알아내지는 않습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1}},
+ sheriff:{name:'보안관',desc:'관찰이 뛰어나고 인물 조사에 익숙해 조사 판정에 +3을 받습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1}},
  doctor:{name:'의사',desc:'치료제로 잃은 체력을 돌립니다(체력 3, 진료소에서는 4). 치료제를 다른 사람에게 건넬 수 있지만, 의사가 아닌 사람은 진료소에서만 쓸 수 있고 조금만 돌아옵니다. 치료제는 한정되어 있습니다.',stats:{fight:3,observe:6,agility:5,medical:10,persuade:5},items:{knife:1,bandage:3,medicine:3}},
  jailor:{name:'간수',desc:'같은 장소의 상대를 하루 한 번 구금할 수 있습니다. 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 작은 행동과 말하기는 가능합니다.',stats:{fight:9,observe:5,agility:4,medical:3,persuade:5},items:{club:1}},
- reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다. 사진의 장면과 기자의 주장은 구분됩니다.',stats:{fight:3,observe:7,agility:9,medical:3,persuade:5},items:{knife:1,camera:1}},
+ reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다.',stats:{fight:3,observe:7,agility:9,medical:3,persuade:5},items:{knife:1,camera:1}},
  dockworker:{name:'항만 노동자',desc:'힘과 현장 경험이 장점입니다. 직업은 진영을 보장하지 않습니다.',stats:{fight:7,observe:5,agility:5,medical:3,persuade:4},items:{club:1}},
  shopkeeper:{name:'잡화상',desc:'물자와 협상에 익숙합니다. 붕대를 다른 사람에게 건넬 수 있습니다.',stats:{fight:4,observe:6,agility:5,medical:4,persuade:8},items:{knife:1,bandage:4}}
 };
