@@ -62,6 +62,6 @@
 - 주소: https://github.com/tjdgns3728-cloud/workbench (비공개). 사용자 말: "git 워크벤치는 기록을 모우고 보고 활용하기 위해서 만들어진 것입니다", "워크벤치는 기본적으로 암호화되어 있는 기록들이 보관되어 있습니다"(2026-11-16).
 - 기록은 `archive/` 안에 age로 봉인해 둔다(X25519 공개 열쇠 방식, age-encryption.org/v1). 평문으로 두는 것은 공통 규칙 게시본(`AI_RULES.md`), 그것을 찾아 읽기 위한 안내(`README.md`, `AGENTS.md`, `CLAUDE.md`), 중립 도구 코드(`toolkit/`)뿐이다.
 - 공통 규칙의 원본은 이 저장소의 `AI_RULES.md`다. 원본을 고치면 workbench의 `AI_RULES.md`도 같은 내용으로 고쳐 올린다(2026-11-16 확인 때 같았음).
-- 기존 봉인 파일: 목록 `archive/index.json.age`, 봉인 파일 2000개 `archive/files/`, 묶음 `p_docs`·`p_personal`·`system`·`work`. 모두 받는 열쇠가 두 개다. 목록은 비밀 열쇠가 있어야 열고 고칠 수 있다.
+- 기존 봉인 파일: 목록 `archive/index.json.age`, 봉인 파일 2000개 `archive/files/`, 묶음 `p_docs`·`p_personal`·`system`·`work`, 2026-11-16에 더해진 목록 `archive/index-20261116.json.age`. 모두 받는 열쇠가 두 개다. 목록은 비밀 열쇠가 있어야 열고 고칠 수 있다.
 - 이 자리(CM)의 기록 묶음: `archive/cm_records_2026-11-16.tar.gz.age`. 2026-11-14~16 대화 원문(사용자 말과 AI 글, 도구 기록·시스템 글 제외), 갈래 세션의 뒷부분, 요약, 기록 사본(제작 기록·실패 기록·HANDOFF·공통 규칙·설정)이 들어 있다. 사용자가 정한 대로 공개 열쇠 하나 `age1rteytcepecgxhhk2nka0cczfl8x8f3j59e20k4dt33njuz54zezq302zfe`로만 봉인했다.
 - 넣는 법: 공식 age(v1.3.2에서 확인)로 `age -r <공개 열쇠> -o archive/<이름>.age <파일>`. 비밀 열쇠는 사용자만 가진다. AI는 봉인에 공개 열쇠만 쓰고, 비밀 열쇠는 읽거나 옮기지 않는다.
