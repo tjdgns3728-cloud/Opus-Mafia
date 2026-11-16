@@ -1,4 +1,4 @@
-// 남의 체력과 쓰러짐은 만났을 때만 갱신되고, 죽음은 바로 보이는지 확인. 사용: node seen_test.js <저장소 경로>
+// 남의 체력은 보기만 해서는 갱신되지 않고(조사·공격 목격은 leak_test.js), 쓰러짐은 같은 곳에서 보이며, 죽음은 바로 보이는지 확인. 사용: node seen_test.js <저장소 경로>
 const path=require('path');const dir=path.join(path.resolve(process.argv[2]||'.'),'game','games','noir-trpg','scripts');
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow'])require(path.join(dir,f+'.js'));
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios;
@@ -13,6 +13,6 @@ b.hp=0;b.downed={left:2,epoch:s.epoch,cause:'공격'};const far=look(a,b);ok(!fa
 a.location='warehouse';const near=look(a,b);ok(near.downed&&near.condition==='쓰러짐'&&near.hp===0,'같은 곳에 가면 쓰러진 것이 보임');
 a.location='hall';ok(look(a,b).downed,'떠난 뒤에도 마지막으로 본 쓰러진 모습이 남음');
 c.location='hall';c.hidden=true;const before=look(a,c).hp;c.hp=3;ok(look(a,c).hp===before,'같은 곳이라도 숨어 있는 사람은 갱신되지 않음 (보이는 값 '+look(a,c).hp+')');
-c.hidden=false;ok(look(a,c).hp===3,'숨기에서 나오면 갱신됨');
+/* 2026-11-16 사용자 지시로 규칙이 바뀜: 예전에는 "숨기에서 나오면(보이면) 갱신", 지금은 조사하거나 맞는 것을 봐야 갱신 */c.hidden=false;ok(look(a,c).hp===before,'숨기에서 나와 보이기만 해서는 체력이 갱신되지 않음 (보이는 값 '+look(a,c).hp+')');
 const d=s.players.find(p=>p.team==='town'&&![a,b,c].includes(p));d.location='chapel';d.hp=0;d.downed=null;ok(look(a,d).condition==='사망'&&look(a,d).hp===0,'죽음은 다른 곳에 있어도 바로 보임');
 a.hp=6;ok(C.view(s,a.id).people.find(p=>p.id===a.id).hp===6,'내 체력은 언제나 바로 보임');
