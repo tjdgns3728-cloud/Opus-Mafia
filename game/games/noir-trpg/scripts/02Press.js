@@ -5,6 +5,7 @@ function validate(s,p,a){
  if(a.type==='photograph'){const t=C().find(s,a.target);if(!t||t.id===p.id||!C().visible(s,p,t)||t.location!==p.location)return '같은 장소에서 모습이 보이는 다른 인물을 선택하세요.';}
  if(a.type==='publish'){
   if(!(p.photos||[]).some(x=>x.id===a.photo))return '직접 촬영해 보관한 사진을 선택하세요.';
+  /* 한 사진은 한 번만 신문에 싣는다(2026-11-16: 같은 사진이 매 턴 다시 실려 모두의 수첩에 같은 기록이 쌓였다) */if((p.photos||[]).find(x=>x.id===a.photo)?.published)return '이미 신문에 실은 사진입니다.';
   if(!String(a.headline||'').trim()||String(a.headline).length>80)return '신문 제목은 1~80자로 적어 주세요.';
   if(!String(a.article||'').trim()||String(a.article).length>500)return '기사 본문은 1~500자로 적어 주세요.';
  }
@@ -27,7 +28,7 @@ function capture(s,p,a){const c=C(),t=c.find(s,a.target);
 }
 function publish(s,p,a){if(p.hp<=0)return;const c=C(),err=validate(s,p,a);if(err){c.narrate(s,p.id,err);return;}
  const photo=p.photos.find(x=>x.id===a.photo),paper={id:'paper'+(++s.serial),number:(s.newspapers||[]).length+1,by:p.id,byName:'이름 없는 발행인',time:c.label(s),headline:String(a.headline).trim(),article:String(a.article).trim(),photo:{...copy(photo),byName:'이름 없는 사진사'}};
- (s.newspapers??=[]).push(paper);
+ (s.newspapers??=[]).push(paper);photo.published=true;
  const facts=`${c.places[photo.place].name} · ${photo.time}. ${photo.subjects.map(o=>o.name+' — '+o.condition).join('; ')}.${photo.moments.length?' '+photo.moments.join(' '):''}`;
  // A published photograph is evidence; the caption/editorial is somebody's claim.
  for(const o of s.players){c.learn(s,o.id,facts,photo.target,'신문에 실린 사진 · 촬영 당시 장면','evidence',photo.id);c.learn(s,o.id,paper.headline+'\n'+paper.article,photo.target,'신문 기사','claim',paper.id);}
@@ -35,7 +36,7 @@ function publish(s,p,a){if(p.hp<=0)return;const c=C(),err=validate(s,p,a);if(err
 }
 function choices(s,p){if(p.role!=='reporter'||!p.items.camera)return [];
  const list=s.players.filter(t=>t.id!==p.id&&t.location===p.location&&C().visible(s,p,t)).map(t=>({type:'photograph',target:t.id,label:t.name+'의 모습 촬영'}));
- for(const photo of p.photos||[])list.push({type:'publish',photo:photo.id,headline:'현장 사진',article:'촬영 당시의 모습을 공개합니다.',label:'사진으로 신문 만들기'});
+ for(const photo of (p.photos||[]).filter(x=>!x.published))list.push({type:'publish',photo:photo.id,headline:'현장 사진 · '+photo.time,article:'촬영 당시의 모습을 공개합니다.',label:'사진으로 신문 만들기'});
  return list;
 }
 root.NoirPress={validate,capture,publish,choices};if(typeof module!=='undefined')module.exports=root.NoirPress;
