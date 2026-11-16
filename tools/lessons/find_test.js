@@ -9,7 +9,7 @@ const titles = list => list.map(r => r.title);
 
 // 1. 기록 파일
 const recs = L.load();
-check('기록이 26개', recs.length === 26, recs.length);
+check('기록이 27개', recs.length === 27, recs.length);
 check('모든 기록에 경험형 다섯 칸(상황과 한 일·실제 결과·원인과 근거·시도한 해결과 결과·이 경험이 보여 주는 것)이 있음', recs.every(r => r.situation && r.result && r.cause && r.tried && r.shows), recs.filter(r => !(r.situation && r.result && r.cause && r.tried && r.shows)).map(r => r.title));
 const rawLessons = fs.readFileSync(path.join(ROOT, 'docs', 'AI_LESSONS.md'), 'utf8').replace(/\r/g, '');
 check('읽지 못하고 빠진 기록이 없음(## 제목 수 = 읽은 기록 수)', (rawLessons.match(/^## /mg) || []).length === recs.length);
@@ -22,7 +22,13 @@ check('종류 이름 일부("고치기")로도 찾음', titles(L.byKind(recs, '�
 check('없는 종류 → 없음', L.byKind(recs, '우주선').length === 0);
 const roleRec = recs.find(r => r.title === '고칠 부분의 역할을 수정 판단에 쓰지 못함');
 check('역할 기록에 효과·더 드는 일이 있음', !!roleRec && /Terra/.test(roleRec.effect) && /없음/.test(roleRec.extra));
-check('종류별 개수 목록에 13가지', L.kindCounts(recs).length === 13, L.kindCounts(recs).map(x => x[0]));
+check('종류별 개수 목록에 14가지', L.kindCounts(recs).length === 14, L.kindCounts(recs).map(x => x[0]));
+// 지킬 방법(2026-11-16): 효과가 확인된 방법만, 할 행동·이유·조건과 함께. 경험만 있는 기록은 그대로
+const ruled = recs.filter(r => r.rule);
+check('지킬 방법이 있는 기록 7개, 모두 이유와 조건이 있음', ruled.length === 7 && ruled.every(r => /이유:/.test(r.rule) && /조건:/.test(r.rule)), ruled.map(r => r.title));
+check('역할 기록은 경험만(지킬 방법 없음)', !!roleRec && !roleRec.rule);
+const regexRec = recs.find(r => r.title === '정규식이 깨짐');
+check('정규식 기록은 띄울 때 지킬 방법이 먼저 나옴', !!regexRec && /^- 정규식이 깨짐 — 지킬 방법: 백슬래시/.test(L.hookOutput({ hook_event_name: 'UserPromptSubmit', prompt: '정규식 node -e' }, [regexRec])?.hookSpecificOutput.additionalContext.split('\n')[1] || ''));
 check('모든 기록에 낱말이나 파일이 하나 이상', recs.every(r => r.words.length || r.files.length), recs.filter(r => !r.words.length && !r.files.length).map(r => r.title));
 check('제목이 겹치지 않음', new Set(titles(recs)).size === recs.length);
 
