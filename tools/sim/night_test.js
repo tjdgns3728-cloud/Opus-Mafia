@@ -40,7 +40,10 @@ ok(s.players.filter(p=>p.team==='mafia'&&p.hp>0).every(p=>p.location!=='hideout'
 const anyone=s.players.find(p=>p.team==='town');ok(!C.validate(s,anyone.id,{type:'move',place:'tavern'},'small'),'낮1: 시민도 행동 없이 한 번 이동 가능');
 C.smallAct(s,anyone.id,{type:'move',place:'tavern'},rng);ok(anyone.location==='tavern'&&!anyone.used.small&&!anyone.used.big,'무료 이동 뒤에도 큰·작은 행동이 남음');
 ok(!!C.validate(s,anyone.id,{type:'move',place:'clinic'},'small'),'무료 이동은 한 번만');
-s.turn=1;s.epoch++;const another=s.players.find(p=>p.team==='town'&&p.id!==anyone.id);ok(!!C.validate(s,another.id,{type:'move',place:'tavern'},'small'),'낮2에는 무료 이동 없음');
+s.turn=1;s.epoch++;const another=s.players.find(p=>p.team==='town'&&p.id!==anyone.id);/* 2026-11-16 사용자 지시로 바뀜: 예전에는 "낮2에는 무료 이동 없음", 지금은 시간대가 바뀔 때마다 무료 이동, 큰 행동의 이동은 없음 */ok(!C.validate(s,another.id,{type:'move',place:'tavern'},'small'),'낮2에도 행동 없이 한 번 이동 가능');
+ok(!!C.validate(s,another.id,{type:'move',place:'tavern'},'big')&&!C.choices(s,another.id,'big').some(a=>a.type==='move'),'큰 행동에는 이동이 없음');
+ok(C.choices(s,another.id,'small').some(a=>a.type==='move'),'작은 행동 목록에 무료 이동이 있음');
+s.turn=2;s.epoch++;ok(!!C.validate(s,another.id,{type:'move',place:'tavern'},'small')&&!C.choices(s,another.id,'small').some(a=>a.type==='move'),'밤에 시민은 이동할 수 없음');s.turn=1;
 // 진료소 규칙
 s=fresh();s.stage='plan';const doc=s.players.find(p=>p.role==='doctor'),nd=s.players.find(p=>p.role!=='doctor'&&p.team==='town'),hurt=s.players.find(p=>p!==nd&&p!==doc);hurt.hp=5;hurt.bleeding=true;nd.items.medicine=1;nd.items.bandage=0;nd.location=hurt.location='hall';
 ok(!!C.validate(s,nd.id,{type:'heal',target:hurt.id},'big'),'의사가 아니면 진료소 밖에서 치료 불가');

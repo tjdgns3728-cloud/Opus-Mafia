@@ -12,8 +12,8 @@ s.turn=2;ok(!!C.validate(s,P.id,{type:'track',target:T.id},'big'),'밤에는 추
 // 2. 고르는 순간에는 숨지 않는다(방패로 못 씀)
 {const s=fresh();const [P,T,A]=s.players;ok(!C.queue(s,P.id,{type:'track',target:T.id}),'추적 고름');ok(!P.hidden,'고르는 순간에는 숨지 않음');ok(C.choices(s,A.id,'big').some(a=>a.type==='attack'&&a.target===P.id),'추적을 고른 사람도 그 턴에 공격 대상으로 고를 수 있음');}
 // 1. 이기면 따라가 보고 들키지 않는다. 지면 놓치고 들킨다
-let win=0,lose=0,bad=[];for(let i=0;i<60;i++){const s=fresh();const [P,T]=s.players;s.plans={[P.id]:{type:'track',target:T.id},[T.id]:{type:'move',place:'tavern'}};C.resolveBig(s,rng);const saw=P.known.some(k=>/추적: .*술집으로 갔습니다/.test(k.text)),caught=T.known.some(k=>/내 뒤를 밟았다/.test(k.text));
- if(P.location==='tavern'){win++;if(!saw||caught||!P.hidden)bad.push('이김:'+[saw,caught,P.hidden]);}else{lose++;if(saw||!caught||P.hidden)bad.push('짐:'+[saw,caught,P.hidden]);}}
+/* 2026-11-16부터 큰 행동의 이동이 없어져, 상대는 그 자리에서 행동하고 이겼는지는 판정 결과로 본다 */let win=0,lose=0,bad=[];for(let i=0;i<60;i++){const s=fresh();const [P,T]=s.players;s.plans={[P.id]:{type:'track',target:T.id},[T.id]:{type:'wait'}};C.resolveBig(s,rng);const saw=P.known.some(k=>/추적: .*그 자리에 머물렀습니다/.test(k.text)),caught=T.known.some(k=>/내 뒤를 밟았다/.test(k.text)),res=s.feed.filter(e=>e.to.includes(P.id)&&e.roll?.kind==='opposed').at(-1)?.roll;
+ if(res?res.success:saw){win++;if(!saw||caught||!P.hidden)bad.push('이김:'+[saw,caught,P.hidden]);}else{lose++;if(saw||!caught||P.hidden)bad.push('짐:'+[saw,caught,P.hidden]);}}
 ok(win>0&&lose>0,'대결이라 이기기도 지기도 함 (이김 '+win+' / 짐 '+lose+')');ok(!bad.length,'이기면 따라가 숨은 채 보고 들키지 않음, 지면 못 따라가고 들킴'+(bad.length?' · '+bad.slice(0,3).join(' '):''));
 // 4. 추적으로 생긴 숨기는 다음 턴이 시작되면 풀린다
 {let s,P;for(let i=0;i<30;i++){s=fresh();[P]=s.players;const T=s.players[1];s.plans={[P.id]:{type:'track',target:T.id},[T.id]:{type:'wait'}};C.resolveBig(s,rng);if(P.hidden)break;}ok(P.hidden,'이긴 추적자는 그 턴 숨은 상태');C.nextTurn(s);ok(!P.hidden,'다음 턴이 시작되면 숨기가 풀림');}
