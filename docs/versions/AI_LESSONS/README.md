@@ -22,3 +22,4 @@
 | [v18](v18.md) | 2026-11-16 22:03 | `0f91d81` | Rules: keep a repeated failure as a new linked record instead of rewriting the old one; records stay varied and the reading AI chooses |
 | [v19](v19.md) | 2026-11-16 22:47 | `39e3508` | Rules v22: record failures from the first one (fact plus links to conversation and outputs); drop the length limit |
 | [v20](v20.md) | 2026-11-17 00:04 | `c76336d` | Night playtest fixes: caught trials open without a consent vote, clearer refusals and button names, one child account, leftover interpretation lines removed |
+| [v21](v21.md) | 2026-11-17 00:07 | `7ce56bd` | Records: failure-fact conversation links also point to the sealed 2026-11-17 workbench bundle; handoff notes the bundle |
