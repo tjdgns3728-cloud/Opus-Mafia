@@ -68,4 +68,5 @@
 - 기존 봉인 파일: 목록 `archive/index.json.age`, 봉인 파일 2000개 `archive/files/`, 묶음 `p_docs`·`p_personal`·`system`·`work`, 2026-11-16에 더해진 목록 `archive/index-20261116.json.age`. 모두 받는 열쇠가 두 개다. 목록은 비밀 열쇠가 있어야 열고 고칠 수 있다.
 - 이 자리(CM)의 기록 묶음: `archive/cm_records_2026-11-16.tar.gz.age`. 2026-11-14~16 대화 원문(사용자 말과 AI 글, 도구 기록·시스템 글 제외), 갈래 세션의 뒷부분, 요약, 기록 사본(제작 기록·실패 기록·HANDOFF·공통 규칙·설정)이 들어 있다. 사용자가 정한 대로 공개 열쇠 하나 `age1rteytcepecgxhhk2nka0cczfl8x8f3j59e20k4dt33njuz54zezq302zfe`로만 봉인했다.
 - 기록 문서 지난 판 묶음: `archive/opus-mafia_versions_2026-11-16.tar.gz.age`(커밋 `6cd0822`의 `docs/versions/` 사본 144개와 `tools/versions/`, 같은 공개 열쇠 하나로 봉인, 풀어서 같은지 확인함). 지난 판이 더 쌓이면 날짜를 붙인 새 묶음으로 더하고, 앞 묶음은 그대로 둔다.
+- 2026-11-17 묶음: `archive/cm_records_2026-11-17.tar.gz.age`(대화 원문 이어서 2026-11-16 21:41 ~ 11-17 00:05, 커밋 `c76336d` 기준 `docs/versions/` 전부, 같은 공개 열쇠, 풀어서 같은지 확인함). Claude Code 대화 원문은 이 컴퓨터에서 30일 뒤 지워지므로, 실패 기록의 "실패 사실"이 가리키는 대화는 이렇게 봉인해 둔다.
 - 넣는 법: 공식 age(v1.3.2에서 확인)로 `age -r <공개 열쇠> -o archive/<이름>.age <파일>`. 비밀 열쇠는 사용자만 가진다. AI는 봉인에 공개 열쇠만 쓰고, 비밀 열쇠는 읽거나 옮기지 않는다.

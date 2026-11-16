@@ -21,3 +21,4 @@
 | [v17](v17.md) | 2026-11-16 21:59 | `946383a` | Rules: rewrite a repeated failure's record so its cause shows precisely; the aim is revealing causes, not preventing failures |
 | [v18](v18.md) | 2026-11-16 22:03 | `0f91d81` | Rules: keep a repeated failure as a new linked record instead of rewriting the old one; records stay varied and the reading AI chooses |
 | [v19](v19.md) | 2026-11-16 22:47 | `39e3508` | Rules v22: record failures from the first one (fact plus links to conversation and outputs); drop the length limit |
+| [v20](v20.md) | 2026-11-17 00:04 | `c76336d` | Night playtest fixes: caught trials open without a consent vote, clearer refusals and button names, one child account, leftover interpretation lines removed |
