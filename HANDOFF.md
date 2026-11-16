@@ -59,6 +59,7 @@
 - AI가 확인할 때는 `.claude/launch.json`의 `black-ridge-check`(8879, AI 끔, 시드 고정)를 쓴다. 예전의 8878 서버는 앱이 창을 닫으면 같이 꺼져서 8879로 바꿨다.
 
 ## 8. 기록 보관소(workbench)
+- **기록의 지난 판(2026-11-16).** 기록 문서(공통 규칙·실패 기록·제작 기록·HANDOFF·설정·AGENTS·CLAUDE)를 고치기 전에 `node tools/versions/snapshot.js`를 실행해, 커밋된 판 가운데 사본이 없는 것을 `docs/versions/<이름>/vNN`에 그대로 복사해 두고 고친다. 사본은 고쳐 쓰지 않는다. 공통 규칙은 머리에 지금 판 번호를 적는다(지금 v21, 사본은 v01~v20). 검사는 `node tools/versions/versions_test.js`. 저장소 전체를 찾을 때 `docs/versions/`에는 지난 판의 같은 글이 여러 번 나온다. 사용자: "기록은 사라져선 안됩니다. 모든 기록은 의미가 있습니다. 특히 ai한테는 더욱 그렇습니다".
 - 주소: https://github.com/tjdgns3728-cloud/workbench (비공개). 사용자 말: "git 워크벤치는 기록을 모우고 보고 활용하기 위해서 만들어진 것입니다", "워크벤치는 기본적으로 암호화되어 있는 기록들이 보관되어 있습니다"(2026-11-16).
 - 기록은 `archive/` 안에 age로 봉인해 둔다(X25519 공개 열쇠 방식, age-encryption.org/v1). 평문으로 두는 것은 공통 규칙 게시본(`AI_RULES.md`), 그것을 찾아 읽기 위한 안내(`README.md`, `AGENTS.md`, `CLAUDE.md`), 중립 도구 코드(`toolkit/`)뿐이다.
 - 공통 규칙의 원본은 이 저장소의 `AI_RULES.md`다. 원본을 고치면 workbench의 `AI_RULES.md`도 같은 내용으로 고쳐 올린다(2026-11-16 확인 때 같았음).
