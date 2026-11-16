@@ -146,7 +146,7 @@ function resolve(s,p,a,rng){const q=s.scenario,d=q.doyle;const err=validate(s,p,
    else if(x<0.75){out+=' 서두르다 손자국을 남겼습니다.';(q.traces??=[]).push({where:'office',who:p.id,epoch:s.epoch,text:'리스의 책상 서랍에 누군가 최근에 손댄 자국이 있다.'});}
    C().emit(s,[p.id],'check',out,{roll:r,actionRecord:true});}
   return;}
- /* 숨긴 곳 살피기(광차·술통·약상자·종탑 아래): 결과는 판정이 정한다. 실패하면 같은 자리 사람이 보거나, 손자국이 남거나, 아무 일도 없다 */if(String(a.sceneKey).startsWith('search:')){const k=a.sceneKey.slice(7),S=SEARCH[k];const r=C().check(p,'observe',rng,{label:S.label,dc:10,terms:S.terms}),here=count(s,SPOT_WHERE[k]);(p.search??={})[k]={epoch:s.epoch};
+ /* 숨긴 곳 살피기(광차·술통·약상자·종탑 아래): 결과는 판정이 정한다. 실패하면 같은 자리 사람이 보거나, 손자국이 남거나, 아무 일도 없다 */if(String(a.sceneKey).startsWith('search:')){const k=a.sceneKey.slice(7),S=SEARCH[k];const r=C().check(p,'observe',rng,{label:S.label,dc:10,terms:p.items.flashlight?S.terms.filter(x=>!/어둠/.test(x.label)):S.terms}),here=count(s,SPOT_WHERE[k]);(p.search??={})[k]={epoch:s.epoch};
   if(r.success){if(here){know(s,p,S.key(here),S.note(here));C().emit(s,[p.id],'check',S.found(here),{roll:r,actionRecord:true});}else{p.search[k].result='empty';const dug=k==='chapel'&&(q.spots||[]).includes('chapel');C().emit(s,[p.id],'check',dug?'흙 속은 비어 있습니다. 파헤친 자리와 기름종이 자국만 남아 있습니다.':S.empty,{roll:r,actionRecord:true});C().learn(s,p.id,dug?'종탑 아래에는 무언가 묻혀 있다가 파낸 자국만 있었다.':S.emptyNote,null,'직접 살펴봄','observed');}}
   else{const seen=local(s,p).filter(o=>o.id!==p.id&&C().visible(s,o,p)),x=rng();let out=S.fail;
    if(seen.length&&x<0.5){out+=' 뒤지는 동안 주변의 눈길이 느껴졌습니다.';for(const o of seen){story(s,[o.id],p.name+'이 '+S.seen+' 것을 봤습니다.');C().learn(s,o.id,p.name+'이 '+C().places[p.location].name+'에서 '+S.seen+' 것을 봤다.',p.id,'직접 목격','observed');}}

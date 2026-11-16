@@ -19,13 +19,13 @@ const town=s=>s.players.filter(p=>p.team==='town'),mafia=s=>s.players.filter(p=>
  ok(!acts(s,u).some(a=>a.verb==='merchantJob'),'못 한 부탁은 같은 때에 다시 할 수 없음');s.epoch++;ok(acts(s,u).some(a=>a.verb==='merchantJob'),'다음 때에는 다시 할 수 있음');
  S.resolve(s,t,job,hi);ok(M.credit(s,t)===1&&/조금 더 믿게/.test(fed(s,t)),'부탁을 해내면 신용 1');ok(!acts(s,t).some(a=>a.verb==='merchantJob'),'해낸 부탁은 다시 생기지 않음');
 // 2. 신용 1: 곤봉·붕대만. 산 물건은 받고 돈과 재고가 줄며, 곁의 사람은 무엇을 샀는지 모른다
- t.location=w.location='rail';const buy=acts(s,t).filter(a=>a.verb==='buyItem').map(a=>a.item).sort().join(',');ok(buy==='bandage,club','신용 1에서 살 수 있는 것: '+buy);
+ t.location=w.location='rail';const buy=acts(s,t).filter(a=>a.verb==='buyItem').map(a=>a.item).sort().join(',');ok(buy==='bandage,club,flashlight','신용 1에서 살 수 있는 것: '+buy);
  S.resolve(s,t,acts(s,t).find(a=>a.item==='club'),hi);ok(t.items.club>=1&&t.money===7&&m.stock.club===1,'곤봉을 사면 받고 돈 2·재고 1이 줄어듦');
  const seen=fed(s,w);ok(/무언가를 주고받습니다/.test(seen)&&!/곤봉/.test(seen.split('|').slice(-1)[0]),'곁의 사람은 주고받는 것만 보고 무엇인지는 모름');
 // 3. 하루 한 번: 같은 날 두 번째로 오른 신용은 다음 날 셈한다. 지키기는 처음 한 번만(NPC 곁에서 지키기는 퇴역군인·간수·보안관만 할 수 있다)
  t.role='guard';const guard=acts(s,t,'big').find(a=>a.verb==='guardNpc'&&a.npc==='merchant');S.resolve(s,t,guard,hi);ok(M.credit(s,t)===1&&m.pending[t.id]===1,'같은 날 두 번째로 오른 것은 미뤄 둠');
  s.day=3;M.flush(s);ok(M.credit(s,t)===2,'다음 날 셈해서 신용 2');S.resolve(s,t,acts(s,t,'big').find(a=>a.verb==='guardNpc'&&a.npc==='merchant'),hi);s.day=4;M.flush(s);ok(M.credit(s,t)===2,'상인을 두 번째 지켜도 오르지 않음');
- const buy2=acts(s,t).filter(a=>a.verb==='buyItem').map(a=>a.item).sort().join(',');ok(buy2==='bandage,club,knife,medicine,vest','신용 2에서 살 수 있는 것: '+buy2);
+ const buy2=acts(s,t).filter(a=>a.verb==='buyItem').map(a=>a.item).sort().join(',');ok(buy2==='bandage,club,flashlight,knife,lockpick,medicine,morphine,vest','신용 2에서 살 수 있는 것: '+buy2);
 // 4. 믿는 사람(신용 2)의 소개
  const intro=acts(s,t).find(a=>a.verb==='introduceMerchant'&&a.target===w.id);ok(!!intro,'신용 2인 사람은 같은 자리 사람을 소개할 수 있음');S.resolve(s,t,intro,hi);ok(M.credit(s,w)===1,'소개받은 사람은 신용 1');
  ok(!acts(s,u).some(a=>a.verb==='introduceMerchant'),'신용이 낮으면 소개할 수 없음');}
@@ -51,4 +51,24 @@ const town=s=>s.players.filter(p=>p.team==='town'),mafia=s=>s.players.filter(p=>
  a.stats.fight=vt.stats.agility+1;let min=null;for(let k=0;k<10&&min===null;k++){const r=C.attackRoll(s,a,vt,{weapon:'pistol'},()=>0.05+k/10);if(r.damage>0&&r.raw+r.bonus-r.reduction<=5)min=r.damage;}ok(min===3,'약하게 맞아 권총 최소 피해 5가 적용될 때 방탄복을 입었으면 3');}
 // 10. 재고와 부탁은 판마다 다르고, 밤에는 팔지 않는다
 {const jobs=new Set(),stocks=new Set();for(let i=1;i<=40;i++){const s=game(i*97),m=M.state(s);jobs.add(m.job);stocks.add(JSON.stringify(m.stock));}ok(jobs.size>=2&&stocks.size>=5,'판마다 부탁('+[...jobs].join(',')+')과 재고('+stocks.size+'가지)가 다름');
- const s=game(),[t]=town(s),m=M.state(s);m.credit[t.id]=3;t.money=9;for(const k of Object.keys(m.stock))m.stock[k]=1;ok(acts(s,t).filter(a=>a.verb==='buyItem').length===7,'신용 3이면 일곱 가지 모두 살 수 있음');s.turn=2;ok(!acts(s,t).some(a=>a.verb==='buyItem'),'밤에는 팔지 않음');}
+ const s=game(),[t]=town(s),m=M.state(s);m.credit[t.id]=3;t.money=9;for(const k of Object.keys(m.stock))m.stock[k]=1;ok(acts(s,t).filter(a=>a.verb==='buyItem').length===10,'신용 3이면 열 가지 모두 살 수 있음');s.turn=2;ok(!acts(s,t).some(a=>a.verb==='buyItem'),'밤에는 팔지 않음');}
+
+// 11. 군용 모르핀: 쓰러진 사람을 살릴 때 쓰면 성공 확률 +30%, 쓰면 없어진다
+{const s=game(67),[r,d]=town(s);r.location=d.location='hall';d.hp=0;d.downed={left:2,epoch:s.epoch,cause:'test'};r.role='lawyer';r.stats.medical=3;
+ const base=C.choices(s,r.id,'big').find(a=>a.type==='revive'&&!a.morphine);ok(!!base&&!C.choices(s,r.id,'big').some(a=>a.morphine),'모르핀이 없으면 보통 살리기만');
+ r.items.morphine=1;const mo=C.choices(s,r.id,'big').find(a=>a.type==='revive'&&a.morphine);ok(!!mo&&/군용 모르핀 · 성공 50%/.test(mo.label),'모르핀이 있으면 "살리기 · 군용 모르핀" (치료 3: 20% → 50%) ('+(mo&&mo.label)+')');
+ s.stage='plan';s.plans={[r.id]:{type:'revive',target:d.id,morphine:true}};C.resolveBig(s,()=>0.45);ok(!d.downed&&d.hp===1&&r.items.morphine===0,'주사위 46으로 50% 안에 들어 살아나고, 모르핀은 없어짐');
+ const r2=s.players.find(p=>p!==r&&p!==d&&p.team==='town');ok(C.validate(s,r2.id,{type:'revive',target:d.id,morphine:true},'big')!==null,'모르핀 없이 모르핀 살리기는 받지 않음');}
+// 12. 자물쇠 따개: 낮에 주인이 없는 남의 집. 못 하면 집에 있던 이웃이 보고 자물쇠에 자국이 남는다
+{const s=game(71),[p,t,w,h]=town(s);p.location='home';t.location='hall';w.location='home';h.location='home';p.items.lockpick=1;
+ const opts=acts(s,p).filter(a=>a.verb==='pickHouse').map(a=>a.house);ok(opts.includes(t.id)&&!opts.includes(w.id),'주인이 집에 없는 집만 딸 수 있음');
+ S.resolve(s,p,acts(s,p).find(a=>a.verb==='pickHouse'&&a.house===t.id),hi);ok(/집 안을 살피자/.test(fed(s,p))&&!/범행을 뜻하지는/.test(fed(s,p)),'자물쇠를 따면 그 집을 살피고, 해석 문장은 없음');
+ ok(!acts(s,p).some(a=>a.verb==='pickHouse'&&a.house===t.id),'같은 때에 같은 집은 다시 따지 않음');
+ const u=s.players.find(x=>x.team==='town'&&![p,t,w,h].includes(x))||s.players.find(x=>![p,t,w,h].includes(x));u.location='tavern';
+ S.resolve(s,p,acts(s,p).find(a=>a.verb==='pickHouse'&&a.house===u.id),lo);ok(w.known.some(k=>k.about===p.id&&/자물쇠를 만지는/.test(k.text))&&u.known.some(k=>/긁힌 자국/.test(k.text)),'못 하면 집에 있던 이웃이 보고, 집주인은 긁힌 자국을 앎');
+ s.turn=2;ok(!acts(s,p).some(a=>a.verb==='pickHouse'),'밤에는 따지 않음');}
+// 13. 손전등: 어두운 곳의 관찰 벌점이 사라지고, 어두운 곳에서 숨기 -2
+{const s=game(73),[p,q2]=town(s);p.location=q2.location='warehouse';const lastRoll=x=>s.feed.filter(e=>e.to.includes(x.id)&&e.roll).at(-1)?.roll||{terms:[]};
+ C.smallAct(s,q2.id,{type:'observe'},hi);ok(lastRoll(q2).terms.some(x=>/어두운 시야/.test(x.label)),'손전등이 없으면 갱도에서 관찰 -2');
+ p.items.flashlight=1;C.smallAct(s,p.id,{type:'observe'},hi);ok(!lastRoll(p).terms.some(x=>/어두운 시야/.test(x.label)),'손전등이 있으면 갱도에서 관찰 벌점 없음');
+ s.epoch++;for(const x of s.players)x.used={big:false,small:false};C.smallAct(s,p.id,{type:'hide'},hi);ok(lastRoll(p).terms.some(x=>x.label==='손전등 불빛'&&x.value===-2),'손전등이 있으면 어두운 곳에서 숨기 -2');}
