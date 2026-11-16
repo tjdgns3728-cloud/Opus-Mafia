@@ -14,13 +14,13 @@ const NEW=['rail','office','union','bridge'];
  for(const k of NEW){p.nightMoveEpoch=null;C.smallAct(s,p.id,{type:'move',place:k},rng);const env=C.view(s,p.id).environment.join(' ');ok(p.location===k&&!/주택가의 문들이 하나씩/.test(env),C.places[k].name+'에 들어서면 그곳 묘사가 나옴(주택가 글이 아님)');}
  ok(C.places.union.light<0&&C.places.bridge.cover===2&&C.places.office.light>0,'장소 특징: 노조 사무실은 어둡고, 협곡 다리는 숨을 곳이 많고, 사무소는 밝음');}
 
-// 2. 암거래 상인: 선로 옆에 있고, 끌어들일 수 없으며, 손님 이야기는 판마다 다르다
-{let talks=0,silent=0;for(let i=0;i<120;i++){const s=game();(s.scenario.rumor.merchantTalks?talks++:silent++);}ok(talks&&silent,'상인이 손님 이야기를 하는 판과 하지 않는 판이 모두 있음 ('+talks+' / '+silent+')');
- const s=game(),m=ST.npc(s,'merchant'),gf=s.players.find(q=>q.team==='mafia'),t=s.players.find(q=>q.team==='town');
+// 2. 암거래 상인: 선로 옆에 있고, 끌어들일 수 없으며, 손님 정보는 말하지 않는다(2026-11-16 신용 규칙: 신용이 가장 앞이라 구매자 정보를 팔지 않는다)
+{const s=game(),m=ST.npc(s,'merchant'),gf=s.players.find(q=>q.team==='mafia'),t=s.players.find(q=>q.team==='town');
  ok(m&&m.location==='rail'&&m.hp===10,'암거래 상인이 선로 옆에 있음');
  gf.location='rail';ok(!S.choices(s,gf,'big').some(a=>a.npc==='merchant'&&/recruit/.test(a.verb||'')),'마피아가 상인을 끌어들일 수 없음');
  t.location='rail';ok(S.speakTopic(s,t,'상인, 무슨 물건 파시오?')==='npc:merchant:goods'&&S.speakTopic(s,t,'상인, 오늘 누가 다녀갔소?')==='npc:merchant:who','상인에게 물건과 손님을 물을 수 있음');
- S.talk(s,t,'npc:merchant:goods');ok(/아무에게나 팔지는 않소/.test(mine(s,t)),'물건을 물으면 아무에게나 팔지 않는다고 함(거래는 값을 정한 뒤)');}
+ S.talk(s,t,'npc:merchant:goods');ok(/믿음은 말로 사는 게 아니오/.test(mine(s,t))&&t.npcHeard.includes('lead:merchantJob'),'신용 0에 물건을 물으면 판마다 다른 부탁을 하고, 물은 사람이 그 부탁을 앎');
+ S.talk(s,t,'npc:merchant:who');ok(/손님 이야기는 하지 않소/.test(mine(s,t)),'손님을 물으면 말하지 않음');}
 
 // 3. 보안관 사무소: 보안관은 처음부터 서랍을 살필 수 있고, 다른 사람은 해먼드에게 들어야 생긴다. 쪽지는 판마다 다르다
 {const kinds={};for(let i=0;i<150;i++){const s=game();kinds[s.scenario.rumor.memo||'없음']=(kinds[s.scenario.rumor.memo||'없음']||0)+1;}ok(Object.keys(kinds).length>=3&&kinds['없음']>0,'서랍 쪽지는 판마다 다름(없을 때도 있음) '+JSON.stringify(kinds));
