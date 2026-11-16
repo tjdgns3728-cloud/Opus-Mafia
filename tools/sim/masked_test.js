@@ -18,7 +18,7 @@ gf.location='tavern';const optB=S.choices(s,gf,'big').find(a=>a.verb==='recruitN
 ok(optB&&/어제 술집에 누가 왔는지/.test(optB.hint)&&/두 번 성공할 때마다/.test(optB.hint),'술집 주인 끌어들이기 설명: '+(optB?.hint||'없음').slice(0,80));
 ok(!S.choices(s,gf,'big').some(a=>a.verb==='threatNpc'&&a.npc==='barkeep'),'술집 주인에게는 협박장(노조·회관용)을 보내지 않음');
 // 3. 끌어들이기 전에는 간호사가 약상자 귀띔을 하고, 끌어들인 뒤에는 하지 않는다
-s.scenario.spots=['medbox','barrel'];const [tA,tB,tC,tD]=town;tA.location='clinic';S.arrival(s,tA);ok(tA.npcHeard.includes('lead:medbox'),'끌어들이기 전: 간호사가 약상자 이야기를 함');
+s.scenario.spots=['medbox','barrel'];s.scenario.rumor={...s.scenario.rumor,medbox:true,barrel:true};/* 간호사가 약상자 이야기를 하는 판 */const [tA,tB,tC,tD]=town;tA.location='clinic';S.arrival(s,tA);ok(tA.npcHeard.includes('lead:medbox'),'끌어들이기 전: 간호사가 약상자 이야기를 함');
 // 4. 술집 주인 끌어들이기(실패 → 성공)
 S.resolve(s,gf,optB,lo);ok(!st.npcs.barkeep.recruited&&got(gf,/내 술집에서 그런 말 마시오/),'실패하면 술집 주인의 거절 대사');
 S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);

@@ -5,7 +5,7 @@ const C=globalThis.NoirTRPG;let seed=5;const rng=()=>{seed=(seed*16807)%21474836
 const seats=Array.from({length:6},(_,i)=>({id:'p'+i,name:['가람','나래','다온','라희','마루','바다'][i],bot:true}));
 const s=C.create(seats,rng);globalThis.NoirScenarios?.start?.(s);globalThis.NoirScenarios?.afterGathering?.(s);
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
-const p=s.players.find(p=>p.team==='town');s.turn=1;
+s.scenario.rumor={...s.scenario.rumor,child:'chapel'};/* 아이가 교회를 본 판(주택가 도착 대사 확인용) */const p=s.players.find(p=>p.team==='town');s.turn=1;
 /* 첫날 낮 2에는 이야기대로 도일이 갱도 입구에 있고 갱도가 닫혀 있다(턴 넘기기를 거치지 않으므로 직접 맞춘다) */
 for(const n of [s.scenario.doyle,...Object.values(s.scenario.continuation?.npcs||{})])if(n?.name==='도일')n.location='warehouse';s.scenario.mineClosed=true;
 /* 2026-11-16부터 이동은 큰 행동이 아니라 시간대마다의 무료 이동 */const go=place=>{for(const o of s.players){o.used={big:false,small:false};o.nightMoveEpoch=null;}s.stage='plan';C.smallAct(s,p.id,{type:'move',place},rng);return s.feed.filter(e=>e.to.includes(p.id)).slice(-6).map(e=>e.text).join(' / ');};

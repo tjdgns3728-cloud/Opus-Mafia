@@ -6,7 +6,7 @@ const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1
 const seq=list=>{let i=0;return ()=>list[Math.min(i++,list.length-1)];};
 const game=()=>{const s=C.create(Array.from({length:8},(_,i)=>({id:'p'+i,name:['가람','나래','다온','라희','마루','바다','사랑','아라'][i],bot:true})),rng);S.start(s);S.afterGathering?.(s);s.day=2;s.turn=0;s.stage='plan';s.scenario.discovered=true;for(const q of s.players){q.used={big:false,small:false};q.location='hall';q.houseId=null;q.hidden=false;}return s;};
 const find=want=>{for(let i=0;i<400;i++){const s=game();if(s.scenario.spots.includes('cart')===want)return s;}return null;};
-const opt=(s,p)=>S.choices(s,p,'small').find(a=>a.sceneKey==='searchCart');
+const opt=(s,p)=>S.choices(s,p,'small').find(a=>a.sceneKey==='search:cart');/* 2026-11-16 네 곳에 같은 방식을 넣으며 이름을 search:cart로 바꿈 */
 const mine=(s,p)=>s.feed.filter(e=>e.to.includes(p.id)).map(e=>String(e.text)).join(' / ');
 
 // 1. 소문은 판마다 다르다
