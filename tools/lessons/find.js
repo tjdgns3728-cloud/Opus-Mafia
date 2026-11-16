@@ -14,11 +14,14 @@ function parse(text) {
   for (const part of text.replace(/\r/g, '').split(/^## /m).slice(1)) {
     const lines = part.split('\n'), title = lines[0].trim(), f = {};
     for (const l of lines.slice(1)) {
-      const m = l.match(/^- (낱말|파일|있었던 일|원인|이렇게 한다):\s*(.*)$/);
+      const m = l.match(/^- (낱말|파일|상황과 한 일|실제 결과|원인과 근거|시도한 해결과 결과|이 경험이 보여 주는 것):\s*(.*)$/);
       if (m) f[m[1]] = m[2].trim();
     }
-    if (!title || !f['이렇게 한다']) continue;
-    out.push({ title, words: list(f['낱말']), files: list(f['파일']), what: f['있었던 일'] || '', why: f['원인'] || '', todo: f['이렇게 한다'] });
+    // 경험형 기록(2026-11-16): 상황·결과·원인·해 본 일·보여 주는 것. 내용 칸이 하나도 없을 때만 뺀다.
+    const rec = { title, words: list(f['낱말']), files: list(f['파일']), situation: f['상황과 한 일'] || '', result: f['실제 결과'] || '',
+      cause: f['원인과 근거'] || '', tried: f['시도한 해결과 결과'] || '', shows: f['이 경험이 보여 주는 것'] || '' };
+    if (!title || !(rec.situation || rec.result || rec.shows)) continue;
+    out.push(rec);
   }
   return out;
 }
@@ -79,8 +82,8 @@ function unseen(sid, key, list) {
   return out;
 }
 
-const brief = r => `- ${r.title} — 있었던 일: ${r.what} / 이렇게 한다: ${r.todo}`;
-const full = r => `## ${r.title}\n있었던 일: ${r.what}\n원인: ${r.why}\n이렇게 한다: ${r.todo}`;
+const brief = r => `- ${r.title} — 상황: ${r.situation} / 결과: ${r.result} / 보여 주는 것: ${r.shows}`;
+const full = r => `## ${r.title}\n상황과 한 일: ${r.situation}\n실제 결과: ${r.result}\n원인과 근거: ${r.cause}\n시도한 해결과 결과: ${r.tried}\n이 경험이 보여 주는 것: ${r.shows}`;
 
 function hookOutput(d, recs) {
   const ev = d.hook_event_name || '';
@@ -96,7 +99,7 @@ function hookOutput(d, recs) {
     list = byFile(recs, rel);
     key = 'file:' + rel;
     head = `고치려는 파일(${rel})에 걸린 지난 실패 기록입니다(docs/AI_LESSONS.md).`;
-    tail = '고치기 전에 이 기록에 걸리는지 확인합니다.';
+    tail = '지금 고치는 일과 견줘 볼 지난 경험입니다. 쓸지는 지금 상황을 보고 정합니다.';
   } else return null;
   list = unseen(d.session_id, key, list);
   if (!list.length) return null;
