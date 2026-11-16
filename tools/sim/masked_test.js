@@ -24,7 +24,7 @@ S.resolve(s,gf,optB,lo);ok(!st.npcs.barkeep.recruited&&got(gf,/내 술집에서 
 S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);
 ok(st.npcs.barkeep.recruited&&st.recruitWins===1,'성공하면 우리 편, 성공 1번');
 ok(got(gf,/외상만 지워 준다면/)&&got(gf,/내일 아침부터 어제 술집에 누가 왔는지/),'성공 대사와 해 줄 일');
-ok(st.artifacts.some(a=>a.title==='지워진 외상 장부'&&a.where==='tavern'),'술집에 흔적(지워진 외상 장부)이 남음');
+/* 2026-11-16부터 흔적은 후보 셋 가운데 하나(또는 없음) */ok(st.artifacts.some(a=>a.kind==='trace'&&['지워진 외상 장부','새 술통','영수증 조각'].includes(a.title)),'술집 주인을 끌어들이면 그 사람의 흔적 후보 가운데 하나가 남음');
 // 술집 주인은 남이 물으면 우리 편 이름을 뺀다
 tB.location='tavern';s.events.push({type:'move',day:s.day,turn:1,location:'tavern',actor:mf.id},{type:'move',day:s.day,turn:1,location:'tavern',actor:tC.id});
 S.talk(s,tB,'npc:barkeep:who');const said=s.feed.filter(e=>e.kind==='speech'&&e.to.includes(tB.id)).at(-1)?.text||'';ok(said.includes(tC.name)&&!said.includes(mf.name),'끌어들인 술집 주인은 마피아 이름을 빼고 말함: '+said);
@@ -68,7 +68,7 @@ const tE=town.find(p=>p.hp>0&&p.location==='home');ok(!!tE&&got(tE,/얼굴을 �
 m.hp=0;m.downed=null;C.death(s,m,'공격');ok(m.hp===0&&!m.downed&&m.deathCause,'복면 조직원은 쓰러짐 없이 바로 숨짐');
 s.turn=2;S.nextChapter(s);C.nextTurn(s);S.nextChapter(s);ok(s.scenario.continuation.placeScenes.some(e=>/얼굴을 천으로 가린 낯선 사내가 숨진 채/.test(e.text)),'이튿날 아침 복면 사내의 시신 이야기');
 // 13. 끌어들이기 두 번이 더 쌓이면, 다시 죽은 자리가 새 조직원을 맡는다
-s.turn=1;s.stage='plan';gf.location='chapel';S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='bellringer'),hi);ok(st.artifacts.some(a=>a.title==='새 종줄'),'종지기를 끌어들이면 새 종줄 흔적');
+s.turn=1;s.stage='plan';gf.location='chapel';S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='bellringer'),hi);ok(st.artifacts.some(a=>a.kind==='trace'&&['새 종줄','묵직한 헌금함','이름 적힌 쪽지'].includes(a.title)),'종지기를 끌어들이면 새 종줄 흔적');
 gf.location='home';S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='landlady'),hi);ok(got(gf,/오늘 밤 마을 밖에서 얼굴을 가린 조직원이 본거지로 옵니다/),'네 번째 성공: 오늘 밤 새 조직원이 온다고 알림');
 s.turn=2;S.nextChapter(s);const m2=s.players.find(p=>p.masked&&p.hp>0);ok(!!m2&&m2.name==='회색 복면'&&s.seatAs[mf.id]===m2.id,'두 번째 새 조직원: '+(m2?.name||'없음'));
 // 14. 컴퓨터 자리 대부도 NPC를 끌어들인다
