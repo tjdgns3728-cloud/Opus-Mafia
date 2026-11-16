@@ -9,7 +9,7 @@ const titles = list => list.map(r => r.title);
 
 // 1. 기록 파일
 const recs = L.load();
-check('기록이 25개', recs.length === 25, recs.length);
+check('기록이 26개', recs.length === 26, recs.length);
 check('모든 기록에 이렇게 한다·있었던 일이 있음', recs.every(r => r.todo && r.what));
 check('모든 기록에 낱말이나 파일이 하나 이상', recs.every(r => r.words.length || r.files.length), recs.filter(r => !r.words.length && !r.files.length).map(r => r.title));
 check('제목이 겹치지 않음', new Set(titles(recs)).size === recs.length);
@@ -25,6 +25,9 @@ check('흔한 말("판정하지 않는다", "문구의 효과")로는 안 뜸', 
 check('"비교를 3번 해 주세요" → 되풀이 지시 기록', titles(L.byWords(recs, '비교를 3번 해 주세요')).includes('같은 지시를 세 번 되풀이해 맡김'));
 check('"시안 2~3개" 같은 흔한 말로는 되풀이 기록이 안 뜸', !titles(L.byWords(recs, '시안 2~3개를 보여 주세요')).includes('같은 지시를 세 번 되풀이해 맡김'));
 check('"전략적인 요소를 명확하게 해 주세요" → 설명 창 기록', titles(L.byWords(recs, '게임의 전략적인 요소를 명확하게 해 주세요')).includes('전략을 설명 창으로 보여 주려 함'));
+check('"이름 색을 바꿔 주세요" → 결과물에서 역할 찾기 기록', titles(L.byWords(recs, '주인공 이름 색을 바꿔 주세요')).includes('고칠 부분이 하는 일을 결과물에서 찾아보지 않고 고침'));
+check('"추천한 대로 규칙을 바꿔주세요" → 규칙 기록이 여전히 첫째', titles(L.byWords(recs, '추천한 대로 규칙을 바꿔주세요'))[0] === T_RULE, titles(L.byWords(recs, '추천한 대로 규칙을 바꿔주세요')));
+check('00World.js → 결과물에서 역할 찾기 기록', titles(L.byFile(recs, 'game/games/noir-trpg/scripts/00World.js')).includes('고칠 부분이 하는 일을 결과물에서 찾아보지 않고 고침'));
 check('낱말 찾기는 최대 3개', L.byWords(recs, '시험 실패 테스트 통과 FAIL 규칙 추천 AI_RULES 컴퓨터 대부 승률 봇 판정 빈칸').length <= 3);
 
 // 3. 파일로 찾기
