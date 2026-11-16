@@ -61,3 +61,4 @@
 | [v57](v57.md) | 2026-11-16 21:59 | `dfd93f6` | Rules: a repeated failure is answered by rewriting its failure record |
 | [v58](v58.md) | 2026-11-16 21:59 | `946383a` | Rules: rewrite a repeated failure's record so its cause shows precisely; the aim is revealing causes, not preventing failures |
 | [v59](v59.md) | 2026-11-16 22:03 | `0f91d81` | Rules: keep a repeated failure as a new linked record instead of rewriting the old one; records stay varied and the reading AI chooses |
+| [v60](v60.md) | 2026-11-16 22:13 | `6cd0822` | Records: never delete; keep every committed past version of the record documents as numbered copies |
