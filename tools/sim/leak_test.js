@@ -42,5 +42,13 @@ const bare=r=>r.secret&&!('stat' in r)&&!('total' in r)&&!('roll' in r)&&!('roll
 {const s=fresh();const gf=s.players.find(p=>p.role==='godfather'),mf=s.players.find(p=>p.role==='mafioso');mf.location='warehouse';mf.hp=5;
  ok(look(s,gf,mf).hp===5,'마피아끼리는 떨어져 있어도 체력을 앎');}
 
+// 3-2. "해먼드·도일이 넘어가면 마피아 한 명으로 센다"는 시민에게 알리지 않는다(2026-11-16 사용자 결정 "시민에게는 숨김")
+{const fs=require('fs');const flow=fs.readFileSync(path.join(dir,'08StoryFlow.js'),'utf8').split('\n');const groups={};let cur=null;
+ for(const l of flow){const m=l.match(/^\s{1,3}([a-z]+):\{\s*$/);if(m){cur=m[1];groups[cur]='';continue;}if(cur){if(/^\s{0,3}\}[,;]?\s*$/.test(l)){cur=null;continue;}groups[cur]+=l+'\n';}}
+ const townGroups=Object.keys(groups).filter(k=>k!=='mafia'&&(k==='town'||C.roles[k]?.team==='town'));
+ const leaks=townGroups.filter(k=>/이기는 조건|머릿수|한 명으로 (셉|셈|칩)/.test(groups[k]));
+ ok(townGroups.length>=5&&!leaks.length,'시민 쪽 이야기 글(시민 공통·직업별 '+townGroups.length+'묶음)에 "넘어가면 마피아 한 명으로 센다"가 없음'+(leaks.length?' · 남은 곳: '+leaks.join(','):''));
+ const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(/v\.me\?\.team==='mafia'\?' 도일이 노조를 넘겼거나/.test(ui),'규칙 글의 "그 수만큼 마피아 편을 더 셉니다"는 마피아에게만 보임');}
+
 // 4. 행동 선택 시간은 2분
 {const s=fresh();ok(s.cfg.planSeconds===120,'행동 선택 시간 120초 (지금 '+s.cfg.planSeconds+')');}
