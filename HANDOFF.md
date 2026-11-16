@@ -12,7 +12,7 @@
 - 짧고 보통 말투로. 내부 코드·기록 번호·시스템 설명 대신 사용자가 아는 말로 쓴다.
 - **시나리오를 부탁받으면 시나리오만 쓴다.** 기능·규칙 이야기는 사용자가 꺼낼 때 한다.
 - 빈 곳은 추측 대신 물어서 채운다. 결과를 바꾸는 결정만, 선택지와 추천을 붙여 한 번에 묻는다. 이미 답한 것은 그 답을 따른다.
-- 만들기 전에 작은 견본을 먼저 보여주고, 방향을 확인받은 뒤 늘린다. 밤샘·장시간 자율 실행 대신 짧은 주기로 보여 준다.
+- 만들기 전에 작은 견본을 먼저 보여주고, 방향을 확인받은 뒤 늘린다. 밤샘·장시간 자율 실행 대신 짧은 주기로 보여 준다. 다만 게임 작업은 끝까지 만든 뒤 고친다(결과물이 바로 보여 무엇이 문제인지 빨리 찾는다, 2026-11-16 사용자 말).
 - 이야기는 하나가 아니라 **상황과 플레이어 행동에 따라 여러 갈래**여야 한다. 분량이 적으면 사용자가 바로 지적한다(최소 10배를 요구한 적 있음).
 - 플레이어에게 **왜 그곳에 가야 하는지, 어디서 무엇을 할 수 있는지**가 이야기 안에서 보여야 한다. 갈 곳을 하나로 정해 주는 대신 여러 선택지를 준다.
 - 플레이어의 선택·대사·진영·과거 행동은 원고에서 비워 두고 플레이어가 정하게 한다.
@@ -51,7 +51,7 @@
 ## 7. 실행과 확인
 - 실행: `game\play.cmd` (1번 AI와 함께 / 2번 사람끼리). Python 3.11+, Node.js 필요.
 - AI 없이 서버만: `cd game/webengine` 후 `python -m server.play --game ../games/noir-trpg --port 8868 --ai off`, 브라우저에서 `http://127.0.0.1:8868/`.
-- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`(끌어들이기·복면 조직원은 `masked_test.js`, 상대 판정 수치·집 안·남의 체력이 새지 않는지는 `leak_test.js`, 도일 설득은 `doyle_test.js`, 장소 안내 창은 `guide_test.js`, 들은 사람에게만 생기는 행동 견본(광차)은 `cart_test.js`, 나머지 숨긴 곳 세 군데와 아이의 목격담은 `spots_test.js`, 새 장소 네 곳과 암거래 상인은 `newplaces_test.js`, 끌어들이기 흔적은 `trace_test.js`, 현장 수색의 오늘 발자국과 주변 보기의 떠난 사람은 `basic_test.js`, 재판 근거 목록에서 같은 편만 아는 기록을 빼는 것은 `evidence_test.js`, 암거래 상인의 신용 거래와 방탄복은 `merchant_test.js`), 이야기 상태 `arc_test.js --show`, 시험 플레이 수정 `playfix3_test.js`. 지난 실패 기록 찾기는 `tools/lessons/find.js`, 그 시험은 `node tools/lessons/find_test.js`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
+- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`(끌어들이기·복면 조직원은 `masked_test.js`, 상대 판정 수치·집 안·남의 체력이 새지 않는지는 `leak_test.js`, 도일 설득은 `doyle_test.js`, 장소 안내 창은 `guide_test.js`, 들은 사람에게만 생기는 행동 견본(광차)은 `cart_test.js`, 나머지 숨긴 곳 세 군데와 아이의 목격담은 `spots_test.js`, 새 장소 네 곳과 암거래 상인은 `newplaces_test.js`, 끌어들이기 흔적은 `trace_test.js`, 현장 수색의 오늘 발자국과 주변 보기의 떠난 사람은 `basic_test.js`, 재판 근거 목록에서 같은 편만 아는 기록을 빼는 것은 `evidence_test.js`, 암거래 상인의 신용 거래와 방탄복은 `merchant_test.js`, 새 장소 네 곳의 사건은 `places_incidents_test.js`), 이야기 상태 `arc_test.js --show`, 시험 플레이 수정 `playfix3_test.js`. 지난 실패 기록 찾기는 `tools/lessons/find.js`, 그 시험은 `node tools/lessons/find_test.js`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
 - 시작 이야기 확인: `node tools/check_intro.js` — 8인·12인 판을 만들어 직업마다 시작 글이 나오는지 출력한다.
 - 사용자가 지금 플레이 중인 서버·방은 그대로 둔다. AI 모드 실행은 구독 사용량이 드니 사용자 요청이 있을 때만.
 - 사용자는 `game\play.cmd`(1번, 주소 http://127.0.0.1:8868/)로 논다. 이 서버는 사용자가 켜고 끈다. 게임 규칙·이야기 코드는 서버를 켤 때 읽히므로, 규칙을 고쳐 올린 뒤에는 "play.cmd를 다시 켜 주세요"라고 말한다. 화면 코드만 고친 것은 페이지를 새로 고치면 보인다. (2026-11-15)

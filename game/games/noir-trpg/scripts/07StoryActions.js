@@ -145,5 +145,5 @@ S.investigate=function(s,p,rng){const entries=z(s).artifacts.filter(a=>accessibl
 S.guide=function(s,p){const list=D.active(s,p).flatMap(def=>def.options.filter(o=>!z(s).incidents[def.id].answered?.includes(p.id+':'+o.key)).map(o=>({slot:o.slot,label:o.label,action:{type:'scene',sceneKey:'incident',incident:def.id,branch:o.key}}))).slice(0,2);const old=base.guide(s,p);return list.length?{title:'이 장소에서 이어지는 일',options:list,done:false}:old;};
 /* 컴퓨터 자리의 대부도 낮에 마을 사람을 끌어들인다 */
 const baseBot=S.botAction;S.botAction=function(s,p,slot){if(slot==='big'&&z(s)&&p.team==='mafia'&&s.turn!==2&&p.stats.persuade>=8){const list=acts(s,p,'big').filter(a=>(a.verb==='recruitNpc'||a.verb==='recruitNpcPaid')&&a.npc!=='mayor');if(list.length&&(freeSeats(s).length?(s.epoch+p.id.length)%3!==0:(s.epoch+p.id.length)%3===0))return list.find(a=>a.verb==='recruitNpcPaid')||list[0];}return baseBot(s,p,slot);};
-Object.assign(D,{merchant:{state:mer,credit:mcredit,open:mopen,flush:mflush,JOBS,GOODS},actions:acts,resolveAction,searches,accessible,revealArtifact,ownArtifacts,callMasked,freeSeats,RECRUIT});
+Object.assign(D,{merchant:{state:mer,credit:mcredit,open:mopen,flush:mflush,raise:mraise,lock:mlock,JOBS,GOODS},actions:acts,resolveAction,searches,accessible,revealArtifact,ownArtifacts,callMasked,freeSeats,RECRUIT});
 })(globalThis);
