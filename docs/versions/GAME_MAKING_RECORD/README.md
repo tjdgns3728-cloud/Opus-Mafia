@@ -63,3 +63,4 @@
 | [v59](v59.md) | 2026-11-16 22:03 | `0f91d81` | Rules: keep a repeated failure as a new linked record instead of rewriting the old one; records stay varied and the reading AI chooses |
 | [v60](v60.md) | 2026-11-16 22:13 | `6cd0822` | Records: never delete; keep every committed past version of the record documents as numbered copies |
 | [v61](v61.md) | 2026-11-16 22:17 | `20afbfe` | Record: the user kept the AI_RULES v21 wording as is |
+| [v62](v62.md) | 2026-11-16 22:47 | `39e3508` | Rules v22: record failures from the first one (fact plus links to conversation and outputs); drop the length limit |
