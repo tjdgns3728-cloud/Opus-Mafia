@@ -12,7 +12,13 @@ const recs = L.load();
 check('기록이 28개', recs.length === 28, recs.length);
 check('모든 기록에 경험형 다섯 칸(상황과 한 일·실제 결과·원인과 근거·시도한 해결과 결과·이 경험이 보여 주는 것)이 있음', recs.every(r => r.situation && r.result && r.cause && r.tried && r.shows), recs.filter(r => !(r.situation && r.result && r.cause && r.tried && r.shows)).map(r => r.title));
 const rawLessons = fs.readFileSync(path.join(ROOT, 'docs', 'AI_LESSONS.md'), 'utf8').replace(/\r/g, '');
-check('읽지 못하고 빠진 기록이 없음(## 제목 수 = 읽은 기록 수)', (rawLessons.match(/^## /mg) || []).length === recs.length);
+check('읽지 못하고 빠진 기록이 없음(## 제목 수 = 읽은 기록 수, "실패 사실" 칸은 뺌)', (rawLessons.match(/^## (?!실패 사실$)/mg) || []).length === recs.length);
+// 실패 사실(2026-11-16): 첫 실패는 사실과 대화·결과물 연결만 적는다. 맨 끝 칸이고 경험 기록으로 읽지 않는다.
+const factPart = rawLessons.split(/^## 실패 사실$/m)[1];
+check('실패 사실 칸이 있고 맨 끝 칸임', factPart !== undefined && !/^## /m.test(factPart));
+check('실패 사실 칸은 경험 기록으로 읽지 않음', !recs.some(r => r.title === '실패 사실'));
+const facts = (factPart || '').split(/^### /m).slice(1);
+check('실패 사실마다 일어난 일·대화·결과물이 있음', facts.length > 0 && facts.every(f => /^- 일어난 일:/m.test(f) && /^- 대화:/m.test(f) && /^- 결과물:/m.test(f)), facts.length);
 check('옛 모양(있었던 일·원인·이렇게 한다) 줄이 남지 않음', !/^- (있었던 일|원인|이렇게 한다):/m.test(rawLessons));
 // 일의 종류로 고르기(2026-11-16): 모든 기록에 맞는 일이 있고, 종류로 찾으면 그 일에 맞는 기록만 나온다
 check('모든 기록에 맞는 일의 종류가 있음', recs.every(r => r.kinds.length), recs.filter(r => !r.kinds.length).map(r => r.title));
