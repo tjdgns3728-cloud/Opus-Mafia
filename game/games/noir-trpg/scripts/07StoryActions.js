@@ -71,7 +71,14 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town'||slot==='
  }
  return out;
 }
-function validAction(s,p,a,slot){return acts(s,p,slot).some(b=>b.verb===a.verb&&b.item===a.item&&b.target===a.target&&b.npc===a.npc&&b.artifact===a.artifact&&b.house===a.house&&b.weapon===a.weapon&&b.raid===a.raid)?null:'현재 장소·소지품·대상 상태에서 실행할 수 없습니다.';}
+function validAction(s,p,a,slot){return acts(s,p,slot).some(b=>b.verb===a.verb&&b.item===a.item&&b.target===a.target&&b.npc===a.npc&&b.artifact===a.artifact&&b.house===a.house&&b.weapon===a.weapon&&b.raid===a.raid)?null:whyNot(s,p,a);}
+/* 고를 때는 됐지만 같은 때에 먼저 일어난 일로 할 수 없게 된 경우, 보이는 까닭을 말한다(2026-11-16) */function whyNot(s,p,a){const pp=C().pp;
+ if(a.npc){const n=D.npc(s,a.npc);if(n&&n.hp<=0)return pp(n.name,'은','는')+' 이미 쓰러져 있습니다.';if(n&&n.location!==p.location)return pp(n.name,'이','가')+' 이 자리에 없습니다.';}
+ if(a.verb==='takeArtifact'){const art=z(s).artifacts.find(x=>x.id===a.artifact);if(!art||art.taken||art.destroyed||art.owner)return '그 물건은 이미 누군가 가져갔습니다.';}
+ if(a.verb==='buyItem'){const m=mer(s),g=GOODS[a.item];if(m&&g&&!(m.stock[a.item]>0))return '상인에게 '+pp(g.name,'이','가')+' 남아 있지 않습니다.';if(g&&p.money<g.price)return '돈이 모자랍니다.';}
+ if(a.target){const t=C().find(s,a.target);if(t&&t.hp<=0)return pp(t.name,'은','는')+' 이미 쓰러져 있습니다.';if(t&&(t.location!==p.location||!C().visible(s,p,t)))return pp(t.name,'이','가')+' 이 자리에 없습니다.';}
+ if(a.verb==='pickHouse'){const t=C().find(s,a.house);if(t&&t.hp>0&&t.location==='home'&&t.houseId===t.id)return '집주인이 집에 돌아와 있습니다.';}
+ return '현재 장소·소지품·대상 상태에서 실행할 수 없습니다.';}
 function revealArtifact(s,p,a){if(!a)return;const t=a.kind==='gun'?(a.reese?'손잡이에 리스의 이니셜이 새겨진 권총입니다. 탄환 ':'남겨진 권총입니다. 탄환 ')+a.ammo+'발이 남아 있습니다.':a.text;D.emit(s,[p.id],t,{actionRecord:true});D.observed(s,p,t,null,a.kind==='note'||a.kind==='extra'?'claim':'evidence','artifact:'+a.id);(a.seen??=[]).push(p.id);}
 function searches(s,p,house){if(p.location!=='home')return;const bombs=q(s).bombs.filter(b=>b.where==='home:'+house),as=z(s).artifacts.filter(a=>a.where==='home:'+house&&!a.destroyed&&!a.taken);const r='집 안을 살피자 '+(bombs.length?'폭약 '+bombs.length+'개와 ':'')+(as.length?'남겨진 물건이 보입니다.':'생활 흔적이 보입니다. 새 물건은 찾지 못했습니다.')+'';D.emit(s,[p.id],r,{actionRecord:true});D.observed(s,p,r,house,'evidence','house:'+house+':'+s.epoch);for(const a of as){a.seen??=[];if(!a.seen.includes(p.id))a.seen.push(p.id);revealArtifact(s,p,a);}if(bombs.length&&house===p.id)p.storyKnown.push('planted:'+s.epoch);}
 function resolveAction(s,p,a,rng){const err=validAction(s,p,a,['inspectSignal','searchHouse','inspectArtifact','buyItem','introduceMerchant','merchantJob','pickHouse'].includes(a.verb)?'small':'big');if(err)return err;const x=q(s),st=z(s),n=a.npc&&D.npc(s,a.npc),t=a.target&&C().find(s,a.target),art=a.artifact&&st.artifacts.find(x=>x.id===a.artifact);st.actions.push({type:a.verb,who:p.id,target:a.target||a.npc,epoch:s.epoch,day:s.day,turn:s.turn,place:p.location});

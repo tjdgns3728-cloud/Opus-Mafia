@@ -48,15 +48,17 @@
 - **장소 안내 다음(2026-11-16):** 사용자가 장소 안내 창을 판정하면 → 장소 늘리기(후보: 기차역·보안관 사무소·노조 사무실, 사용자 확인 필요) → 이야기 분량 늘리기. 최종 이동은 지도에서 장소를 누르면 정보와 이동/취소가 나오는 창(지금의 이동 목록 창이 그 내용). 술집·교회는 지금 "여기서만 할 수 있는 일"이 거의 없다.
 - **마피아 승률:** 시간대마다 무료 이동으로 바꾼 뒤 같은 시드 30판에서 20% → 47%. 원인을 아직 찾지 않았다(사용자에게 물어 둠).
 - 정해지지 않은 것: 밤에 깨어 있을 때의 패널티, 도일이 굴복했을 때의 효과. (폭발 피해는 2026-11-16에 "그 자리 모두 죽음, 되살릴 수 없음"으로 정함)
+- **밤의 시험 플레이(2026-11-16)에서 고치지 않고 둔 것:** ① 폭약을 찾아 꺼낸 시민도 NPC에게 붙잡혀 바로 재판에 오른다(60판에서 붙잡힌 재판 77건 중 시민 대상 45건). 고발 규칙은 사용자 결정이라 그대로 두고, 컴퓨터 자리는 폭약 재판을 자기가 본 것으로 정한다. ② 역할 안내 문장("…봐 두십시오", "…찾으십시오")과 둘째 날 아침의 규칙 안내("사람들 앞에서 대놓고 칼을 꺼내면…")는 사용자가 정한 시작 이야기 틀과 규칙 설명이라 그대로 둠. ③ 화면으로 한 판을 끝까지 해 보지는 못했다(대행자 사흘, 퇴역군인 이틀).
 
 ## 7. 실행과 확인
 - 실행: `game\play.cmd` (1번 AI와 함께 / 2번 사람끼리). Python 3.11+, Node.js 필요.
 - AI 없이 서버만: `cd game/webengine` 후 `python -m server.play --game ../games/noir-trpg --port 8868 --ai off`, 브라우저에서 `http://127.0.0.1:8868/`.
-- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`(끌어들이기·복면 조직원은 `masked_test.js`, 상대 판정 수치·집 안·남의 체력이 새지 않는지는 `leak_test.js`, 도일 설득은 `doyle_test.js`, 장소 안내 창은 `guide_test.js`, 들은 사람에게만 생기는 행동 견본(광차)은 `cart_test.js`, 나머지 숨긴 곳 세 군데와 아이의 목격담은 `spots_test.js`, 새 장소 네 곳과 암거래 상인은 `newplaces_test.js`, 끌어들이기 흔적은 `trace_test.js`, 현장 수색의 오늘 발자국과 주변 보기의 떠난 사람은 `basic_test.js`, 재판 근거 목록에서 같은 편만 아는 기록을 빼는 것은 `evidence_test.js`, 암거래 상인의 신용 거래와 방탄복은 `merchant_test.js`, 새 장소 네 곳의 사건은 `places_incidents_test.js`), 이야기 상태 `arc_test.js --show`, 시험 플레이 수정 `playfix3_test.js`. 지난 실패 기록 찾기는 `tools/lessons/find.js`, 그 시험은 `node tools/lessons/find_test.js`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
+- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`(끌어들이기·복면 조직원은 `masked_test.js`, 상대 판정 수치·집 안·남의 체력이 새지 않는지는 `leak_test.js`, 도일 설득은 `doyle_test.js`, 장소 안내 창은 `guide_test.js`, 들은 사람에게만 생기는 행동 견본(광차)은 `cart_test.js`, 나머지 숨긴 곳 세 군데와 아이의 목격담은 `spots_test.js`, 새 장소 네 곳과 암거래 상인은 `newplaces_test.js`, 끌어들이기 흔적은 `trace_test.js`, 현장 수색의 오늘 발자국과 주변 보기의 떠난 사람은 `basic_test.js`, 재판 근거 목록에서 같은 편만 아는 기록을 빼는 것은 `evidence_test.js`, 암거래 상인의 신용 거래와 방탄복은 `merchant_test.js`, 새 장소 네 곳의 사건은 `places_incidents_test.js`), 이야기 상태 `arc_test.js --show`, 시험 플레이 수정 `playfix3_test.js`, 2026-11-16 밤 시험 플레이 수정(붙잡힌 재판 바로 소집, NPC 고발 조사, 컴퓨터 자리의 고발 근거·표, 장소 칸 중복, 아이 목격담 한 곳, 해석 문장 등) `playfix4_test.js`. 지난 실패 기록 찾기는 `tools/lessons/find.js`, 그 시험은 `node tools/lessons/find_test.js`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
 - 시작 이야기 확인: `node tools/check_intro.js` — 8인·12인 판을 만들어 직업마다 시작 글이 나오는지 출력한다.
 - 사용자가 지금 플레이 중인 서버·방은 그대로 둔다. AI 모드 실행은 구독 사용량이 드니 사용자 요청이 있을 때만.
 - 사용자는 `game\play.cmd`(1번, 주소 http://127.0.0.1:8868/)로 논다. 이 서버는 사용자가 켜고 끈다. 게임 규칙·이야기 코드는 서버를 켤 때 읽히므로, 규칙을 고쳐 올린 뒤에는 "play.cmd를 다시 켜 주세요"라고 말한다. 화면 코드만 고친 것은 페이지를 새로 고치면 보인다. (2026-11-15)
-- AI가 확인할 때는 `.claude/launch.json`의 `black-ridge-check`(8879, AI 끔, 시드 고정)를 쓴다. 예전의 8878 서버는 앱이 창을 닫으면 같이 꺼져서 8879로 바꿨다.
+- AI가 확인할 때는 `.claude/launch.json`의 `black-ridge-check`(8879, AI 끔, 시드 고정)를 쓴다. 예전의 8878 서버는 앱이 창을 닫으면 같이 꺼져서 8879로 바꿨다. 시드가 고정된 8879에서는 첫 자리가 늘 같은 직업(8인이면 대행자)이라, 다른 직업으로 해 볼 때는 `black-ridge-check-random`(8880, AI 끔, 시드 없음)을 쓴다(2026-11-16).
+- 앱 창이 숨겨져 있으면 화면 찍기와 좌표 클릭이 되지 않는다. 그때는 페이지 안 스크립트로 누르는데, 보이지 않는 쪽 행동 칸은 `inert`라 사람은 누를 수 없고, 다시 그려지면 버튼 번호(data-index)가 바뀐다. 확인 탭의 소리는 탭 안에서 `AudioContext.resume`과 `HTMLMediaElement.play`를 막아 끈다(게임 코드는 그대로, 사용자: "그리고 게임 소리 꺼주세요").
 
 ## 8. 기록 보관소(workbench)
 - **기록의 지난 판(2026-11-16).** 기록 문서(공통 규칙·실패 기록·제작 기록·HANDOFF·설정·AGENTS·CLAUDE)를 고치기 전에 `node tools/versions/snapshot.js`를 실행해, 커밋된 판 가운데 사본이 없는 것을 `docs/versions/<이름>/vNN`에 그대로 복사해 두고 고친다. 사본은 고쳐 쓰지 않는다. 공통 규칙은 머리에 지금 판 번호를 적는다(지금 v21, 사본은 v01~v20). 검사는 `node tools/versions/versions_test.js`. 저장소 전체를 찾을 때 `docs/versions/`에는 지난 판의 같은 글이 여러 번 나온다. 사용자: "기록은 사라져선 안됩니다. 모든 기록은 의미가 있습니다. 특히 ai한테는 더욱 그렇습니다".

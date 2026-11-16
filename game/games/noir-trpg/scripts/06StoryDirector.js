@@ -39,7 +39,7 @@ function guard(s,def){const x=q(s),z=d(s),f=z.flags;switch(def.guard){
  case 'mineClosed':return x.mineClosed;
  case 'minerEntered':return !!f.minerEntered&&npc(s,'miner').hp>0;
  case 'minerInClinic':return npc(s,'miner').location==='clinic'&&npc(s,'miner').hp>0&&npc(s,'miner').bleeding;
- case 'chapelSpot':return (x.spots||['chapel']).includes('chapel');
+ /* 아이가 교회 종탑 밑을 봤다고 말하는 판에만(아이가 본 곳은 판마다 하나. 폭약이 교회에 있어도 아이는 다른 곳을 봤을 수 있다. 2026-11-16) */case 'chapelSpot':return (x.rumor?.child||(x.spots||['chapel'])[0])==='chapel'&&!f.childSilenced;
   case 'doyleAlive':return aliveNpc(x.doyle)&&x.doyle.location===def.place;
  case 'mayorAlive':return aliveNpc(x.mayor)&&x.mayor.location===def.place;
  case 'burnHome':return z.actions.some(a=>a.type==='burn'&&a.place==='home'&&s.epoch-a.epoch<=2);

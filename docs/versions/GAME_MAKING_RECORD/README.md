@@ -64,3 +64,4 @@
 | [v60](v60.md) | 2026-11-16 22:13 | `6cd0822` | Records: never delete; keep every committed past version of the record documents as numbered copies |
 | [v61](v61.md) | 2026-11-16 22:17 | `20afbfe` | Record: the user kept the AI_RULES v21 wording as is |
 | [v62](v62.md) | 2026-11-16 22:47 | `39e3508` | Rules v22: record failures from the first one (fact plus links to conversation and outputs); drop the length limit |
+| [v63](v63.md) | 2026-11-16 22:49 | `b9b3d64` | Rules v23: a repeated instruction 'can be read' as the previous result being wrong (the record marks it as an estimate) |
