@@ -60,7 +60,7 @@ function chapterText(s,place){const q=s.scenario,d=q.doyle;
  if(place==='tavern'&&s.day===5)return '광부가 잔을 내려놓습니다. "열차만 오면 다 끝나. 그때까지만 살아 있으면 돼." 누군가 회관 쪽을 보며 마지막 고발을 할 것인지 묻습니다.';
  if(place==='clinic'&&s.day>=3)return '진료소 문은 열려 있습니다. 간호사가 약장을 살피다가 멈춥니다. "새 약은 열차가 와야 받아요. 다친 사람에게 먼저 써야 합니다." 누구를 믿고 치료할지는 의사가 정할 일입니다.';
  if(place==='hall'&&s.day===5)return '해먼드가 회관 창을 닫으며 말합니다. "오늘 밤만 버티면 됩니다. 오늘 밤만." 고발하려면 아직 기회가 있습니다. 이번 표가 외부 지원 전 마지막 판단이 됩니다.';
- if(place==='chapel')return '비어 있는 예배당에 발소리가 울립니다. 종탑 아래에는 흙 묻은 마대 자국이 남아 있습니다. 이곳에 무엇을 묻거나 꺼냈는지는 가까이 살펴야 알 수 있습니다.';
+ if(place==='chapel')return '비어 있는 예배당에 발소리가 울립니다. 종탑 아래에는 흙 묻은 마대 자국이 남아 있습니다.';
  if(place==='tavern')return '잔을 닦던 주인이 목소리를 낮춥니다. "리스가 간밤 화약고 쪽으로 가는 걸 본 광부가 있소. 일을 못 하면 오늘 저녁값도 외상인데, 이 동네가 어디로 가는 건지." 바 뒤편에서 광부가 당신 쪽을 봅니다.';
  if(place==='clinic')return '진료대 옆에 리스의 외투가 접혀 있습니다. 창밖을 보던 간호사가 말합니다. "누가 또 다칠까 봐 문을 닫을 수도 없네요. 붕대는 여기 있지만 약은 얼마 남지 않았어요."';
  if(place==='home')return s.turn===2?'당신 집의 문이 닫혔습니다. 다른 집 안은 보이지 않습니다. 가까이 들리는 소리만이 바깥 상황을 알려 줍니다.':'리스가 쓰러졌던 골목에서 아이가 담벼락을 가리킵니다. "여기서 끈을 주웠어요." 문 앞의 발자국은 여러 방향으로 흩어져 있습니다.';
@@ -111,18 +111,18 @@ const WHY={'search:desk':'관찰 판정입니다. 리스의 책상 서랍을 뒤
  hideMark:'리스와 맞붙다 남은 몸의 흔적을 감춥니다. 완전히 지울 수는 없어서, 조사하는 사람은 다른 점을 알아챌 수 있습니다.',
  takeWill:'숨진 사람의 품에서 유언을 집어 듭니다. 집어 든 유언은 당신만 읽을 수 있습니다.',
  erase:'이 장소의 흔적 하나를 없앱니다. 그 뒤로는 아무도 그 흔적을 찾지 못합니다. 같은 자리에 있는 사람은 당신이 무언가를 치우는 것을 봅니다.',
- take:'폭약을 손에 넣습니다. 그다음 회관에 맡기거나, 숨기거나, 설치할 수 있습니다. 들고 있는 것을 남이 보면 의심받습니다.',
+ take:'폭약을 손에 넣습니다.',
  secure:'회관에 맡긴 폭약은 아무도 쓰지 못합니다. 두 개가 모두 모이면 도일이 갱도를 다시 엽니다.',
  bury:'폭약을 종탑 아래에 숨깁니다.',
  cart:'폭약을 수레 덮개 아래에 숨깁니다.',
  arm:'폭약을 갱도에 설치하고 긴 도화선에 불을 붙입니다. 다음 때(낮 1이면 낮 2, 낮 2면 밤, 밤이면 다음 날 낮 1)가 끝날 때 터지고, 그때 갱도에 있는 사람과 NPC는 모두 죽습니다. 그 전에 누가 도화선을 찾아 끊으면 터지지 않습니다.',
  ignite:'도화선에 불을 붙입니다. 갱도에 있는 사람이 모두 죽습니다. 당신도 15초 안에 빠져나오지 않으면 죽습니다.',
- plant:'그 사람의 집에 폭약 하나를 놓습니다. 폭약이 그 집에서 나오면 집주인이 의심받습니다.',
+ plant:'그 사람의 집에 폭약 하나를 놓습니다.',
  disarm:'도화선을 끊고 폭약을 거둡니다. 성공하면 이 폭약은 터지지 않습니다.',
  protect:'도일 편에 섭니다. 그 뒤로는 누가 도일에게 돈을 내밀거나 협박해도 잘 통하지 않습니다.',
  threaten:'성공하면 도일이 노조를 넘깁니다. 광부들이 마피아 편에 서서, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다. 실패해도 협박한 사실은 남아, 도일이 나중에 사람들에게 알릴 수 있습니다.',
  bribe:'돈 3을 씁니다. 성공하면 도일이 노조를 넘깁니다. 광부들이 마피아 편에 서서, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다.',
- disclose:'도일이 협박받은 사실을 사람들에게 알리게 합니다. 누가 협박했는지 찾는 실마리가 됩니다.'};
+ disclose:'도일이 협박받은 사실을 사람들에게 알리게 합니다.'};
 function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town'||slot==='big'&&p.jailEpoch===s.epoch)return [];const q=s.scenario,a=[],add=(key,label,target)=>a.push({type:'scene',sceneKey:key,label,target,hint:WHY[key]||''});
  if(slot==='small'){if(p.team==='mafia'&&erasable(s,p).length)add('erase','이 장소의 흔적 지우기 · '+ERASABLE[erasable(s,p)[0]]);for(const d of s.players.filter(d=>d.id!==p.id&&d.hp<=0&&!d.downed&&d.will&&!q.wills?.[d.id]&&C().sameSpace(s,p,d)))add('takeWill',d.name+'의 유언 집어들기',d.id);if(p.reeseMark&&!p.reeseMark.hidden)add('hideMark',p.reeseMark.type==='button'?'흔적 감추기 · 외투에 새 단추 달기':'흔적 감추기 · 손에 붕대 감기');
   /* 리스의 책상 서랍: 보안관(리스의 동료)은 처음부터 알고, 다른 사람은 해먼드에게 들어야 생긴다 */if(p.location==='office'&&(p.role==='sheriff'||p.npcHeard?.includes('lead:office'))&&!p.storyKnown.includes('desk')&&p.search?.desk?.result!=='empty'&&p.search?.desk?.epoch!==s.epoch)add('search:desk','리스의 책상 서랍을 살핀다');
@@ -132,7 +132,7 @@ function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town'|
  if(['armed','extinguished'].includes(q.fuse?.status)&&p.location==='warehouse'&&p.storyKnown.some(k=>k.startsWith('fuse:')))add('disarm','발견한 도화선 끊고 폭약 회수');
  
  if(p.location===q.doyle.location&&q.doyle.hp>0&&s.turn!==2){if(!q.doyle.protected&&!['guard','jailor','sheriff'].includes(p.role))add('protect','도일 편에 서기');if(p.team==='mafia'&&!q.doyle.cowed){add('threaten','도일에게 노조를 넘기라고 협박');if(p.money>=3)add('bribe','도일에게 운영 자금 제안 · 3');}if(q.doyle.threatened&&!q.doyle.disclosed)add('disclose','도일에게 협박장을 공개하자고 설득');}
- if(s.turn===2&&p.team==='mafia')for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&t.location==='home'))for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))a.push({type:'attack',nightRaid:true,target:t.id,weapon:w,label:t.name+'의 집 습격 · '+C().weapons[w].name,hint:'그 집에 들어가 공격합니다. 시민이 한 명 줄면 마피아 편이 절반에 가까워집니다. 총을 쏘면 다른 집에서 어느 집인지 듣습니다.'});
+ if(s.turn===2&&p.team==='mafia')for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&t.location==='home'))for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))a.push({type:'attack',nightRaid:true,target:t.id,weapon:w,label:t.name+'의 집 습격 · '+C().weapons[w].name,hint:'그 집에 들어가 공격합니다. 총을 쏘면 다른 집에서 어느 집인지 듣습니다.'});
  /* 플레이어 영입은 보류(2026-11-14) */
  return a;
 }
@@ -177,7 +177,7 @@ function speak(s,p,text){const topic=/해먼드|시장/.test(text)?(/열쇠|화�
 function recruit(s,p,t,a){if(s.offers.some(o=>o.to===t.id&&!o.done)){story(s,[p.id],'상대에게 아직 답하지 않은 제안이 있습니다.');return;}s.offers.push({id:'o'+(++s.serial),kind:'recruit',anonymous:true,from:p.id,to:t.id,terms:String(a.reason||'함께 살아남읍시다. 동의한다면 답장을 주시오.').slice(0,300),done:false});story(s,[p.id],t.name+'에게 이름을 적지 않은 쪽지를 보냈습니다. 상대가 직접 답해야 합류가 결정됩니다.',{actionRecord:true});story(s,[t.id],'접힌 쪽지가 도착했습니다. "우리 편이 되어 살아남읍시다." 보낸 이름은 없습니다. 받아들일지 거절할지는 당신이 정합니다. 오른쪽 능력 탭에서 답할 수 있습니다.');know(s,t,'offer:'+s.serial,'보낸 이를 알 수 없는 마피아 합류 제안을 받았다.','claim');}
 function prepareRaids(s){if(s.turn!==2)return;const raids=Object.entries(s.plans).filter(([id,a])=>a.type==='attack'&&C().find(s,id)?.team==='mafia'&&C().find(s,a.target)?.location==='home'&&!C().validate(s,id,{...a,nightRaid:true},'big'));for(const [id,a] of raids){const p=C().find(s,id),t=C().find(s,a.target);a.nightRaid=true;p.location='home';p.houseId=t.houseId||t.id;story(s,[p.id],t.name+'의 집으로 다가가 문을 밀어 엽니다. 안에서 인기척이 납니다.',{actionRecord:true});story(s,[t.id],({shelter:'누군가 집 안으로 들어옵니다. 숨은 곳에서 숨을 죽입니다.',sleep:'잠결에 문이 흔들리는 소리가 들립니다. 누군가 집 안으로 들어옵니다.',watch:'불침번을 서던 중 누군가 문을 밀고 들어옵니다. 맞설 준비를 합니다.'})[s.plans[t.id]?.type]||'문이 흔들리고 누군가 집 안으로 들어옵니다. 공격을 피하거나 막을 짧은 틈이 있습니다.');}}
 function hazardView(s,p){const q=s.scenario;if(!q?.hazardPending||p.location!=='warehouse'||p.hp<=0)return null;return {text:'불붙은 도화선이 갱도 안쪽으로 타들어 갑니다. 폭발을 직격으로 맞으면 사망합니다.',choice:p.hazardChoice||null,attempted:!!p.hazardAttempted};}
-function hazardAction(s,p,choice,rng){if(s.stage!=='hazard'||!hazardView(s,p)||p.hazardChoice||choice==='extinguish'&&p.hazardAttempted||!['escape','extinguish'].includes(choice))return '지금 선택할 수 없는 대응입니다.';p.hazardChoice=choice;if(choice==='escape'){p.location='hall';p.houseId=null;story(s,[p.id],'갱도에서 뛰쳐나와 회관 쪽 길로 물러섭니다. 폭발 지점에서 벗어났습니다.',{actionRecord:true});}else{p.hazardAttempted=true;const r=C().check(p,'observe',rng,{label:'불붙은 도화선 끄기',dc:12});if(r.success){s.scenario.fuse.status='extinguished';s.scenario.hazardPending=false;}C().emit(s,[p.id],'check',r.success?'불꽃을 밟아 껐습니다. 도화선 끝이 검게 꺼지고 폭발은 일어나지 않습니다.':'발을 뻗었지만 불꽃을 끄지 못했습니다. 아직 폭발 범위 안에 있습니다. 시간이 남아 있다면 대피해야 합니다.',{roll:r,authored:true,actionRecord:true});if(!r.success)p.hazardChoice=null;}return null;}
+function hazardAction(s,p,choice,rng){if(s.stage!=='hazard'||!hazardView(s,p)||p.hazardChoice||choice==='extinguish'&&p.hazardAttempted||!['escape','extinguish'].includes(choice))return '지금 선택할 수 없는 대응입니다.';p.hazardChoice=choice;if(choice==='escape'){p.location='hall';p.houseId=null;story(s,[p.id],'갱도에서 뛰쳐나와 회관 쪽 길로 물러섭니다. 폭발 지점에서 벗어났습니다.',{actionRecord:true});}else{p.hazardAttempted=true;const r=C().check(p,'observe',rng,{label:'불붙은 도화선 끄기',dc:12});if(r.success){s.scenario.fuse.status='extinguished';s.scenario.hazardPending=false;}C().emit(s,[p.id],'check',r.success?'불꽃을 밟아 껐습니다. 도화선 끝이 검게 꺼지고 폭발은 일어나지 않습니다.':'발을 뻗었지만 불꽃을 끄지 못했습니다. 아직 폭발 범위 안에 있습니다.',{roll:r,authored:true,actionRecord:true});if(!r.success)p.hazardChoice=null;}return null;}
 function resolveHazard(s){const q=s.scenario;if(q.fuse?.status==='lit'){q.fuse.status='exploded';q.exploded=true;q.bombs.filter(b=>b.where==='armed').forEach(b=>b.where='spent');const victims=C().alive(s).filter(p=>p.location==='warehouse');for(const p of victims){story(s,[p.id],'갱도 안쪽에서 섬광이 터집니다. 피하지 못한 폭발이 몸을 덮칩니다.',{actionRecord:true});p.hp=0;C().death(s,p,'폭발 직격');}for(const n of [q.doyle,...Object.values(q.continuation?.npcs||{})])if(n&&n.hp>0&&n.location==='warehouse'){n.hp=0;n.deathCause='explosion';}story(s,C().alive(s).filter(p=>p.location!=='warehouse'&&C().distance(p.location,'warehouse')<=2).map(p=>p.id),'갱도 쪽에서 굉음이 터지고 먼지가 솟아오릅니다. 이곳에서는 안에 누가 있었는지 확인할 수 없습니다.');}else story(s,here(s,'warehouse').map(p=>p.id),'도화선이 꺼졌습니다. 폭약은 그대로지만 폭발은 멎었습니다.');q.hazardPending=false;sync(s);C().finish(s);}
 function ending(s,r){if(r.team==='mafia')return '마피아 편이 생존자의 절반 이상이 됐습니다. 회관에서 내리는 표결을 그들의 동의 없이 뒤집을 수 없게 되었습니다. 외부 지원이 오기 전에 블랙 리지의 광산과 마을이 넘어갔습니다.';if(r.team==='town'&&C().alive(s).some(p=>p.team==='mafia'))return '새벽의 기적 소리와 함께 선로를 고친 사람들과 외부 경찰이 블랙 리지에 들어옵니다. 마을을 장악하지 못한 마피아는 더 버티지 못합니다. 시민 편이 살아남았습니다.';if(r.team==='town')return '마을에 남은 마피아가 모두 사라졌습니다. 열차는 아직 도착하지 않았지만 주민들은 마을을 지켜 냈습니다.';return r.text;}
  function fallen(s,p){const held=s.scenario.bombs.filter(b=>b.where==='carry:'+p.id);for(const b of held)b.where=p.location==='home'?'home:'+(p.houseId||p.id):p.location;if(held.length)tellAllies(s,p,'같은 편 '+C().pp(p.name,'이','가')+' 쓰러지면서 품에 있던 폭약 '+held.length+'개가 '+(C().places[p.location]?.name||'그 자리')+'에 남았습니다.');sync(s);}

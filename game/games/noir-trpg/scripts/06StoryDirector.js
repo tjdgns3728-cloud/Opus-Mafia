@@ -54,13 +54,13 @@ function text(s,p,raw){const x=q(s),z=d(s),lastExec=z.executions.at(-1),fake=z.p
  const homeBombs=lastExec?bombCount(s,'home:'+lastExec.target):0,homeArts=lastExec?z.artifacts.filter(a=>a.where==='home:'+lastExec.target&&!a.taken&&!a.destroyed):[];
  const ashes=z.artifacts.filter(a=>a.kind==='ash'&&a.where===p.location&&!a.destroyed);const values={stock,ashResult:ashes.at(-1)?.text||'타다 남은 조각은 있지만 읽을 수 있는 글자는 확인하지 못했습니다.',accused:s.cases.length?named(s,s.cases.at(-1).target):'고발된 사람',executed:lastExec?named(s,lastExec.target):'사망한 사람',fakeHeadline:fake?.headline||'',
   doyleThreatReply:x.doyle.threatened?'도일이 목소리를 낮춥니다. "노조를 넘기라는 협박을 받았소. 혼자 감당하기 어렵소."':'도일이 고개를 젓습니다. "내가 실제로 받은 협박은 아직 없소. 소문과는 구분해 주시오."',
-  childReply:z.flags.childSilenced?'아이가 땅을 보며 말합니다. "꿈이었어. 아무것도 못 봤어." 누가 말을 바꾸게 했는지는 이 말만으로 알 수 없습니다.':'아이가 고개를 끄덕입니다. "긴 외투였어. 얼굴은 여전히 모르겠어." 어제의 말에 새로운 신원 정보가 더해지지는 않습니다.',
+  childReply:z.flags.childSilenced?'아이가 땅을 보며 말합니다. "꿈이었어. 아무것도 못 봤어."':'아이가 고개를 끄덕입니다. "긴 외투였어. 얼굴은 여전히 모르겠어." 어제의 말에 새로운 신원 정보가 더해지지는 않습니다.',
   watchReply:'지금 이곳에서 당번을 서는 사람: '+(C().alive(s).filter(o=>o.watchEpoch===s.epoch&&o.location==='warehouse').map(o=>o.name).join(', ')||'아직 없음')+'.',
-  cartResult:bombCount(s,'cart')?'광차 덮개 아래에서 폭약 '+bombCount(s,'cart')+'개를 확인했습니다. 가져다 둔 사람은 이 물건만으로 알 수 없습니다.':'광차 덮개 아래에는 현재 폭약이 없습니다. 다른 곳에도 없다는 뜻은 아닙니다.',
+  cartResult:bombCount(s,'cart')?'광차 덮개 아래에서 폭약 '+bombCount(s,'cart')+'개를 확인했습니다.':'광차 덮개 아래에는 현재 폭약이 없습니다. 다른 곳에도 없다는 뜻은 아닙니다.',
   moneyIntro:!aliveNpc(x.doyle)?'도일이 앉던 자리에 모자가 놓였습니다. 주인이 말없이 잔을 하나 채웁니다.':x.doyle.cowed||z.flags.unionFunded?'후원금이 들어온 뒤 광부들이 외상을 갚습니다. 돈을 받지 않겠다는 광부는 구석에 홀로 앉아 있습니다.':'주인이 "외상 사절" 팻말을 세웁니다. 빈 잔을 든 광부들이 문가에서 항의합니다.',
   moneyReply:x.doyle.cowed||z.flags.unionFunded?'광부가 말합니다. "노조 쪽에서 새 돈이 왔소. 누가 댔는지는 직접 묻지 않았소."':'광부가 빈 주머니를 내보입니다. "내게 들어온 후원금은 없소."',
   moneyClue:x.doyle.cowed||z.flags.unionFunded?'카운터에 놓인 일부 새 지폐의 번호가 이어집니다. 한 묶음에서 나왔다는 단서이며, 플레이어 진영을 가리는 표시는 아닙니다.':'비교할 새 지폐 묶음이 이곳에 없습니다. 없는 자금 흐름을 확인한 것으로 적을 수는 없습니다.',
-  houseResult:'집 안에서 '+(homeBombs?'폭약 '+homeBombs+'개':homeArts.length?'남겨진 물건 '+homeArts.length+'건':'새 물증 없이 생활 흔적')+'를 확인했습니다. 발견 여부만으로 사망자의 진영을 단정할 수 없습니다.',
+  houseResult:'집 안에서 '+(homeBombs?'폭약 '+homeBombs+'개':homeArts.length?'남겨진 물건 '+homeArts.length+'건':'새 물증 없이 생활 흔적')+'를 확인했습니다.',
   blastResult:'폭발 지점에서 직접 사망한 인물은 '+(z.blastVictims?.map(id=>named(s,id)).join(', ')||'현재 확인한 명단 없음')+'입니다. 새로 도착한 사람에게 점화자의 신원이 저절로 드러나지는 않습니다.',
   armedCount:'현재 설치 지점에 남은 폭약은 '+bombCount(s,'armed')+'개입니다. 회관에 맡긴 수는 '+bombCount(s,'secured')+'개이며, 나머지의 위치를 모르면 모두 찾았다고 말할 수 없습니다.'};
  return String(raw||'').replace(/\{(\w+)\}/g,(_,k)=>values[k]??'확인하지 못한 내용');
@@ -98,7 +98,7 @@ function resolveIncident(s,p,a,rng){const found=incidentOption(s,p,a);if(!found)
  if(o.slot==='small'){emit(s,[p.id],result,{actionRecord:true,incident:def.id});if(fact)observed(s,p,fact,null,'evidence',def.id+':'+o.key);}else{localAct(s,p,result,{incident:def.id});if(fact)for(const to of local(s,p))observed(s,to,fact,null,o.slot==='free'?'claim':'observed',def.id+':'+o.key);}
  if(o.effect==='searchExecuted'){const target=d(s).executions.filter(e=>e.day<s.day).at(-1)?.target;if(target)root.NoirStory.searches(s,p,target);}unlock(s,o.next);refreshIncidents(s);if(o.next)announce(s,p);return null;
 }
-function aftermath(s){const z=d(s);for(const def of defs()){const st=z.incidents[def.id];if(!st?.open||st.done||!def.default||st.opened>=s.epoch)continue;effect(s,null,def.default);st.open=false;st.done=true;st.choice='no-intervention';emit(s,audience(s,def.place).map(p=>p.id),def.default==='minerEntered'?'말다툼이 이어지는 사이 광부 하나가 쇠사슬을 넘어갔습니다. 잠시 뒤 어둠 속에서 버팀목이 무너지는 소리와 신음이 들립니다.':def.default==='wageFight'?'품삯 다툼 끝에 NPC 광부끼리 주먹이 오갔습니다. 한 사람이 코피를 닦으며 술집 밖으로 나갑니다.':def.default==='travelerLeft'?'짐을 꾸린 광부가 선로를 따라 마을 밖으로 향합니다. 그가 무엇을 보게 될지는 돌아온 뒤에 알 수 있습니다.':'노조원들이 NPC 대표를 뽑았습니다. 새 대표는 다음 날 갱도를 열겠다고 말합니다.',{incident:def.id});}refreshIncidents(s);}
+function aftermath(s){const z=d(s);for(const def of defs()){const st=z.incidents[def.id];if(!st?.open||st.done||!def.default||st.opened>=s.epoch)continue;effect(s,null,def.default);st.open=false;st.done=true;st.choice='no-intervention';emit(s,audience(s,def.place).map(p=>p.id),def.default==='minerEntered'?'말다툼이 이어지는 사이 광부 하나가 쇠사슬을 넘어갔습니다. 잠시 뒤 어둠 속에서 버팀목이 무너지는 소리와 신음이 들립니다.':def.default==='wageFight'?'품삯 다툼 끝에 NPC 광부끼리 주먹이 오갔습니다. 한 사람이 코피를 닦으며 술집 밖으로 나갑니다.':def.default==='travelerLeft'?'짐을 꾸린 광부가 선로를 따라 마을 밖으로 향합니다.':'노조원들이 NPC 대표를 뽑았습니다. 새 대표는 다음 날 갱도를 열겠다고 말합니다.',{incident:def.id});}refreshIncidents(s);}
 function journal(s,p){return defs().filter(def=>{const st=d(s).incidents[def.id];return st&&(st.seen.includes(p.id)||st.resolvedBy===p.id);}).map(def=>{const st=d(s).incidents[def.id];return {id:def.id,title:(st.intros?.[p.id]||'현장에서 들은 사건').split(/[.!?]/)[0].slice(0,52),place:def.place,status:st.results?.[p.id]?'내가 확인한 후속 내용':'처음 본 상황',result:st.results?.[p.id]||null,mine:st.resolvedBy===p.id};});}
 
 // The remaining hooks below use only authoritative game events and the current viewer's evidence.
