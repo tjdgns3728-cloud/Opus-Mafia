@@ -7,6 +7,11 @@ const places={
  clinic:{name:'마을 진료소',short:'진료소',direction:'북쪽 진료소',photo:3,light:2,cover:0,text:'밝은 진찰등과 처치대가 있습니다.'},
  chapel:{name:'작은 교회',short:'교회',direction:'남쪽 교회',photo:4,light:0,cover:1,text:'긴 의자와 촛불이 놓여 있습니다. 목소리가 돌벽에 울립니다.'},
  home:{name:'주택가',short:'주거지',direction:'서남쪽 주택가',photo:5,light:0,cover:1,text:'주민들이 머무는 주택가입니다. 창문 너머로 눈 쌓인 길이 보입니다.'},
+ /* 새 장소 네 곳(2026-11-16 사용자 승인 초안). 사진은 비슷한 곳의 것을 함께 쓴다 */
+ rail:{name:'선로 옆',short:'선로',direction:'동북쪽 선로',photo:1,light:0,cover:1,text:'끊긴 선로 끝에 화물칸 몇 량이 서 있습니다. 화물칸 그늘 사이로 사람이 드나듭니다.'},
+ office:{name:'보안관 사무소',short:'사무소',direction:'중앙 사무소',photo:0,light:1,cover:0,text:'리스가 쓰던 책상과 서류함, 빈 유치장이 있습니다. 주인 잃은 램프가 꺼져 있습니다.'},
+ union:{name:'노조 사무실',short:'노조',direction:'동쪽 노조 사무실',photo:2,light:-1,cover:1,text:'장부 선반과 긴 의자가 놓인 노조 사무실입니다. 창이 작아 어둡습니다.'},
+ bridge:{name:'협곡 다리',short:'다리',direction:'먼 협곡',photo:5,light:0,cover:2,text:'선로가 협곡 앞에서 끊겨 있습니다. 바위 사이로 찬 바람이 올라옵니다.'},
  hideout:{name:'마피아 본거지',short:'본거지',direction:'외딴 본거지',photo:6,light:-1,cover:2,secret:true,text:'마을 밖 버려진 광산 창고입니다. 마피아 편만 아는 곳입니다. 밤이면 이곳에 모여 계획을 나눕니다.'}
 };
 const roles={
@@ -153,7 +158,7 @@ function caught(s,p,t,by,event,weapon='pistol'){if(p.disguise&&p.disguise.epoch=
 // 밤에 한 집으로 둘 이상이 들어가면 다른 집 사람들이 창밖으로 알아챌 수 있다. 관찰 판정 난이도 16, 환경 보정은 밤의 어둠 -2와 한 사람 늘 때마다 +3. 성공하면 몇 명이었는지와 그중 한 사람을 알아본다.
 function raidNoticed(s,t,ids,rng){s.raidSeen??={};const key=s.epoch+':'+t.id;if(s.raidSeen[key])return;s.raidSeen[key]=true;const n=ids.length,count=n===2?'두 사람':n+'명';for(const o of alive(s).filter(o=>o.id!==t.id&&!ids.includes(o.id)&&o.team!=='mafia')){const r=check(o,'observe',rng,{label:'밤에 이웃집을 살피기',dc:16,terms:[{label:'밤의 어둠',value:-2},{label:'여럿이 움직이는 소리',value:3*(n-1)}]});if(!r.success)continue;const who=find(s,ids[die(rng,ids.length)-1]);const text=`밤에 창밖으로 ${t.name}의 집에 ${count}이 들어가는 것을 봤습니다. 그중 한 사람은 ${nameFor(s,o,who)}이었습니다.`;emit(s,[o.id],'check',text,{roll:r});learn(s,o.id,`밤에 ${t.name}의 집으로 ${count}이 들어가는 것을 봤다. 그중 한 사람은 ${nameFor(s,o,who)}이었다.`,idFor(s,o,who),'직접 목격','observed');}}
 // 장소 사이 거리(1 가까움, 2 중간, 3 멂). 회관이 가운데, 갱도는 동쪽 끝, 진료소는 북쪽 마을 끝, 술집은 서쪽, 교회는 남쪽, 주택가는 서남쪽.
-const DIST={hall:{warehouse:2,tavern:1,clinic:2,chapel:1,home:1},warehouse:{tavern:3,clinic:2,chapel:2,home:3},tavern:{clinic:2,chapel:2,home:1},clinic:{chapel:3,home:3},chapel:{home:1}};
+const DIST={hall:{warehouse:2,tavern:1,clinic:2,chapel:1,home:1,office:1,union:2,rail:2},warehouse:{tavern:3,clinic:2,chapel:2,home:3,union:1,rail:1,office:2},tavern:{clinic:2,chapel:2,home:1,office:1,union:1,rail:2},clinic:{chapel:3,home:3,office:2,union:3,rail:3},chapel:{home:1,office:2,union:3,rail:3},home:{office:1,union:2,rail:2},office:{union:2,rail:2},union:{rail:2},rail:{bridge:2}};/* 협곡 다리는 선로 옆 말고는 모두 멂(3) */
 function distance(a,b){if(a===b)return 0;return DIST[a]?.[b]??DIST[b]?.[a]??3;}
 // 소리가 닿는 거리: 총성은 1, 폭발은 2, 비명·다투는 소리는 같은 장소(0)에서만.
 const HEAR={gun:1,fight:0,blast:2};

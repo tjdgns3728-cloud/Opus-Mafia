@@ -11,7 +11,7 @@ const last=(p,re)=>s.feed.filter(e=>e.to.includes(p.id)&&re.test(String(e.text))
 // 1. 새 NPC 넷이 각자의 자리에 있다
 ok(['barkeep','nurse','bellringer','landlady'].every(k=>st.npcs[k]?.hp===10),'새로 섭외할 수 있는 NPC 넷: 술집 주인, 간호사, 종지기, 하숙집 주인');
 ok(st.npcs.barkeep.location==='tavern'&&st.npcs.nurse.location==='clinic'&&st.npcs.bellringer.location==='chapel'&&st.npcs.landlady.location==='home','각자 낮의 자리에 있음');
-ok(C.view(s,town[0].id).story.cast.length===7&&C.view(s,town[0].id).story.cast.every(n=>n.title),'NPC 명단 7명, 모두 하는 일이 적혀 있음');
+ok(C.view(s,town[0].id).story.cast.length===8&&C.view(s,town[0].id).story.cast.every(n=>n.title),'NPC 명단 8명(2026-11-16 암거래 상인 더함), 모두 하는 일이 적혀 있음');
 // 2. 끌어들이기 선택지: NPC마다 해 주는 일이 다르게 적힘
 s.day=1;s.turn=1;s.stage='plan';s.scenario.discovered=true;for(const p of s.players)p.location='hall';
 gf.location='tavern';const optB=S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep');

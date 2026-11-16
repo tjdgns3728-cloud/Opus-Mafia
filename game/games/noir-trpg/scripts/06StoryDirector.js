@@ -13,7 +13,8 @@ function start(s,rng){base.start(s,rng);const x=q(s);Object.assign(x.mayor,{id:'
   barkeep:{id:'barkeep',name:'술집 주인',title:'광부 술집의 주인',post:'tavern',hp:10,bleeding:false,location:'tavern',stats:{fight:5,agility:3},defense:'block'},
   nurse:{id:'nurse',name:'간호사',title:'진료소의 간호사',post:'clinic',nightPost:'clinic',hp:10,bleeding:false,location:'clinic',stats:{fight:2,agility:5},defense:'dodge'},
   bellringer:{id:'bellringer',name:'종지기',title:'교회 종을 치는 노인',post:'chapel',hp:10,bleeding:false,location:'chapel',stats:{fight:2,agility:2},defense:'dodge'},
-  landlady:{id:'landlady',name:'하숙집 주인',title:'주택가의 하숙집 주인',post:'home',hp:10,bleeding:false,location:'home',stats:{fight:3,agility:3},defense:'dodge'}},stock:s.players.length,artifacts:[],executions:[],trials:[],actions:[],signals:[],printed:[],rumors:[],roleSeen:{},serial:0,dayStarted:{},arrivals:{}};
+  landlady:{id:'landlady',name:'하숙집 주인',title:'주택가의 하숙집 주인',post:'home',hp:10,bleeding:false,location:'home',stats:{fight:3,agility:3},defense:'dodge'},
+ /* 설정의 암거래 상인: 뒤에 조직이 있어 끌어들이거나 협박할 수 없다. 거래는 값과 효과를 정한 뒤에 넣는다 */merchant:{id:'merchant',name:'암거래 상인',title:'선로 옆의 암거래 상인',post:'rail',hp:10,bleeding:false,location:'rail',stats:{fight:6,agility:5},defense:'dodge'}},stock:s.players.length,artifacts:[],executions:[],trials:[],actions:[],signals:[],printed:[],rumors:[],roleSeen:{},serial:0,dayStarted:{},arrivals:{}};
  const sheriff=s.players.find(p=>p.role==='sheriff');if(sheriff)sheriff.items.notebook=1;else artifact(s,{kind:'notebook',title:'리스의 수첩',where:'hall',text:'리스의 수첩. 열쇠 명단과 눌린 글씨가 남아 있다.'});
  for(const p of s.players){p.directorKnown=[];p.initialTeam=p.team;p.initialRole=p.role;p.storyLastSeen={};}
 }
