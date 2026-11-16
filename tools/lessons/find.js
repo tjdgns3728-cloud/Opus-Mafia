@@ -14,12 +14,14 @@ function parse(text) {
   for (const part of text.replace(/\r/g, '').split(/^## /m).slice(1)) {
     const lines = part.split('\n'), title = lines[0].trim(), f = {};
     for (const l of lines.slice(1)) {
-      const m = l.match(/^- (낱말|파일|상황과 한 일|실제 결과|원인과 근거|시도한 해결과 결과|이 경험이 보여 주는 것):\s*(.*)$/);
+      const m = l.match(/^- (낱말|파일|맞는 일|상황과 한 일|실제 결과|원인과 근거|시도한 해결과 결과|이 경험이 보여 주는 것|효과|더 드는 일):\s*(.*)$/);
       if (m) f[m[1]] = m[2].trim();
     }
     // 경험형 기록(2026-11-16): 상황·결과·원인·해 본 일·보여 주는 것. 내용 칸이 하나도 없을 때만 뺀다.
     const rec = { title, words: list(f['낱말']), files: list(f['파일']), situation: f['상황과 한 일'] || '', result: f['실제 결과'] || '',
-      cause: f['원인과 근거'] || '', tried: f['시도한 해결과 결과'] || '', shows: f['이 경험이 보여 주는 것'] || '' };
+      cause: f['원인과 근거'] || '', tried: f['시도한 해결과 결과'] || '', shows: f['이 경험이 보여 주는 것'] || '',
+      // 일의 종류로 고르기(2026-11-16): 일을 맡길 때 그 일에 맞는 기록만 함께 준다. 효과·더 드는 일은 있을 때만.
+      kinds: list(f['맞는 일']), effect: f['효과'] || '', extra: f['더 드는 일'] || '' };
     if (!title || !(rec.situation || rec.result || rec.shows)) continue;
     out.push(rec);
   }
@@ -66,6 +68,16 @@ function byWords(recs, text, max) {
 function byFile(recs, file, max) {
   return recs.filter(r => fileHit(r, file)).slice(0, max || 6);
 }
+// 일의 종류로 찾기. 종류 이름이 같거나 그 이름을 품으면 맞는다(예: "고치기" → "기존 결과물 고치기").
+function byKind(recs, kind) {
+  const k = String(kind || '').trim();
+  return k ? recs.filter(r => r.kinds.some(x => x === k || x.includes(k))) : [];
+}
+function kindCounts(recs) {
+  const n = {};
+  for (const r of recs) for (const k of r.kinds) n[k] = (n[k] || 0) + 1;
+  return Object.entries(n).sort((a, b) => b[1] - a[1]);
+}
 
 // 같은 대화에서 같은 기록을 같은 자리(요청 / 파일마다)에 두 번 띄우지 않는다.
 function unseen(sid, key, list) {
@@ -83,7 +95,8 @@ function unseen(sid, key, list) {
 }
 
 const brief = r => `- ${r.title} — 상황: ${r.situation} / 결과: ${r.result} / 보여 주는 것: ${r.shows}`;
-const full = r => `## ${r.title}\n상황과 한 일: ${r.situation}\n실제 결과: ${r.result}\n원인과 근거: ${r.cause}\n시도한 해결과 결과: ${r.tried}\n이 경험이 보여 주는 것: ${r.shows}`;
+const full = r => `## ${r.title}\n맞는 일: ${r.kinds.join(', ') || '확인되지 않음'}\n상황과 한 일: ${r.situation}\n실제 결과: ${r.result}\n원인과 근거: ${r.cause}\n시도한 해결과 결과: ${r.tried}\n이 경험이 보여 주는 것: ${r.shows}` +
+  (r.effect ? `\n효과: ${r.effect}` : '') + (r.extra ? `\n더 드는 일: ${r.extra}` : '');
 
 function hookOutput(d, recs) {
   const ev = d.hook_event_name || '';
@@ -118,11 +131,12 @@ function main(argv) {
     return;
   }
   const recs = load();
-  const list = argv[0] === '--file' ? byFile(recs, relPath(argv[1])) : byWords(recs, argv.join(' '));
+  if (argv[0] === '--kinds') { console.log(kindCounts(recs).map(([k, n]) => `${k} ${n}`).join('\n')); return; }
+  const list = argv[0] === '--file' ? byFile(recs, relPath(argv[1])) : argv[0] === '--kind' ? byKind(recs, argv.slice(1).join(' ')) : byWords(recs, argv.join(' '));
   console.log(list.length ? list.map(full).join('\n\n') : '맞는 기록이 없습니다.');
 }
 
 if (require.main === module) {
   try { main(process.argv.slice(2)); } catch (e) { if (process.argv[2] !== '--hook') throw e; }
 }
-module.exports = { parse, load, wordScore, fileHit, relPath, byWords, byFile, unseen, hookOutput };
+module.exports = { parse, load, wordScore, fileHit, relPath, byWords, byFile, byKind, kindCounts, unseen, hookOutput };

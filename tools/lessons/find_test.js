@@ -14,6 +14,15 @@ check('모든 기록에 경험형 다섯 칸(상황과 한 일·실제 결과·�
 const rawLessons = fs.readFileSync(path.join(ROOT, 'docs', 'AI_LESSONS.md'), 'utf8').replace(/\r/g, '');
 check('읽지 못하고 빠진 기록이 없음(## 제목 수 = 읽은 기록 수)', (rawLessons.match(/^## /mg) || []).length === recs.length);
 check('옛 모양(있었던 일·원인·이렇게 한다) 줄이 남지 않음', !/^- (있었던 일|원인|이렇게 한다):/m.test(rawLessons));
+// 일의 종류로 고르기(2026-11-16): 모든 기록에 맞는 일이 있고, 종류로 찾으면 그 일에 맞는 기록만 나온다
+check('모든 기록에 맞는 일의 종류가 있음', recs.every(r => r.kinds.length), recs.filter(r => !r.kinds.length).map(r => r.title));
+const byK = titles(L.byKind(recs, '기존 결과물 고치기'));
+check('"기존 결과물 고치기" → 역할 기록과 NPC 대답 기록만', byK.includes('고칠 부분의 역할을 수정 판단에 쓰지 못함') && byK.includes('NPC가 대화에 대답하지 않음') && byK.length === 2, byK);
+check('종류 이름 일부("고치기")로도 찾음', titles(L.byKind(recs, '고치기')).includes('고칠 부분의 역할을 수정 판단에 쓰지 못함'));
+check('없는 종류 → 없음', L.byKind(recs, '우주선').length === 0);
+const roleRec = recs.find(r => r.title === '고칠 부분의 역할을 수정 판단에 쓰지 못함');
+check('역할 기록에 효과·더 드는 일이 있음', !!roleRec && /Terra/.test(roleRec.effect) && /없음/.test(roleRec.extra));
+check('종류별 개수 목록에 13가지', L.kindCounts(recs).length === 13, L.kindCounts(recs).map(x => x[0]));
 check('모든 기록에 낱말이나 파일이 하나 이상', recs.every(r => r.words.length || r.files.length), recs.filter(r => !r.words.length && !r.files.length).map(r => r.title));
 check('제목이 겹치지 않음', new Set(titles(recs)).size === recs.length);
 

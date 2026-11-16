@@ -2,7 +2,7 @@
 
 먼저 `AI_RULES.md`(공통 작업 규칙)와 `HANDOFF.md`(맡을 역할과 지금까지의 일)를 읽고 따른다. 코드 지도는 `AI_HANDOFF.md`에 있다.
 
-일을 시작할 때 `node tools/lessons/find.js "<할 일 요약>"`을, 파일을 고치기 전에 `node tools/lessons/find.js --file <경로>`를 실행해 뜬 지난 실패 기록을 확인한다.
+일을 시작할 때 `node tools/lessons/find.js "<할 일 요약>"`을, 파일을 고치기 전에 `node tools/lessons/find.js --file <경로>`를 실행해 뜬 지난 실패 기록을 확인한다. 다른 AI에게 일을 맡길 때는 `node tools/lessons/find.js --kind <종류>`(종류 목록은 `--kinds`)로 그 일에 맞는 기록만 골라 함께 넘긴다.
 
 아래는 GA가 남긴 기록이다. `AI_HANDOFF.md`를 읽는다. 작성: GA / Codex, 현재 P와의 대화에서 받은 지시를 요약한 인계 후 기록이다.
 
