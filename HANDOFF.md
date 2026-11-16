@@ -44,12 +44,14 @@
 
 ## 6. 남은 일과 정해지지 않은 것
 - **다음 할 일(사용자에게 제안해 둠):** 둘째 날부터의 직업별 안내(`08StoryFlow.js`의 `roleDays`)가 한 줄짜리라 같은 문제가 있다. 같은 틀로 고치기.
+- **장소 안내 다음(2026-11-16):** 사용자가 장소 안내 창을 판정하면 → 장소 늘리기(후보: 기차역·보안관 사무소·노조 사무실, 사용자 확인 필요) → 이야기 분량 늘리기. 최종 이동은 지도에서 장소를 누르면 정보와 이동/취소가 나오는 창(지금의 이동 목록 창이 그 내용). 술집·교회는 지금 "여기서만 할 수 있는 일"이 거의 없다.
+- **마피아 승률:** 시간대마다 무료 이동으로 바꾼 뒤 같은 시드 30판에서 20% → 47%. 원인을 아직 찾지 않았다(사용자에게 물어 둠).
 - 정해지지 않은 것: 밤에 깨어 있을 때의 패널티, 도일이 굴복했을 때의 효과, 폭발 피해의 크기.
 
 ## 7. 실행과 확인
 - 실행: `game\play.cmd` (1번 AI와 함께 / 2번 사람끼리). Python 3.11+, Node.js 필요.
 - AI 없이 서버만: `cd game/webengine` 후 `python -m server.play --game ../games/noir-trpg --port 8868 --ai off`, 브라우저에서 `http://127.0.0.1:8868/`.
-- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`(끌어들이기·복면 조직원은 `masked_test.js`, 상대 판정 수치·집 안·남의 체력이 새지 않는지는 `leak_test.js`, 도일 설득은 `doyle_test.js`), 이야기 상태 `arc_test.js --show`, 시험 플레이 수정 `playfix3_test.js`. 지난 실패 기록 찾기는 `tools/lessons/find.js`, 그 시험은 `node tools/lessons/find_test.js`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
+- 시험 도구: `tools/sim/` (무작위 판 돌리기 `fuzz.js`, 승률 `batch.js`, 규칙별 `*_test.js`(끌어들이기·복면 조직원은 `masked_test.js`, 상대 판정 수치·집 안·남의 체력이 새지 않는지는 `leak_test.js`, 도일 설득은 `doyle_test.js`, 장소 안내 창은 `guide_test.js`), 이야기 상태 `arc_test.js --show`, 시험 플레이 수정 `playfix3_test.js`. 지난 실패 기록 찾기는 `tools/lessons/find.js`, 그 시험은 `node tools/lessons/find_test.js`. 쓰는 법은 `docs/GAME_MAKING_RECORD.md` 4장)
 - 시작 이야기 확인: `node tools/check_intro.js` — 8인·12인 판을 만들어 직업마다 시작 글이 나오는지 출력한다.
 - 사용자가 지금 플레이 중인 서버·방은 그대로 둔다. AI 모드 실행은 구독 사용량이 드니 사용자 요청이 있을 때만.
 - 사용자는 `game\play.cmd`(1번, 주소 http://127.0.0.1:8868/)로 논다. 이 서버는 사용자가 켜고 끈다. 게임 규칙·이야기 코드는 서버를 켤 때 읽히므로, 규칙을 고쳐 올린 뒤에는 "play.cmd를 다시 켜 주세요"라고 말한다. 화면 코드만 고친 것은 페이지를 새로 고치면 보인다. (2026-11-15)

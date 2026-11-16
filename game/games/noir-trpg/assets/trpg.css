@@ -204,3 +204,17 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 .term-tip.with-photo{display:flex;gap:12px;align-items:flex-start;max-width:min(380px,calc(100vw - 16px))}
 .tip-photo{width:112px;height:140px;flex:none;border-radius:2px;box-shadow:0 2px 10px #000a}
 .tip-text{min-width:0}
+
+/* 장소 안내 창과 이동 목록(2026-11-16). 나중에 지도에서 장소를 누르면 나올 창과 같은 내용 */
+.place-guide>div{width:min(600px,92vw)}
+.guide-sec{margin-top:14px}
+.guide-sec>b{display:block;color:#bca574;font-weight:400;font-size:13px;letter-spacing:1px;margin-bottom:4px}
+.guide-sec ul{margin:0;padding-left:18px}.guide-sec li{margin:5px 0}
+.guide-act{color:#eadbbd}
+.place-guide .muted,.place-detail .muted{color:#a69c8c;font-size:13px}
+.guide-open{margin-left:10px;font-size:12px;padding:3px 9px;vertical-align:middle;border:1px solid #6e6046;background:#1d1b17;color:#bca574;cursor:pointer;font-family:'Malgun Gothic',sans-serif}
+.place-list{display:flex;flex-direction:column;gap:6px;margin:6px 0 10px}
+.place-opt{display:grid;grid-template-columns:auto 96px 1fr;gap:8px;align-items:baseline;border:1px solid #4a4235;padding:8px 10px;cursor:pointer}
+.place-opt.on{border-color:#bca574;background:#221f19}
+.place-opt span{color:#a69c8c;font-size:13px}
+.place-detail{border-top:1px solid #4a4235;padding-top:8px;margin-top:4px}

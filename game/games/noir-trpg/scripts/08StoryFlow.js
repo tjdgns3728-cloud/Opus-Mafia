@@ -280,6 +280,24 @@ function speakTopic(s,p,t){/* 말 걸기 메뉴는 숨겨도, 대화 칸에서 �
 function speak(s,p,t){const topic=speakTopic(s,p,t);if(!topic)return false;talk(s,p,topic);return true;}
 function projection(s,p){const here=n=>n.location===p.location&&!(s.turn===2&&p.location==='home'&&p.houseId!=='npc:'+n.id);p.npcSeen??={};const cast=Object.values(z(s).npcs).map(n=>{const h=here(n);if(h)p.npcSeen[n.id]={place:n.location,time:C.label(s)};const seen=p.npcSeen[n.id];return {id:n.id,name:n.name,title:n.title||'',here:h,hp:h?n.hp:null,bleeding:h&&n.bleeding,dead:n.hp<=0&&(h||!!n.deathReported),lastSeen:!h&&seen?seen:null};});
  return {cast,journal:D.journal(s,p),npcs:Object.values(z(s).npcs).filter(n=>n.location===p.location&&!(s.turn===2&&p.location==='home'&&p.houseId!=='npc:'+n.id)).map(n=>({id:n.id,name:n.name,hp:n.hp,bleeding:n.bleeding})),stock:p.location==='clinic'?z(s).stock:null,artifacts:D.ownArtifacts(s,p).map(a=>({id:a.id,title:a.title||'보관한 종이',text:a.text})),papers:p.location==='hall'?z(s).printed.filter(e=>e.posted&&!e.removed).map(e=>({id:e.id,headline:e.headline})):[]};}
+/* 장소 안내(2026-11-16 사용자 요청): 도착하면 가운데 창으로, 이동할 곳을 고를 때는 고른 곳의 정보로 보여 준다(나중에 지도에서 누르면 나올 창).
+   플레이어가 화면에서 볼 수 있는 것만 담는다. 다른 장소는 지금 누가 있는지 알려 주지 않고 "주로 만나는 사람"만 적는다. */
+const GUIDE_WHY={hall:'고발장을 내고 재판을 여는 곳입니다. 해먼드 시장이 마을 일을 맡고 있습니다.',warehouse:'입구 옆에 화약고가 있습니다.',tavern:'광부들이 모이는 술집입니다. 손님과 소문이 드나듭니다.',clinic:'붕대를 사고 상처를 치료하는 곳입니다.',chapel:'종지기가 지키는 작은 교회입니다.',home:'내 집과 이웃집이 있는 주택가입니다. 리스의 빈집도 이곳에 있습니다.'},
+ GUIDE_USUAL={hall:['mayor'],warehouse:['doyle','miner'],tavern:['barkeep','miner'],clinic:['nurse'],chapel:['bellringer'],home:['landlady','resident','child']},
+ GUIDE_NAME={mayor:'해먼드 시장',doyle:'도일',miner:'젊은 광부',barkeep:'술집 주인',nurse:'간호사',bellringer:'종지기',landlady:'하숙집 주인',resident:'이웃',child:'아이'},
+ GUIDE_COMMON=['observe','evidence','hide','unhide','investigate','attack','track','jail','give','wait','move','disguise','bandage'];
+function placeGuide(s,p){if(!z(s)||!p||p.hp<=0)return null;const heard=s.feed.some(e=>e.to.includes(p.id)&&/폭약/.test(String(e.text))&&/여섯/.test(String(e.text))),places={};
+ const asksAt=k=>{const m={};for(const [who,,label] of topics[k]||[])(m[who]??=[]).push(label.split(' · ')[1]);if(k==='warehouse')m.doyle=['갱도와 협박','화약고 열쇠'];return m;};
+ for(const [k,pl] of Object.entries(C.places)){if(pl.secret)continue;const asks=asksAt(k);
+  places[k]={name:pl.name,here:false,why:GUIDE_WHY[k]+(k==='warehouse'&&heard?' 폭약 여섯 개가 없어졌다는 그 화약고입니다.':''),
+   feature:[pl.light<0?'어두워서 주변을 살피기 어렵습니다(살피기 −2).':pl.light>0?'밝아서 숨기 어렵습니다(숨기 −2).':'',pl.cover?`숨을 곳이 있어 숨기 쉽습니다(숨기 +${pl.cover}).`:''].filter(Boolean).join(' '),
+   people:(GUIDE_USUAL[k]||[]).map(id=>({name:GUIDE_NAME[id],asks:asks[id]||[]})),only:[],now:''};}
+ const cur=places[p.location];if(cur&&s.turn!==2){cur.here=true;const m={};for(const o of optionsUnused(s,p)){const who=o.topic.split(':')[1];(m[who]??=[]).push(o.label.split(' · ')[1]);}
+  cur.people=Object.entries(m).map(([id,asks])=>({name:GUIDE_NAME[id]||id,asks:[...new Set(asks)]}));
+  const seen=new Set();for(const a of [...C.choices(s,p.id,'big'),...C.choices(s,p.id,'small'),...(S.choices(s,p,'big')||[]),...(S.choices(s,p,'small')||[])]){if(a.target||a.type==='wait'||a.verb==='attackNpc'||a.type!=='scene'&&GUIDE_COMMON.includes(a.type)||!a.label||seen.has(a.label))continue;seen.add(a.label);cur.only.push({label:a.label,hint:a.hint||''});}
+  const ev=s.feed.filter(e=>e.to.includes(p.id)&&e.epoch===s.epoch&&(e.localEvent||e.kind==='environment')).at(-1);cur.now=ev?C.korean(s,ev.localSummary||ev.text):'';}
+ return {here:p.location,places};}
+S.placeGuide=placeGuide;
 S.nextChapter=nextChapter;S.arrival=arrival;S.npcOptions=options;S.talk=talk;S.speak=speak;S.speakTopic=speakTopic;
 S.fallen=function(s,p){base.fallen(s,p);onDeath(s,p);};
 /* 결말: 승패 한 줄 + 광산 · 도일 · 진상 한 줄씩 */const baseEnding=S.ending;S.ending=function(s,r){const head=baseEnding(s,r);if(!q(s)||!['town','mafia'].includes(r.team))return head;const x=q(s),d=x.doyle,won=r.team==='mafia',tr=Math.max(0,...s.players.filter(p=>p.team!=='mafia').map(truthOf));return [head,x.exploded?'무너진 갱도 입구 앞에서 광부들이 삽을 듭니다. 다시 파려면 몇 해가 걸릴 것입니다.':won?'갱도 입구에는 처음 보는 회사 간판이 걸립니다. 회관의 표결 기록은 깨끗합니다. 바깥의 법도 손댈 수 없습니다.':'갱도 입구 팻말에는 여전히 블랙 리지의 이름이 적혀 있습니다.',d.hp<=0?'도일의 열쇠는 주인을 잃었습니다.':d.cowed?'도일은 갱도 앞에서 남의 장부를 들고 서 있습니다. 광부들과 눈을 맞추지 않습니다.':won?'도일은 끝까지 노조를 넘기지 않았지만, 표는 그의 편이 아니었습니다.':'도일이 목에 건 열쇠로 갱도 문을 엽니다.',won||tr<2?'리스의 죽음은 "떠돌이 무리의 짓"으로 기록됩니다. 수첩은 증거품 상자에서 다시 나오지 않습니다.':tr>=3?'주 경찰이 리스의 수첩을 받아 듭니다. 화약고를 연 것이 마을 안의 열쇠였다는 것까지 밝혀졌습니다.':'주 경찰이 리스의 수첩을 받아 듭니다. 리스가 폭약 도둑을 보고 죽었다는 것까지 밝혀졌습니다.'].join('\n');};
