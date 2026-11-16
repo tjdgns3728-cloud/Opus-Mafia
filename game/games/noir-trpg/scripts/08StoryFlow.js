@@ -7,7 +7,7 @@ const roleDays={
  guard:[['home','아이가 주운 매듭','군에서 보던 형태인지 살필 수 있지만 매듭 하나로 범인을 알 수는 없습니다.'],['warehouse','어두운 갱도','실제로 함께 있는 NPC 곁을 지키거나 위험한 현장 일을 도울 수 있습니다.'],['clinic','살아남은 부상자','도와줄 사람이 다쳤다면 붕대로 지혈할 수 있습니다. 체력을 돌리려면 의사의 치료제가 필요합니다.'],['chapel','신호와 사람의 차이','종소리만 들었다면 울린 사람은 모릅니다. 자신이 본 장면을 따로 남깁니다.'],['warehouse','타들어 가는 도화선','타들어 가는 도화선을 찾았다면 터지기 전에 끊을 수 있습니다.']],
  detective:[['home','골목에 남은 두 흔적','리스가 쓰러진 곳을 살펴볼 수 있습니다. 발자국 크기는 사람의 이름이 아닙니다.'],['chapel','흙이 움직인 자리','종탑 아래가 비었거나 채워져 있는지 직접 보고 비교할 수 있습니다.'],['home','새로 놓인 물건','자기 집이나 처형 뒤 빈집에 실제로 남은 물건을 살필 수 있습니다.'],['warehouse','남은 광차','발견한 개수와 아직 모르는 위치를 구분해 수첩에 남깁니다.'],['hall','추측을 걷어 낸 기록','직접 본 것과 전해 들은 말을 나누어 마지막 재판에 제출할 수 있습니다.']],
  reporter:[['warehouse','현장을 남길 사진','보이는 사람과 실제 행동만 사진에 남습니다. 찍지 않은 일을 기사로 사실화하지 않습니다.'],['clinic','기사와 당사자의 말','발행은 사진과 글을 공개하는 큰 행동입니다. 질문은 같은 장소에서 대화로 할 수 있습니다.'],['hall','출처가 다른 종이','자신이 발행한 신문은 신문함에 남습니다. 다른 종이는 현장에서 출처를 따로 살펴야 합니다.'],['tavern','돌아온 사람의 증언','인터뷰에서 들은 말은 전언입니다. 사진과 목격의 근거를 구분해 기사에 적습니다.'],['hall','마지막으로 공개할 것','어떤 사진과 기사를 공개할지 직접 고릅니다. 미발행 기록은 자동으로 모두에게 전해지지 않습니다.']],
- godfather:[['chapel','여섯 개의 행방','당신들 편이 숨긴 폭약의 위치를 압니다. 옮기거나 남겨 둘 수 있습니다.'],['tavern','돈과 익명 쪽지','돈을 넣은 제안도 상대의 자발적 수락이 필요합니다. 돈만으로 진영을 바꾸지 않습니다.'],['hall','정보를 무기로 쓰기','직접 쓴 호외는 회관에 붙여야 퍼집니다. 붙이는 행동을 보면 작성자를 의심할 근거가 됩니다.'],['chapel','같은 편의 신호','세 번의 종과 삼각형 촛대는 직접 행동한 때만 남습니다. 동료 이동을 강제하지 않습니다.'],['home','남은 숫자','마피아 편이 생존자의 절반 이상이면 장악합니다. 죽이기와 자발적 영입 중 무엇을 시도할지 정합니다.']],
+ godfather:[['chapel','두 개의 행방','당신들 편이 숨긴 폭약의 위치를 압니다. 옮기거나 남겨 둘 수 있습니다.'],['tavern','돈과 익명 쪽지','돈을 넣은 제안도 상대의 자발적 수락이 필요합니다. 돈만으로 진영을 바꾸지 않습니다.'],['hall','정보를 무기로 쓰기','직접 쓴 호외는 회관에 붙여야 퍼집니다. 붙이는 행동을 보면 작성자를 의심할 근거가 됩니다.'],['chapel','같은 편의 신호','세 번의 종과 삼각형 촛대는 직접 행동한 때만 남습니다. 동료 이동을 강제하지 않습니다.'],['home','남은 숫자','마피아 편이 생존자의 절반 이상이면 장악합니다. 죽이기와 자발적 영입 중 무엇을 시도할지 정합니다.']],
  mafioso:[['chapel','권총과 폭약','리스의 권총은 실제 소지품입니다. 탄환을 쓰면 줄고, 숨기면 손에서 빠집니다.'],['home','집에 남길 물건','밤의 습격과 물건을 놓는 행동 중 하나를 고릅니다. 하지 않은 행동의 흔적은 남기지 않습니다.'],['warehouse','폭약의 다음 위치','폭약을 옮겼다면 현재 놓인 수량만 다시 회수하거나 설치할 수 있습니다.'],['chapel','실제 신호','동료에게 보낼 종 신호도 자신의 큰 행동입니다. 다른 주민은 소리만 들을 수 있습니다.'],['warehouse','설치와 대피','갱도에 설치한 폭약은 다음 때가 끝날 때 터집니다. 설치한 사람도 그때 남아 있으면 죽습니다.']],
  consigliere:[['tavern','듣고 싶은 말','동료에게 아는 사실을 전할지는 직접 정합니다. 듣지 않은 사정을 알 수는 없습니다.'],['home','흔적을 읽는 한계','직업 조사는 실제 사건 흔적을 찾습니다. 실패가 상대의 무죄를 뜻하지는 않습니다.'],['hall','소문의 출처','누가 누구에게 들었는지 대화로 물을 수 있습니다. 물음이 상대의 기록 공개를 강제하지 않습니다.'],['tavern','돈 앞에서 갈리는 말','직접 만난 NPC의 질문에 답하거나 자신이 아는 말을 전할 수 있습니다.'],['hall','오늘 꺼낼 기록','개인 수첩에 남은 근거를 골라 공유할 수 있습니다. 공유하기 전에는 다른 플레이어에게 보이지 않습니다.']],
  kidnapper:[['warehouse','붙잡는 손','같은 장소에서 상대를 구금할 수 있습니다. 몸을 붙잡는 결과는 판정으로 정합니다.'],['home','붙잡힌 사람의 다음 턴','구금으로 막은 큰 행동과 실제로 들은 대화를 구분합니다. 구금이 자백을 만들지는 않습니다.'],['hall','붙잡은 뒤의 고발','직접 행동을 본 사람은 고발할 수 있습니다. 다음 말과 표는 각자의 선택입니다.'],['chapel','만남을 막을 것인가','교회에 가는 사람을 보았더라도 목적까지 아는 것은 아닙니다.'],['warehouse','마지막 행동 한 번','구금한 사람이 위험한 곳에 있더라도 게임에 없는 자동 처형은 하지 않습니다.']],
@@ -62,14 +62,14 @@ const teamStories={
   final:"오늘이 마지막 날입니다. 오늘 밤만 버티면 새벽에 열차가 옵니다. 그자들도 그것을 압니다. 오늘 재판이 마지막 재판이고, 오늘 밤 습격은 어느 때보다 거셀 것입니다.",
   doyleDead:"도일이 죽었습니다. 노조는 대표를 잃었고, 광부들은 누구 말을 들어야 할지 모릅니다. 돈을 주겠다는 사람이 나타나면 광부들이 그쪽으로 기울 것입니다. 새 대표를 누가 맡는지 지켜보십시오.",
   doyleCowed:"도일이 노조를 넘겼습니다. 갱도는 다시 열렸지만, 누구 돈으로 열렸는지 도일은 말하지 않습니다.",
-  secured:"마을에서 찾은 폭약 네 개가 회관에 봉인되었습니다. 도일은 나머지 둘이 그자들 손에 있으리라 보고, 사람을 세워 지키며 갱도를 다시 엽니다. 폭약을 숨긴 사람은 아직 마을 안에 있고, 남은 두 개로 무엇을 할지 모릅니다.",
+  secured:"마을에서 찾은 폭약 두 개가 회관에 봉인되었습니다. 도일이 갱도를 다시 엽니다. 폭약을 숨긴 사람은 아직 마을 안에 있습니다.",
   crisis:"마을의 공기가 바뀌었습니다. 그자들은 이제 숨기보다 서두를 것입니다. 누명을 씌우고, 증인을 노리고, 마지막 수를 준비할 때입니다. 혼자 다니지 말고, 본 것은 회관에 내놓으십시오.",
   doyleHeld:"도일 곁을 지키는 사람이 생겼습니다. 곁에 사람이 있는 동안 도일은 돈에도 협박에도 쉽게 넘어가지 않습니다. 도일을 찾아오는 사람이 있다면 그 얼굴을 기억해 두십시오.",
   doyleThreatened:"도일이 협박장을 사람들 앞에 내놓았습니다. 노조를 넘기지 않으면 다른 집들도 해치겠다는 내용입니다. 그자들이 노리는 것은 노조, 그리고 노조가 쥔 갱도입니다. 도일이 혼자 있으면 위험합니다.",
   truth3:"수첩과 화약고 자물쇠가 같은 쪽을 가리킵니다. 화약고는 열쇠로 열렸습니다. 리스를 죽이고 폭약을 가져간 사람은 바깥 떠돌이가 아니라, 열쇠를 가졌거나 훔칠 수 있었던 이 마을 사람입니다.",
   truth2:"흩어져 있던 것이 이어집니다. 리스는 그날 밤 화약고에 갔고, 폭약 꾸러미에 손을 댔습니다. 리스는 폭약을 가져가는 사람을 봤고, 그래서 죽었을 것입니다. 이것을 아는 사람이 늘수록 그자들은 숨기 어려워집니다.",
   hunger:"갱도가 닫힌 지 며칠째입니다. 금을 캐던 손이 놀고, 술집 외상 장부가 길어집니다. 돈 걱정하는 광부에게 누가 돈을 내미는지 보십시오. 그 돈이 어디서 나왔는지가 이 일의 뿌리일지 모릅니다.",
-  closed:"갱도가 닫혔습니다. 폭약 여섯 개가 어디 있는지 모르는 채로 광부를 들여보낼 수는 없다는 것이 도일의 말입니다. 그런데 갱도가 닫혀서 득을 보는 사람은 누구일까요. 품삯이 끊긴 광부들 곁에서 누가 서성이는지 보십시오.",
+  closed:"갱도가 닫혔습니다. 폭약 두 개가 어디 있는지 모르는 채로 광부를 들여보낼 수는 없다는 것이 도일의 말입니다. 그런데 갱도가 닫혀서 득을 보는 사람은 누구일까요. 품삯이 끊긴 광부들 곁에서 누가 서성이는지 보십시오.",
   open:"갱도가 다시 열렸습니다. 광부들은 일터로 돌아갔지만, 사라진 폭약이 다 돌아온 것은 아닙니다."
  },
  mafia:{
@@ -78,7 +78,7 @@ const teamStories={
   armed:"갱도 안쪽에서 도화선이 타들어 가고 있습니다. 설치한 다음 때가 끝날 무렵 터지고, 그때 갱도에 있는 사람과 NPC는 모두 죽습니다. 그때 누가 갱도에 모일지 지켜보십시오. 당신은 그 자리에 있어서는 안 됩니다.",
   doyleDead:"도일이 죽었습니다. 노조는 머리를 잃었고, 광부들은 기댈 곳을 찾습니다. 새 대표를 누가 맡느냐에 따라 노조가 당신들 손에 들어올 수도 있습니다.",
   doyleCowed:"도일이 노조를 넘겼습니다. 갱도는 당신들 돈으로 다시 열렸고, 도일도 이기는 조건을 셀 때 당신들 편으로 칩니다. 이제 노조를 쥔 쪽은 당신들입니다.",
-  secured:"숨겨 둔 폭약 네 개를 빼앗겼습니다. 갱도는 다시 열립니다. 갱도를 닫아 둘 열쇠를 잃었습니다. 남은 것은 본거지의 두 개와 돈과 쪽지, 그리고 칼입니다.",
+  secured:"숨겨 둔 폭약 두 개를 모두 빼앗겼습니다. 갱도는 다시 열립니다. 남은 것은 돈과 쪽지, 그리고 칼입니다.",
   planted:"폭약 하나가 시민의 집 마루 밑에 있습니다. 누군가 그것을 찾아내면 집주인이 의심받고, 그 사람이 회관에서 처형되면 칼을 쓰지 않고도 한 명이 줄어듭니다. 집주인이 먼저 찾아 회관에 맡기면 헛수고가 됩니다.",
   moved:(s,p)=>'숨겨 둔 폭약이 자리를 옮겼습니다. 지금 '+bombWhere(s,p)+'. 숨겼던 자리에는 흔적이 남았을 수 있습니다.',
   crisis:"이제 숨기만 해서는 끝까지 갈 수 없습니다. 의심이 좁혀 오기 전에 서둘러야 합니다. 누명을 씌울 사람, 입을 막을 증인, 갱도의 폭약. 무엇을 쓸지 본거지에서 정하십시오.",
@@ -144,7 +144,7 @@ const roleStories={
   closed:"계획대로 갱도가 닫혔습니다. 해먼드나 젊은 광부를 끌어들이면 이기는 조건을 셀 때 그 사람을 당신 편 한 명으로 칩니다. 돈을 얹으면 설득이 쉬워지지만, 곁에서 지키는 사람이 있으면 어렵습니다.",
   hunger:"외상 장부가 길어졌습니다. 도일에게 손을 뻗을 때입니다. 협박에는 돈이 들지 않고, 돈으로 넘기면 조용합니다. 도일이 넘어오면 갱도가 다시 열리고, 노조도 금광도 당신들 쪽으로 기웁니다.",
   doyleHeld:"도일 곁을 지키는 사람이 생겼습니다. 곁에 사람이 있으면 돈도 협박도 먹히지 않습니다. 지키는 사람을 먼저 떼어 놓거나, 해먼드와 젊은 광부 쪽으로 눈을 돌리십시오.",
-  secured:"폭약 네 개를 빼앗겼습니다. 본거지의 두 개만 남았습니다. 갱도를 닫아 둘 열쇠를 잃었고, 광부들이 일터로 돌아가면 돈으로 사람을 사기 어려워집니다. 이제는 표를 세는 싸움입니다. 죄 없는 사람이 처형되면 당신이 손을 쓰지 않아도 상대 편이 한 명 줄어듭니다.",
+  secured:"폭약 두 개를 모두 빼앗겼습니다. 갱도를 닫아 둘 열쇠를 잃었고, 광부들이 일터로 돌아가면 돈으로 사람을 사기 어려워집니다. 이제는 표를 세는 싸움입니다. 죄 없는 사람이 처형되면 당신이 손을 쓰지 않아도 상대 편이 한 명 줄어듭니다.",
   crisis:"살아 있는 사람 가운데 당신 편을 세어 봅니다. 절반까지 몇 명이 모자란지 확인하십시오. 불침번을 서는 집은 습격하기 어렵고, 잠든 집이 가장 쉽습니다. 낮에 누가 피곤해 보이는지 보면 누가 밤을 새웠는지 압니다.",
   final:"새벽에 열차가 오면 끝입니다. 그 전에 절반이 되어야 합니다. 갱도에 폭약을 설치하면 다음 때가 끝날 때 터집니다. 쓸 수 있는 날은 오늘뿐입니다. 한 명이면 되는지, 두 명이 모자란지 세어 봅니다."
  },
@@ -171,10 +171,10 @@ const roleStories={
 function situation(s,p){const x=q(s),d=x.doyle,m=p.team==='mafia',a=z(s).arc||{};
  if(x.exploded)return '갱도 입구가 무너졌습니다. 그 소리는 마을 어디서나 들렸습니다.';
  if(d.hp<=0&&d.deathReported)return '도일이 죽었다는 말이 마을에 퍼졌습니다. 노조는 대표를 잃었습니다.';
- if(x.secured)return '마을에서 찾은 폭약 네 개가 회관에 봉인되었다는 말이 돕니다. 갱도는 다시 열렸습니다.';
+ if(x.secured)return '마을에서 찾은 폭약 두 개가 회관에 봉인되었다는 말이 돕니다. 갱도는 다시 열렸습니다.';
  if(d.cowed)return m?'도일이 노조를 넘기기로 했습니다. 갱도의 폐쇄 팻말은 내려갔습니다.':'갱도의 폐쇄 팻말이 내려갔습니다. 도일은 이유를 말하지 않습니다.';
  if(x.mineClosed&&a.closedDay!=null&&s.day-a.closedDay>=2)return '갱도가 닫힌 지 며칠째입니다. 품삯이 끊긴 광부들의 외상이 늘어 갑니다.';
- if(x.mineClosed)return m?'도일이 화약고의 빈 칸을 보았고 갱도는 닫혔습니다. 마을이 폭약을 찾기 시작했습니다.':'도일이 화약고에서 폭약 여섯 개가 사라진 것을 알고 갱도를 닫았습니다. 일을 못 하는 광부들의 품삯이 끊겼습니다.';
+ if(x.mineClosed)return m?'도일이 화약고의 빈 칸을 보았고 갱도는 닫혔습니다. 마을이 폭약을 찾기 시작했습니다.':'도일이 화약고에서 폭약 두 개가 사라진 것을 알고 갱도를 닫았습니다. 일을 못 하는 광부들의 품삯이 끊겼습니다.';
  return '갱도는 열려 있고 광부들은 일터로 갑니다.';
 }
 // 아침마다 아직 이야기하지 않은 상황 하나를 골라 직업의 눈으로 들려준다. 새로 할 이야기가 없으면 아무것도 보내지 않는다.
@@ -185,7 +185,7 @@ function roleStory(s,p){const told=(p.toldTags??=[]),first=(p.tagFirst??={}),R=r
  return null;}
 function roleLead(s,p){const h=roleDays[p.role]?.[Math.min(4,s.day-1)];if(!h)return;const key=p.id+':'+s.day;if(z(s).roleSeen[key])return;z(s).roleSeen[key]=true;p.personalLead={place:h[0],title:h[1],action:h[2],done:false,day:s.day,source:'story/scenes/jobs_expanded.md',isGuidance:true};const t=s.day>=2?roleStory(s,p):null;if(t)D.emit(s,[p.id],t,{private:true,source:'story/story_jobs.md'});}
 // 장소 글 끝에 지금 이 자리에 있는 NPC를 알려 준다(밤 주택가 제외).
-function environmentText(s,p){const base=placeText(s,p),x=q(s);let extra='';if(p.location==='hall'&&x.announcedDay===s.day&&s.turn===0&&x.doyle.hp>0&&x.doyle.location==='hall')extra+=' 도일이 연단에서 종을 울리고 말합니다. '+(x.secured?'"폭약 네 개는 회수했소. 나머지 둘과 그걸 가져간 사람은 아직 이 마을에 있소."':'"화약고에서 폭약 여섯 개가 없어졌소. 그걸 찾기 전까지 갱도를 닫겠소."');return base+extra;}
+function environmentText(s,p){const base=placeText(s,p),x=q(s);let extra='';if(p.location==='hall'&&x.announcedDay===s.day&&s.turn===0&&x.doyle.hp>0&&x.doyle.location==='hall')extra+=' 도일이 연단에서 종을 울리고 말합니다. '+(x.secured?'"폭약 두 개는 모두 회수했소. 가져간 사람은 아직 이 마을에 있소."':'"화약고에서 폭약 두 개가 없어졌소. 그걸 찾기 전까지 갱도를 닫겠소."');return base+extra;}
 function placeText(s,p){const x=q(s),n=x.doyle,day=s.day;
  /* 밤에는 낮의 모습을 보여 주지 않는다 */if(s.turn===2&&!(p.location==='warehouse'&&(x.exploded||x.fuse?.status==='armed'))){const N={hall:'회관은 불이 꺼진 채 잠겨 있습니다. 창밖으로 바람 소리만 들립니다.',warehouse:'갱도 입구는 캄캄합니다. 화약고 자물쇠가 달빛에 희미하게 빛납니다.',tavern:'술집은 문을 닫았습니다. 위층 창에 등잔 하나만 남아 있습니다.',clinic:D.npc(s,'nurse')?.hp>0?'진료소 창에 작은 등불 하나가 켜져 있습니다. 간호사는 안쪽 방에서 쉬고 있습니다.':'진료소 창은 어둡습니다. 등불을 켤 사람이 없습니다.',chapel:'교회는 어둡습니다. 바람이 들 때마다 종줄이 조금씩 흔들립니다.',home:'주택가의 창이 모두 어둡습니다. 골목에는 개 짖는 소리뿐입니다.'};if(N[p.location])return N[p.location];}
  if(p.location==='warehouse'){if(x.fuse?.status==='armed'&&!x.exploded)return '갱도 안쪽 어딘가에서 무언가 타는 냄새가 납니다. 버팀목 사이로 가는 연기가 새어 나옵니다.';if(x.exploded)return '무너진 갱도 앞에 흙먼지가 내려앉아 있습니다. 버팀목이 부러지고 입구가 막혔습니다.';if(n.location==='warehouse'&&n.hp===0)return '갱도 입구에 도일의 시신이 남아 있습니다. 그 곁의 사람들은 누가 이곳에 왔는지 묻고 있습니다.';if(x.mineClosed)return '갱도 앞 쇠사슬에 폐쇄 팻말이 걸려 있습니다. 광부들이 안에 둔 물건과 받지 못한 임금 이야기를 합니다.';return !x.discovered?'갱도 입구는 어둡습니다. 화약고 문은 잠겨 있고, 광차가 선로 끝에 서 있습니다.':'폐쇄 팻말이 내려갔습니다. 광부들은 다시 들어갈 준비를 합니다. 팻말이 내려갔다고 폭약이 사라졌다는 뜻은 아닙니다.';}
@@ -230,7 +230,7 @@ function nextChapter(s){const x=q(s),st=z(s);if(s.day>lastDay(s))return false;/*
  /* 도일의 하루: 날짜가 아니라 갱도 상태를 따른다 */const doyleSpot=()=>s.day===1?['hall','warehouse'][s.turn]:s.day>=lastDay(s)?['warehouse','hall'][s.turn]:(!x.announced||x.announcedDay===s.day)?['hall','warehouse'][s.turn]:x.mineClosed?['tavern','warehouse'][s.turn]:['warehouse','tavern'][s.turn];
  for(const n of Object.values(st.npcs)){n.houseId=null;if(n.hp<=0){if(s.turn===0&&!n.deathReported){n.deathReported=true;placeScene(s,n.location,n.deathCause==='explosion'?'무너진 갱도에서 '+C.pp(n.name,'의','의')+' 시신을 찾아냅니다. 폭발에 휘말렸습니다.':'주민들이 '+n.name+'의 시신을 발견합니다. 누가 공격했는지는 이 모습만으로 알 수 없습니다.',s.players.filter(p=>p.directorKnown?.includes('npc-seen:'+n.id+':0')).map(p=>p.id));}continue;}if(n.escort&&C.find(s,n.escort)?.hp>0){n.location=C.find(s,n.escort).location;}else if(n.needsClinic&&s.turn===0){n.location='clinic';n.needsClinic=false;}else if(n.location==='clinic'&&n.hp<10){}else if(n.id==='doyle')n.location=doyleSpot();else if(n.id==='mayor')n.location=n.escort?C.find(s,n.escort)?.location||'hall':'hall';else if(n.post)n.location=n.post;else if(!st.flags.minerEntered)n.location=x.mineClosed&&!x.exploded?'tavern':'warehouse';}
  if(x.secured||x.doyle.cowed||st.flags.unionFunded)x.mineClosed=false;
- if(s.day===1&&s.turn===1&&!x.secured&&!x.doyle.cowed){x.mineClosed=true;D.emit(s,D.audience(s,'warehouse').map(p=>p.id),(x.doyle.hp>0&&x.doyle.location==='warehouse'?'도일이':'광부가')+' 화약고를 엽니다. 빈 칸을 세던 손이 멎습니다. "여섯 개요. 폭약 여섯 개가 없어졌소. 어디 있는지 알기 전에는 갱도를 닫겠소."');}
+ if(s.day===1&&s.turn===1&&!x.secured&&!x.doyle.cowed){x.mineClosed=true;D.emit(s,D.audience(s,'warehouse').map(p=>p.id),(x.doyle.hp>0&&x.doyle.location==='warehouse'?'도일이':'광부가')+' 화약고를 엽니다. 빈 칸을 세던 손이 멎습니다. "두 개요. 폭약 두 개가 없어졌소. 어디 있는지 알기 전에는 갱도를 닫겠소."');}
  if(s.day>=2&&s.turn===0&&!x.announced){x.announced=true;x.announcedDay=s.day;C.emit(s,C.alive(s).filter(p=>p.location!=='hall').map(p=>p.id),'environment','회관 쪽에서 종이 울리고 주민을 부르는 목소리가 들립니다.');}
  /* 협박받은 다음 날 아침에 털어놓는다 */if(x.doyle.threatened&&st.arc?.threatDay!=null&&st.arc.threatDay<s.day&&!x.doyle.cowed&&x.doyle.hp>0&&!x.doyle.disclosed&&s.turn===0){x.doyle.disclosed=true;placeScene(s,x.doyle.location,'도일이 협박장을 꺼냅니다. "노조를 넘기지 않으면 다른 집들도 해치겠다는군. 더 숨길 일이 아니오."');}
  if(x.mayor.threatened&&x.mayor.hp>0&&!x.mayor.disclosed&&s.turn===0){x.mayor.disclosed=true;placeScene(s,x.mayor.location,'해먼드가 이름 없는 쪽지를 탁자에 놓습니다. "회관 문을 닫으라는군. 나는 재판을 막지 않겠소."');for(const a of st.artifacts.filter(a=>a.kind==='threat'&&a.npc==='mayor')){a.public=true;a.where='hall';}}
@@ -269,7 +269,7 @@ function talk(s,p,topic){if(!optionsUnused(s,p).some(o=>o.topic===topic))return 
  if(who==='barkeep'){if(what==='who'){line=saidVisitors(visitors('tavern'));}else if(bought&&what==='rumor')line='"요즘은 아무 말도 안 듣고 삽니다." 술집 주인이 장부를 서둘러 덮습니다.';else if(what==='reese')line='"리스는 그날 자정 무렵 여기서 한 잔 하고 화약고 쪽으로 갔소. 누구를 만난다는 말은 없었소."';else if(what==='rumor')line=x.doyle.cowed||st.flags.unionFunded?'"노조에 새 돈이 들어왔다는 말이 도오. 도일은 누구 돈인지 말을 안 하오."':x.doyle.threatened?'"도일이 누구한테 협박을 받는다는 말이 있소. 요즘 도일 곁에 누가 드나드는지 보시오."':'"외상 장부가 길어졌소. 돈 걱정하는 광부가 많으니, 누가 그들에게 돈을 쥐여 주는지 보시오."';}
  if(who==='mayor')line=what==='reese'?'"고함과 부서지는 소리를 들었소. 창을 열었을 때는 조용했소. 얼굴을 가렸다는 말은 날이 밝고 들었지, 내가 본 건 아니오."':what==='keys'?'"내 열쇠는 가지고 있소. 리스의 것은 어디 갔는지 모르오. 이름이 명단에 있다고 그날 문을 연 사람이라는 뜻은 아니오."':'"배급은 갱도가 멈춘 동안 버틸 몫이오. 재판은 공개된 고발과 해명 뒤에 표로 정합시다."';
  if(who==='doyle'&&what==='keys')line=D.npc(s,'doyle')?.magazineShown?.[p.id]?'"이미 같이 열어 보지 않았소. 본 그대로요. 리스의 열쇠가 지금 어디 있는지는 나도 모르오."':'"열쇠는 내 손을 떠나지 않소. 정 못 믿겠거든 나를 설득해 보시오. 그럴 만하다 싶으면 같이 화약고를 열어 안을 보여 주겠소."';
- else if(who==='doyle')line=s.day===1&&s.turn===0?'"지금 화약고로 가서 문을 열어 보겠소. 아직 잃어버린 수를 확인한 것은 아니오."':x.doyle.threatened?x.doyle.disclosed?'"노조를 넘기라는 협박을 공개했소. 누구를 믿을지는 말이 아니라 곁에서 하는 일을 보겠소."':'"노조를 넘기라는 협박이 왔소. 다른 집들 이름도 적혀 있소. 아직 누구에게까지 말할지 정하지 못했소."':x.secured?'"폭약은 회수했소. 가져간 사람까지 밝혀진 것은 아니오."':'"폭약 여섯 개가 없어졌소. 열쇠는 나와 시장, 리스가 갖고 있었소. 내 말과 실제 기록이 다르면 직접 비교해 보시오."';
+ else if(who==='doyle')line=s.day===1&&s.turn===0?'"지금 화약고로 가서 문을 열어 보겠소. 아직 잃어버린 수를 확인한 것은 아니오."':x.doyle.threatened?x.doyle.disclosed?'"노조를 넘기라는 협박을 공개했소. 누구를 믿을지는 말이 아니라 곁에서 하는 일을 보겠소."':'"노조를 넘기라는 협박이 왔소. 다른 집들 이름도 적혀 있소. 아직 누구에게까지 말할지 정하지 못했소."':x.secured?'"폭약은 회수했소. 가져간 사람까지 밝혀진 것은 아니오."':'"폭약 두 개가 없어졌소. 열쇠는 나와 시장, 리스가 갖고 있었소. 내 말과 실제 기록이 다르면 직접 비교해 보시오."';
  if(who==='miner'){if(what==='reese')line='"자정쯤 리스가 화약고 쪽으로 가는 걸 봤소. 그 뒤엔 집에 갔지. 누구를 만났는지는 못 봤소."';else if(what==='wages')line=x.doyle.cowed||st.flags.unionFunded?'"노조 쪽에서 새 돈이 들어왔소. 돈을 받았다는 이유만으로 내가 누굴 따르는지 정하지는 마시오."':'"갱도는 닫혔고 임금은 밀렸소. 다른 돈을 받으라지만 누가 주는지부터 알고 싶소."';else if(what==='where')line='"여기서 직접 본 것은 이곳에 들어온 사람뿐이오. 다른 집 안에서 무슨 일이 있었는지는 모르오."';else line=x.exploded?'"갱도 입구가 무너진 걸 봤소. 누가 점화했는지는 그때 곁에 있던 사람에게 물으시오."':'"화약고 문은 부서지지 않았소. 그게 누가 열었는지까지 말해 주지는 않지."';}
  if(who==='nurse')line=what==='supply'?'"붕대는 '+st.stock+'개 남았어요. 지혈할 천과 체력을 회복시키는 치료제는 달라요."':'"직접 이곳에 들어온 부상자만 봤어요. 상처만 보고 어느 편인지 알 수는 없어요."';
  if(who==='child')line=st.flags.childSilenced?'"꿈이었어. 아무것도 못 봤어." 아이가 눈을 내립니다.':st.flags.childSpoke?'"긴 외투 입은 사람이 땅을 팠어. 얼굴은 못 봤다니까."':'"교회 앞에서 큰 사람이 땅을 파는 걸 봤어. 얼굴은 못 봤어."';
@@ -286,10 +286,10 @@ const GUIDE_WHY={hall:'고발장을 내고 재판을 여는 곳입니다. 해먼
  GUIDE_USUAL={hall:['mayor'],warehouse:['doyle','miner'],tavern:['barkeep','miner'],clinic:['nurse'],chapel:['bellringer'],home:['landlady','resident','child']},
  GUIDE_NAME={mayor:'해먼드 시장',doyle:'도일',miner:'젊은 광부',barkeep:'술집 주인',nurse:'간호사',bellringer:'종지기',landlady:'하숙집 주인',resident:'이웃',child:'아이'},
  GUIDE_COMMON=['observe','evidence','hide','unhide','investigate','attack','track','jail','give','wait','move','disguise','bandage'];
-function placeGuide(s,p){if(!z(s)||!p||p.hp<=0)return null;const heard=s.feed.some(e=>e.to.includes(p.id)&&/폭약/.test(String(e.text))&&/여섯/.test(String(e.text))),places={};
+function placeGuide(s,p){if(!z(s)||!p||p.hp<=0)return null;const heard=s.feed.some(e=>e.to.includes(p.id)&&/폭약/.test(String(e.text))&&/두 개/.test(String(e.text))),places={};
  const asksAt=k=>{const m={};for(const [who,,label] of topics[k]||[])(m[who]??=[]).push(label.split(' · ')[1]);if(k==='warehouse')m.doyle=['갱도와 협박','화약고 열쇠'];return m;};
  for(const [k,pl] of Object.entries(C.places)){if(pl.secret)continue;const asks=asksAt(k);
-  places[k]={name:pl.name,here:false,why:GUIDE_WHY[k]+(k==='warehouse'&&heard?' 폭약 여섯 개가 없어졌다는 그 화약고입니다.':''),
+  places[k]={name:pl.name,here:false,why:GUIDE_WHY[k]+(k==='warehouse'&&heard?' 폭약 두 개가 없어졌다는 그 화약고입니다.':''),
    feature:[pl.light<0?'어두워서 주변을 살피기 어렵습니다(살피기 −2).':pl.light>0?'밝아서 숨기 어렵습니다(숨기 −2).':'',pl.cover?`숨을 곳이 있어 숨기 쉽습니다(숨기 +${pl.cover}).`:''].filter(Boolean).join(' '),
    people:(GUIDE_USUAL[k]||[]).map(id=>({name:GUIDE_NAME[id],asks:asks[id]||[]})),only:[],now:''};}
  const cur=places[p.location];if(cur&&s.turn!==2){cur.here=true;const m={};for(const o of optionsUnused(s,p)){const who=o.topic.split(':')[1];(m[who]??=[]).push(o.label.split(' · ')[1]);}

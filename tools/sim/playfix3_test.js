@@ -14,7 +14,7 @@ const role=(s,r)=>s.players.find(p=>p.role===r);
 {const s=game();const gf=role(s,'godfather'),mf=role(s,'mafioso');advance(s,{day:2,turn:0},s=>{if(s.day===1&&s.turn===0)for(const b of s.scenario.bombs)b.where='carry:'+gf.id;});
  const t=s.feed.filter(e=>e.to.includes(mf.id)&&e.source==='story/story_jobs.md'&&parseInt(e.time,10)===2).map(e=>e.text).join('\n');
  ok(/대놓고 칼을 꺼내면/.test(t),'대행자: 둘째 날 아침에 기본 안내가 먼저 나옴');
- advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)===3&&/자리를 옮겼습니다\. 지금 .*의 품에 6개/.test(e.text)),'대행자: 셋째 날 아침에 폭약이 지금 누구 품에 있는지 나옴');}
+ advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)===3&&/자리를 옮겼습니다\. 지금 .*의 품에 2개/.test(e.text)),'대행자: 셋째 날 아침에 폭약이 지금 누구 품에 있는지 나옴');}
 // 2. 아침에 아무도 없을 때 생긴 장면(도일의 협박장 공개)은 그 턴에 그곳에 오는 사람이 본다
 {const s=game();advance(s,{day:1,turn:1});s.scenario.doyle.threatened=true;advance(s,{day:2,turn:0});const p=s.players.find(p=>p.team==='town');ok(!seen(s,p,/도일이 협박장을 꺼냅니다/),'아침에 집에 있던 사람은 아직 못 봄');p.location='hall';S.arrival(s,p);ok(seen(s,p,/도일이 협박장을 꺼냅니다/),'아침에 회관으로 온 사람은 도일의 협박장 공개를 봄');S.arrival(s,p);ok(count(s,p,/도일이 협박장을 꺼냅니다/)===1,'한 번만 봄');}
 // 3. 같은 편이 폭약을 꺼내면 바로 알린다 / 쓰러지면서 떨어뜨려도 알린다
