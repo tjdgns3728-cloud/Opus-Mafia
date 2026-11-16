@@ -30,3 +30,4 @@
 | [v26](v26.md) | 2026-11-16 21:42 | `b5e35bc` | Seat code CM; describe the workbench record store in HANDOFF |
 | [v27](v27.md) | 2026-11-16 21:47 | `e1b883d` | Failure record: spoke as if unreadable sealed records could have been checked |
 | [v28](v28.md) | 2026-11-16 22:13 | `6cd0822` | Records: never delete; keep every committed past version of the record documents as numbered copies |
+| [v29](v29.md) | 2026-11-16 22:15 | `c8d9c80` | Records: copy the committed versions before editing HANDOFF; note the sealed versions bundle in the workbench |
