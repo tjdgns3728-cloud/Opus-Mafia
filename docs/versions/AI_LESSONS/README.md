@@ -35,3 +35,4 @@
 | [v31](v31.md) | 2026-11-17 20:57 | `c2f13bf` | Records: the user's remark was not a stop; CM misread it and halted the research, corrected and resumed (third study running); failure fact with the user's words on blocking failures |
 | [v32](v32.md) | 2026-11-17 21:38 | `598912e` | Records: third study (raw screens as task text): neither run added fixed vote rules and both asked; the first study's 6/6 traced to the task-text bias; effect fields updated |
 | [v33](v33.md) | 2026-11-17 21:50 | `e48e62f` | Records: research report remade in the folded layout (sealed v09); failure fact for the flat report |
+| [v34](v34.md) | 2026-11-17 21:51 | `634af8e` | Failure fact: read the user's question as blame and apologized first (repeat of the same-day misreading); why it repeated despite the record and rules |
