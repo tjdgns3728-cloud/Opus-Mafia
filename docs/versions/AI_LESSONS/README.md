@@ -45,3 +45,4 @@
 | [v41](v41.md) | 2026-11-18 01:05 | `150c9b8` | Failure fact (study 2): add that CM labeled the task AIs' plans as the old failure although they followed the rules; the user: the designer failed, the implementing AIs did nothing wrong |
 | [v42](v42.md) | 2026-11-18 02:09 | `e9a4a63` | Failure fact: the mockup report was one 4.9MB file with embedded images and the app refused to show it; images sent separately as small JPEGs |
 | [v43](v43.md) | 2026-11-18 02:15 | `d4bb624` | Failure fact: the report showed the mockup pictures shrunk to half width as JPEGs, so they could not be read; now full-size PNGs one per row |
+| [v44](v44.md) | 2026-11-18 02:24 | `5ac604d` | Failure facts: the app pane opens a page as one data: snapshot (sibling images never load, files over ~600KB do not open), so the report now embeds the mockup HTML; backslash eaten by the shell in node -e again |
