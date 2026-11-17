@@ -31,3 +31,4 @@
 | [v27](v27.md) | 2026-11-17 19:21 | `6803319` | Failure record: changing computer-seat trial votes without checking who those trials catch (from the 11-16 night playtest and the 11-17 study); finder test counts updated |
 | [v28](v28.md) | 2026-11-17 20:29 | `d9f72f4` | Records: second study (run given only the new failure record kept the vote rule; counted defendants by team); effect field on that record |
 | [v29](v29.md) | 2026-11-17 20:35 | `2f0c570` | Records: user judged the study invalid (rule-bot environment off the game's purpose, researcher interpretation in the task text, later decision in the record); failure fact |
+| [v30](v30.md) | 2026-11-17 20:39 | `13f66f8` | Failure records: computer seats given fixed rules instead of human-like judgment; research environment not matched to the game's purpose and researcher interpretation put in the task text |
