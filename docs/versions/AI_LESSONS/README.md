@@ -43,3 +43,4 @@
 | [v39](v39.md) | 2026-11-18 01:01 | `40e6a34` | Win-condition texts no longer say a recruited young miner counts for the mafia (only Hammond and Doyle do, as the win check counts); test for the count and the texts; failure fact: the study 2 report put everything in and the user could not see what the AIs made |
 | [v40](v40.md) | 2026-11-18 01:04 | `0af1e8e` | Failure fact: study 2 stopped the task AIs at a plan, so the user had nothing built to verify (the user judged at the mockup stage back then) |
 | [v41](v41.md) | 2026-11-18 01:05 | `150c9b8` | Failure fact (study 2): add that CM labeled the task AIs' plans as the old failure although they followed the rules; the user: the designer failed, the implementing AIs did nothing wrong |
+| [v42](v42.md) | 2026-11-18 02:09 | `e9a4a63` | Failure fact: the mockup report was one 4.9MB file with embedded images and the app refused to show it; images sent separately as small JPEGs |
