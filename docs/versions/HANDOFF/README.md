@@ -40,3 +40,4 @@
 | [v36](v36.md) | 2026-11-17 18:16 | `8d44e92` | Records: research report v03 (sharp screenshots, simple page, viewable by the user); two failure facts |
 | [v37](v37.md) | 2026-11-17 18:28 | `cfeb366` | Records: research report v04 (what each computer seat read and why it voted; list-switch view, rest folded); failure fact |
 | [v38](v38.md) | 2026-11-17 20:29 | `d9f72f4` | Records: second study (run given only the new failure record kept the vote rule; counted defendants by team); effect field on that record |
+| [v39](v39.md) | 2026-11-17 20:42 | `50a7036` | Records: reader-first study record v06; the study is invalid and the user judged CM unsuited as a research model |
