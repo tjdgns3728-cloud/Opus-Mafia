@@ -86,3 +86,4 @@
 | [v82](v82.md) | 2026-11-18 00:49 | `ab9d121` | CM study 2 at the user's request: redesigned from scratch with the same aim, one real request (strategy), kind-matched records handed or not, 3 runs each; all six proposed the same strategy window; one failure fact (backslash path passed through bash to tar); HANDOFF points to the sealed study 2 bundle |
 | [v83](v83.md) | 2026-11-18 01:01 | `40e6a34` | Win-condition texts no longer say a recruited young miner counts for the mafia (only Hammond and Doyle do, as the win check counts); test for the count and the texts; failure fact: the study 2 report put everything in and the user could not see what the AIs made |
 | [v84](v84.md) | 2026-11-18 01:19 | `a29b070` | Records: CM study 2 continued to mockups (v02 bundle, short report with the six screens) |
+| [v85](v85.md) | 2026-11-18 02:13 | `0e78557` | Record: study reports go to a file on the user's computer with images beside it, as GPT does (user's words kept) |
