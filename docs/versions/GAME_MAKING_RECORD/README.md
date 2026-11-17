@@ -67,3 +67,4 @@
 | [v63](v63.md) | 2026-11-16 22:49 | `b9b3d64` | Rules v23: a repeated instruction 'can be read' as the previous result being wrong (the record marks it as an estimate) |
 | [v64](v64.md) | 2026-11-17 00:04 | `c76336d` | Night playtest fixes: caught trials open without a consent vote, clearer refusals and button names, one child account, leftover interpretation lines removed |
 | [v65](v65.md) | 2026-11-17 08:12 | `76b6f86` | Records: dynamite-catch trials stay as they are (user's choice); play lengths corrected to what the screen showed |
+| [v66](v66.md) | 2026-11-17 13:32 | `95be7e7` | Record: read CX-01's research rules on request; the user kept the common rules' approval clause as is |
