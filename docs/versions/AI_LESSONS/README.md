@@ -47,3 +47,4 @@
 | [v43](v43.md) | 2026-11-18 02:15 | `d4bb624` | Failure fact: the report showed the mockup pictures shrunk to half width as JPEGs, so they could not be read; now full-size PNGs one per row |
 | [v44](v44.md) | 2026-11-18 02:24 | `5ac604d` | Failure facts: the app pane opens a page as one data: snapshot (sibling images never load, files over ~600KB do not open), so the report now embeds the mockup HTML; backslash eaten by the shell in node -e again |
 | [v45](v45.md) | 2026-11-18 02:25 | `115ce8d` | Failure fact: restore the backslash the shell dropped from the quoted broken line |
+| [v46](v46.md) | 2026-11-18 07:57 | `4d42ca4` | Failure fact: the user judged study 2 a failure because its results (plans, mockups) cannot be verified; gameplay must be shown |
