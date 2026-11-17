@@ -37,3 +37,4 @@
 | [v33](v33.md) | 2026-11-17 08:12 | `76b6f86` | Records: dynamite-catch trials stay as they are (user's choice); play lengths corrected to what the screen showed |
 | [v34](v34.md) | 2026-11-17 17:16 | `3d41a21` | Records: CM study v01 on failure records (3 real requests x with/without records x 3 runs, sealed in the workbench); three failure facts; user asked for smaller studies |
 | [v35](v35.md) | 2026-11-17 17:40 | `d34a299` | Records: research report rewritten results-first (same trial screen in every fixed game, actual proposals and answers); failure fact for the numbers-only first report |
+| [v36](v36.md) | 2026-11-17 18:16 | `8d44e92` | Records: research report v03 (sharp screenshots, simple page, viewable by the user); two failure facts |

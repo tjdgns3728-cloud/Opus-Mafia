@@ -70,3 +70,4 @@
 | [v66](v66.md) | 2026-11-17 13:32 | `95be7e7` | Record: read CX-01's research rules on request; the user kept the common rules' approval clause as is |
 | [v67](v67.md) | 2026-11-17 17:16 | `3d41a21` | Records: CM study v01 on failure records (3 real requests x with/without records x 3 runs, sealed in the workbench); three failure facts; user asked for smaller studies |
 | [v68](v68.md) | 2026-11-17 17:40 | `d34a299` | Records: research report rewritten results-first (same trial screen in every fixed game, actual proposals and answers); failure fact for the numbers-only first report |
+| [v69](v69.md) | 2026-11-17 18:16 | `8d44e92` | Records: research report v03 (sharp screenshots, simple page, viewable by the user); two failure facts |
