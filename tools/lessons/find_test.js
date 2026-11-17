@@ -9,7 +9,7 @@ const titles = list => list.map(r => r.title);
 
 // 1. 기록 파일
 const recs = L.load();
-check('기록이 29개', recs.length === 29, recs.length);
+check('기록이 31개', recs.length === 31, recs.length);
 check('모든 기록에 경험형 다섯 칸(상황과 한 일·실제 결과·원인과 근거·시도한 해결과 결과·이 경험이 보여 주는 것)이 있음', recs.every(r => r.situation && r.result && r.cause && r.tried && r.shows), recs.filter(r => !(r.situation && r.result && r.cause && r.tried && r.shows)).map(r => r.title));
 const rawLessons = fs.readFileSync(path.join(ROOT, 'docs', 'AI_LESSONS.md'), 'utf8').replace(/\r/g, '');
 check('읽지 못하고 빠진 기록이 없음(## 제목 수 = 읽은 기록 수, "실패 사실" 칸은 뺌)', (rawLessons.match(/^## (?!실패 사실$)/mg) || []).length === recs.length);
