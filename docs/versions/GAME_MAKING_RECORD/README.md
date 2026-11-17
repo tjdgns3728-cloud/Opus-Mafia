@@ -72,3 +72,4 @@
 | [v68](v68.md) | 2026-11-17 17:40 | `d34a299` | Records: research report rewritten results-first (same trial screen in every fixed game, actual proposals and answers); failure fact for the numbers-only first report |
 | [v69](v69.md) | 2026-11-17 18:16 | `8d44e92` | Records: research report v03 (sharp screenshots, simple page, viewable by the user); two failure facts |
 | [v70](v70.md) | 2026-11-17 18:28 | `cfeb366` | Records: research report v04 (what each computer seat read and why it voted; list-switch view, rest folded); failure fact |
+| [v71](v71.md) | 2026-11-17 20:29 | `d9f72f4` | Records: second study (run given only the new failure record kept the vote rule; counted defendants by team); effect field on that record |
