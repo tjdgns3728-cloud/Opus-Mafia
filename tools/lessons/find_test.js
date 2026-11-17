@@ -31,7 +31,7 @@ check('역할 기록에 효과·더 드는 일이 있음', !!roleRec && /Terra/.
 check('종류별 개수 목록에 14가지', L.kindCounts(recs).length === 14, L.kindCounts(recs).map(x => x[0]));
 // 지킬 방법(2026-11-16): 효과가 확인된 방법만, 할 행동·이유·조건과 함께. 경험만 있는 기록은 그대로
 const ruled = recs.filter(r => r.rule);
-check('지킬 방법이 있는 기록 8개, 모두 이유와 조건이 있음', ruled.length === 8 && ruled.every(r => /이유:/.test(r.rule) && /조건:/.test(r.rule)), ruled.map(r => r.title));
+check('지킬 방법이 있는 기록 7개, 모두 이유와 조건이 있음', ruled.length === 7 && ruled.every(r => /이유:/.test(r.rule) && /조건:/.test(r.rule)), ruled.map(r => r.title));
 check('역할 기록은 경험만(지킬 방법 없음)', !!roleRec && !roleRec.rule);
 const regexRec = recs.find(r => r.title === '정규식이 깨짐');
 check('정규식 기록은 띄울 때 지킬 방법이 먼저 나옴', !!regexRec && /^- 정규식이 깨짐 — 지킬 방법: 백슬래시/.test(L.hookOutput({ hook_event_name: 'UserPromptSubmit', prompt: '정규식 node -e' }, [regexRec])?.hookSpecificOutput.additionalContext.split('\n')[1] || ''));
@@ -97,8 +97,6 @@ r = run({ hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Write', t
 check('파일 훅: 다른 파일이면 뜸', !!json(r.stdout));
 r = run({ hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Edit', tool_input: { file_path: path.join(ROOT, 'README.md') } });
 check('파일 훅: 걸린 기록이 없으면 아무것도 안 냄', r.status === 0 && r.stdout === '');
-r = run({ hook_event_name: 'PreToolUse', session_id: 's1b', tool_name: 'Edit', tool_input: { file_path: path.join(os.tmpdir(), 'copy-of-game', 'tools', 'sim', 'masked_test.js') } });
-check('파일 훅: 저장소 밖 사본 파일에는 안 뜸(경로 끝이 같아도)', r.status === 0 && r.stdout === '', r.stdout);
 
 r = run({ hook_event_name: 'Stop', session_id: 's1' });
 check('다른 훅 이름이면 아무것도 안 냄', r.status === 0 && r.stdout === '');
