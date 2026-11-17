@@ -28,3 +28,4 @@
 | [v24](v24.md) | 2026-11-17 17:40 | `d34a299` | Records: research report rewritten results-first (same trial screen in every fixed game, actual proposals and answers); failure fact for the numbers-only first report |
 | [v25](v25.md) | 2026-11-17 18:16 | `8d44e92` | Records: research report v03 (sharp screenshots, simple page, viewable by the user); two failure facts |
 | [v26](v26.md) | 2026-11-17 18:28 | `cfeb366` | Records: research report v04 (what each computer seat read and why it voted; list-switch view, rest folded); failure fact |
+| [v27](v27.md) | 2026-11-17 19:21 | `6803319` | Failure record: changing computer-seat trial votes without checking who those trials catch (from the 11-16 night playtest and the 11-17 study); finder test counts updated |
