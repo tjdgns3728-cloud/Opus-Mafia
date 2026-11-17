@@ -78,3 +78,4 @@
 | [v74](v74.md) | 2026-11-17 20:57 | `c2f13bf` | Records: the user's remark was not a stop; CM misread it and halted the research, corrected and resumed (third study running); failure fact with the user's words on blocking failures |
 | [v75](v75.md) | 2026-11-17 21:38 | `598912e` | Records: third study (raw screens as task text): neither run added fixed vote rules and both asked; the first study's 6/6 traced to the task-text bias; effect fields updated |
 | [v76](v76.md) | 2026-11-17 21:45 | `02a41c6` | Records: full research report for the three studies (sealed v08) |
+| [v77](v77.md) | 2026-11-17 21:50 | `e48e62f` | Records: research report remade in the folded layout (sealed v09); failure fact for the flat report |
