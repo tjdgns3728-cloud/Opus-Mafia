@@ -38,3 +38,4 @@
 | [v34](v34.md) | 2026-11-17 21:51 | `634af8e` | Failure fact: read the user's question as blame and apologized first (repeat of the same-day misreading); why it repeated despite the record and rules |
 | [v35](v35.md) | 2026-11-17 21:55 | `bc45167` | Records: hand-off of the whole study as one sealed bundle (v10 complete); failure-fact times corrected from the transcript |
 | [v36](v36.md) | 2026-11-17 22:06 | `270487e` | Rule-like additions from today's study removed at the user's request (HANDOFF directive sentences, the new lesson's rule field, the outside-repo hook change); facts kept |
+| [v37](v37.md) | 2026-11-17 22:21 | `4c41597` | CM's research ends at the user's word; four failure facts (rule-like lines added without approval, the user's aim written as the study's aim, an unreadable report, a report that only opened through a server); HANDOFF points to the final hand-off bundle v11 |

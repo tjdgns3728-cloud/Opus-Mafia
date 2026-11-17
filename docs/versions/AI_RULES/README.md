@@ -25,3 +25,4 @@
 | [v21](v21.md) | 2026-11-16 22:13 | `6cd0822` | Records: never delete; keep every committed past version of the record documents as numbered copies |
 | [v22](v22.md) | 2026-11-16 22:47 | `39e3508` | Rules v22: record failures from the first one (fact plus links to conversation and outputs); drop the length limit |
 | [v23](v23.md) | 2026-11-16 22:49 | `b9b3d64` | Rules v23: a repeated instruction 'can be read' as the previous result being wrong (the record marks it as an estimate) |
+| [v24](v24.md) | 2026-11-17 23:10 | `1e06ca9` | Clarify questions, uncertainty, and scope of recorded guidance |
