@@ -76,3 +76,4 @@
 | [v72](v72.md) | 2026-11-17 20:35 | `2f0c570` | Records: user judged the study invalid (rule-bot environment off the game's purpose, researcher interpretation in the task text, later decision in the record); failure fact |
 | [v73](v73.md) | 2026-11-17 20:42 | `50a7036` | Records: reader-first study record v06; the study is invalid and the user judged CM unsuited as a research model |
 | [v74](v74.md) | 2026-11-17 20:57 | `c2f13bf` | Records: the user's remark was not a stop; CM misread it and halted the research, corrected and resumed (third study running); failure fact with the user's words on blocking failures |
+| [v75](v75.md) | 2026-11-17 21:38 | `598912e` | Records: third study (raw screens as task text): neither run added fixed vote rules and both asked; the first study's 6/6 traced to the task-text bias; effect fields updated |

@@ -33,3 +33,4 @@
 | [v29](v29.md) | 2026-11-17 20:35 | `2f0c570` | Records: user judged the study invalid (rule-bot environment off the game's purpose, researcher interpretation in the task text, later decision in the record); failure fact |
 | [v30](v30.md) | 2026-11-17 20:39 | `13f66f8` | Failure records: computer seats given fixed rules instead of human-like judgment; research environment not matched to the game's purpose and researcher interpretation put in the task text |
 | [v31](v31.md) | 2026-11-17 20:57 | `c2f13bf` | Records: the user's remark was not a stop; CM misread it and halted the research, corrected and resumed (third study running); failure fact with the user's words on blocking failures |
+| [v32](v32.md) | 2026-11-17 21:38 | `598912e` | Records: third study (raw screens as task text): neither run added fixed vote rules and both asked; the first study's 6/6 traced to the task-text bias; effect fields updated |
