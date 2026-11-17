@@ -81,3 +81,4 @@
 | [v77](v77.md) | 2026-11-17 21:50 | `e48e62f` | Records: research report remade in the folded layout (sealed v09); failure fact for the flat report |
 | [v78](v78.md) | 2026-11-17 21:51 | `634af8e` | Failure fact: read the user's question as blame and apologized first (repeat of the same-day misreading); why it repeated despite the record and rules |
 | [v79](v79.md) | 2026-11-17 21:55 | `bc45167` | Records: hand-off of the whole study as one sealed bundle (v10 complete); failure-fact times corrected from the transcript |
+| [v80](v80.md) | 2026-11-17 22:06 | `270487e` | Rule-like additions from today's study removed at the user's request (HANDOFF directive sentences, the new lesson's rule field, the outside-repo hook change); facts kept |

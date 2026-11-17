@@ -46,3 +46,4 @@
 | [v42](v42.md) | 2026-11-17 21:45 | `02a41c6` | Records: full research report for the three studies (sealed v08) |
 | [v43](v43.md) | 2026-11-17 21:50 | `e48e62f` | Records: research report remade in the folded layout (sealed v09); failure fact for the flat report |
 | [v44](v44.md) | 2026-11-17 21:55 | `bc45167` | Records: hand-off of the whole study as one sealed bundle (v10 complete); failure-fact times corrected from the transcript |
+| [v45](v45.md) | 2026-11-17 22:06 | `270487e` | Rule-like additions from today's study removed at the user's request (HANDOFF directive sentences, the new lesson's rule field, the outside-repo hook change); facts kept |
