@@ -43,3 +43,4 @@
 | [v39](v39.md) | 2026-11-17 20:42 | `50a7036` | Records: reader-first study record v06; the study is invalid and the user judged CM unsuited as a research model |
 | [v40](v40.md) | 2026-11-17 20:57 | `c2f13bf` | Records: the user's remark was not a stop; CM misread it and halted the research, corrected and resumed (third study running); failure fact with the user's words on blocking failures |
 | [v41](v41.md) | 2026-11-17 21:38 | `598912e` | Records: third study (raw screens as task text): neither run added fixed vote rules and both asked; the first study's 6/6 traced to the task-text bias; effect fields updated |
+| [v42](v42.md) | 2026-11-17 21:45 | `02a41c6` | Records: full research report for the three studies (sealed v08) |

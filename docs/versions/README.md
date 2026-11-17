@@ -9,8 +9,8 @@
 |---|---|---|
 | [공통 규칙](AI_RULES/README.md) | `AI_RULES.md` | 23 |
 | [실패 기록](AI_LESSONS/README.md) | `docs/AI_LESSONS.md` | 32 |
-| [제작 기록](GAME_MAKING_RECORD/README.md) | `docs/GAME_MAKING_RECORD.md` | 75 |
-| [인계 문서](HANDOFF/README.md) | `HANDOFF.md` | 41 |
+| [제작 기록](GAME_MAKING_RECORD/README.md) | `docs/GAME_MAKING_RECORD.md` | 76 |
+| [인계 문서](HANDOFF/README.md) | `HANDOFF.md` | 42 |
 | [이야기 설정](SETTING/README.md) | `story/SETTING.md` | 14 |
 | [Codex 안내](AGENTS/README.md) | `AGENTS.md` | 5 |
 | [Claude 안내](CLAUDE/README.md) | `CLAUDE.md` | 1 |
