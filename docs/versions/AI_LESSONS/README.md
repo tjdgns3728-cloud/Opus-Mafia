@@ -24,3 +24,4 @@
 | [v20](v20.md) | 2026-11-17 00:04 | `c76336d` | Night playtest fixes: caught trials open without a consent vote, clearer refusals and button names, one child account, leftover interpretation lines removed |
 | [v21](v21.md) | 2026-11-17 00:07 | `7ce56bd` | Records: failure-fact conversation links also point to the sealed 2026-11-17 workbench bundle; handoff notes the bundle |
 | [v22](v22.md) | 2026-11-17 08:12 | `76b6f86` | Records: dynamite-catch trials stay as they are (user's choice); play lengths corrected to what the screen showed |
+| [v23](v23.md) | 2026-11-17 17:16 | `3d41a21` | Records: CM study v01 on failure records (3 real requests x with/without records x 3 runs, sealed in the workbench); three failure facts; user asked for smaller studies |

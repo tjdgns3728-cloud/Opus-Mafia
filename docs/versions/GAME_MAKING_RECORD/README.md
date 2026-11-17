@@ -68,3 +68,4 @@
 | [v64](v64.md) | 2026-11-17 00:04 | `c76336d` | Night playtest fixes: caught trials open without a consent vote, clearer refusals and button names, one child account, leftover interpretation lines removed |
 | [v65](v65.md) | 2026-11-17 08:12 | `76b6f86` | Records: dynamite-catch trials stay as they are (user's choice); play lengths corrected to what the screen showed |
 | [v66](v66.md) | 2026-11-17 13:32 | `95be7e7` | Record: read CX-01's research rules on request; the user kept the common rules' approval clause as is |
+| [v67](v67.md) | 2026-11-17 17:16 | `3d41a21` | Records: CM study v01 on failure records (3 real requests x with/without records x 3 runs, sealed in the workbench); three failure facts; user asked for smaller studies |
