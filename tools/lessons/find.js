@@ -110,7 +110,8 @@ function hookOutput(d, recs) {
     tail = '맞는 기록이 있으면 첫 답에 "떠오른 기록"으로 한 줄 밝힙니다. 이번 일과 상관없으면 그렇다고 말하고 넘어갑니다.';
   } else if (ev === 'PreToolUse') {
     const ti = d.tool_input || {}, rel = relPath(ti.file_path || ti.notebook_path || '');
-    if (!rel) return null;
+    // 이 저장소의 기록은 이 저장소 파일에만 띄운다(2026-11-17). 저장소 밖의 게임 사본을 고치는 AI(연구의 기록 없는 조건 등)에게 기록이 새지 않게.
+    if (!rel || path.isAbsolute(rel) || /^[A-Za-z]:\//.test(rel)) return null;
     list = byFile(recs, rel);
     key = 'file:' + rel;
     head = `고치려는 파일(${rel})에 걸린 지난 실패 기록입니다(docs/AI_LESSONS.md).`;

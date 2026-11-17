@@ -97,6 +97,8 @@ r = run({ hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Write', t
 check('파일 훅: 다른 파일이면 뜸', !!json(r.stdout));
 r = run({ hook_event_name: 'PreToolUse', session_id: 's1', tool_name: 'Edit', tool_input: { file_path: path.join(ROOT, 'README.md') } });
 check('파일 훅: 걸린 기록이 없으면 아무것도 안 냄', r.status === 0 && r.stdout === '');
+r = run({ hook_event_name: 'PreToolUse', session_id: 's1b', tool_name: 'Edit', tool_input: { file_path: path.join(os.tmpdir(), 'copy-of-game', 'tools', 'sim', 'masked_test.js') } });
+check('파일 훅: 저장소 밖 사본 파일에는 안 뜸(경로 끝이 같아도)', r.status === 0 && r.stdout === '', r.stdout);
 
 r = run({ hook_event_name: 'Stop', session_id: 's1' });
 check('다른 훅 이름이면 아무것도 안 냄', r.status === 0 && r.stdout === '');
