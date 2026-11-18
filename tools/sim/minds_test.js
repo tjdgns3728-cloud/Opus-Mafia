@@ -73,3 +73,23 @@ ok(M.principles(m1).includes('같은 편')&&M.principles(t1).includes('신용'),
  const ds=[a,b,c].map(x=>({type:'disguise',target:x.id}));
  ok(M.disguiseTarget(s,m2,ds,()=>0)?.target===b.id,'마피아는 이미 고발받은 시민(나래)으로 꾸밈');
  ok(M.disguiseTarget(s,m2,[{type:'disguise',target:a.id}],()=>0)===null,'고발받은 사람이 없으면 따로 고르지 않음(아무나)');}
+// ---- 2026-11-18 추가: 한 사람의 말은 한 번만 ----
+{const s=C.create(Array.from({length:8},(_,i)=>({id:'r'+i,name:['가람','나래','다온','라희','마루','바다','사랑','아라'][i],bot:true})),rng);S.start(s);S.afterGathering?.(s);
+ s.day=3;s.turn=0;for(const q of s.players){q.location='hall';q.hidden=false;q.filedDay=null;}
+ const [a,b,c,d,e,f]=s.players.filter(p=>p.team==='town').concat(s.players.filter(p=>p.team==='mafia'));
+ const mk=(by,target,reason,evidence=[])=>{const cs={id:'c'+(++s.serial),day:s.day,closed:false,target,by,reason,reasons:[{by,text:reason}],evidence,support:[by],responses:{[by]:true},order:s.serial};s.cases.push(cs);for(const o of C.alive(s)){o.knownCases??=[];o.knownCases.push(cs.id);}return cs;};
+ const seen={id:'k'+(++s.serial),text:`${c.name}이 ${d.name}을 단검으로 공격했습니다.`,about:c.id,source:'직접 목격',kind:'observed',time:'3일째 낮 1'};b.known.push(seen);
+ const ev={id:seen.id,by:b.id,text:seen.text,source:seen.source,kind:'observed',time:seen.time};
+ mk(b.id,c.id,seen.text,[ev]);const base=M.suspicion(s,a,c.id).score;
+ ok(base===4,'목격 근거 하나: 4');
+ // 14. 근거를 낸 목격자가 회관에서 같은 일을 말해도 더하지 않는다
+ C.learn(s,a.id,`${b.name}: 제가 직접 본 것이 있습니다. ${c.name}이 ${d.name}을 단검으로 공격했습니다.`,b.id,'현장에서 들은 말','claim');
+ ok(M.suspicion(s,a,c.id).score===base,'근거를 낸 사람이 같은 일을 말해도 의심이 늘지 않음');
+ // 15. 근거가 없는 사람이 여러 번 말해도 한 번
+ C.learn(s,a.id,`${e.name}: ${c.name}이 사람을 공격하는 걸 봤소.`,e.id,'현장에서 들은 말','claim');const once=M.suspicion(s,a,c.id).score;
+ C.learn(s,a.id,`${e.name}: 다시 말하지만 ${c.name}이 공격했소.`,e.id,'현장에서 들은 말','claim');
+ ok(once===base+2&&M.suspicion(s,a,c.id).score===once,'같은 사람이 두 번 말해도 들은 증언은 한 번(2)');
+ // 16. 같은 근거가 두 신청에 붙어도 한 번
+ mk(b.id,c.id,seen.text,[ev]);ok(M.suspicion(s,a,c.id).score===once,'같은 근거가 두 신청에 붙어도 한 번');
+ // 17. 근거 없는 고발도 같은 사람이 여러 번 내면 한 번
+ mk(d.id,e.id,'수상합니다.');mk(d.id,e.id,'정말 수상합니다.');ok(Math.abs(M.suspicion(s,a,e.id).score-0.6)<0.01,'같은 사람의 근거 없는 고발 둘은 0.6 한 번');}

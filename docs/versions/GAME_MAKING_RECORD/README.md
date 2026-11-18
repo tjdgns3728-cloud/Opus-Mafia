@@ -108,3 +108,4 @@
 | [v104](v104.md) | 2026-11-18 21:06 | `8f5097e` | Witness notice under fight text: the scene is in the notebook and can be chosen as trial evidence; test |
 | [v105](v105.md) | 2026-11-18 21:37 | `246d168` | Record: computer-seat judgment, measurements and AI-on games; code map lists the new script |
 | [v106](v106.md) | 2026-11-18 21:46 | `5b3e6f6` | Record: causes of wrongful town convictions in simulated games |
+| [v107](v107.md) | 2026-11-18 22:14 | `4187d22` | Computer seats: night sightings, who said what, and chosen disguises; record; tests |

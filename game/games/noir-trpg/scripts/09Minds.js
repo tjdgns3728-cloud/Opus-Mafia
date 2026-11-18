@@ -32,20 +32,28 @@ function suspicion(s,p,x){if(!x||x===p.id)return {score:0,why:[]};const nm=id=>C
  /* 밤에 본 얼굴은 변장일 수 있다(마피아는 밤마다 다른 사람으로 꾸민다). 밤의 목격은 밤마다 가장 센 것 하나만 세고,
     첫 밤은 반만, 서로 다른 밤에 또 같은 이름을 봤다면 그 밤부터는 거의 그대로 믿는다. */
  const nights=[];const add=(w,label,k)=>{if(isNight(k))nights.push({w,label,time:String(k.time)});else{score+=w;why.push(label);}};
+ /* 한 사람의 말은 한 번만 센다(2026-11-18): 목격 근거를 낸 사람이 회관에서 같은 일을 말해도 따로 더하지 않고,
+    같은 사람이 여러 번 말해도, 같은 근거가 여러 신청에 붙어도, 같은 사람이 여러 번 고발해도 한 번으로 센다. */
+ const vis=cases(s,p).filter(c=>c.target===x);
+ const witnesses=new Set(vis.flatMap(c=>c.caught?[]:(c.evidence||[]).filter(e=>e.by!==p.id&&(e.kind==='evidence'||e.kind==='observed'&&ATTACK.test(String(e.text)))).map(e=>e.by)));
+ const spoke=new Set(),seenEv=new Set(),seenFiler=new Set();
+ const claim=(text,w,label)=>{const c=claimInfo(s,text);/* 피고 자신의 말은 피고를 짚는 근거가 아니다 */if(c.speaker===x||!accuses(s,c.body,x))return;
+  const key=c.speaker||'?'+c.body;if(spoke.has(key)||(c.speaker&&witnesses.has(c.speaker)))return;spoke.add(key);score+=w*trust(s,p,c.speaker);why.push(label(c));};
  for(const k of known(p)){const text=String(k.text);
-  if(k.kind==='claim'){const c=claimInfo(s,text);if(c.speaker!==x&&accuses(s,c.body,x)){score+=2*trust(s,p,c.speaker);why.push((c.speaker?nm(c.speaker)+'의 ':'')+'들은 증언');}continue;}
+  if(k.kind==='claim'){claim(text,2,c=>(c.speaker?nm(c.speaker)+'의 ':'')+'들은 증언');continue;}
   if(k.about!==x)continue;
   if(k.source==='직접 목격'&&ATTACK.test(text))add(8,'내가 직접 본 공격',k);
   else if(k.source==='직접 목격'&&/집에 들어가는 것을 봤다/.test(text))add(3,'밤에 남의 집에 들어가는 것을 봄',k);
   else if(k.kind==='evidence'&&ATTACK.test(text))add(4,'공격 장면 사진',k);}
- for(const c of cases(s,p)){if(c.target!==x)continue;
+ for(const c of vis){
   if(c.caught){if(c.caughtKind==='npc'){score+=1;why.push('NPC의 고발');}else{score+=6;why.push('여럿 앞에서 붙잡힘');}continue;}
-  for(const e of c.evidence||[]){if(e.by===p.id)continue;const t=Math.max(0.6,trust(s,p,e.by)),text=String(e.text);
+  for(const e of c.evidence||[]){if(e.by===p.id)continue;const key=e.by+'|'+e.text+'|'+e.time;if(seenEv.has(key))continue;seenEv.add(key);
+   const t=Math.max(0.6,trust(s,p,e.by)),text=String(e.text);
    if(e.kind==='observed'&&ATTACK.test(text))add(4*t,nm(e.by)+'의 목격 근거',e);
    else if(e.kind==='evidence'){score+=2.5*t;why.push(nm(e.by)+'의 사진 근거');}
-   else if(e.kind==='claim'){const cl=claimInfo(s,text);/* 피고 자신의 말은 피고를 짚는 근거가 아니다 */if(cl.speaker!==x&&accuses(s,cl.body,x)){score+=1.5*trust(s,p,cl.speaker);why.push(nm(e.by)+'가 붙인 증언');}}
+   else if(e.kind==='claim')claim(text,1.5,()=>nm(e.by)+'가 붙인 증언');
    else score+=0.8*t;}
-  for(const f of filers(c))if(f!==p.id&&!(c.evidence||[]).some(e=>e.by===f)){score+=0.6*trust(s,p,f);why.push(nm(f)+'의 근거 없는 고발');}}
+  for(const f of filers(c))if(f!==p.id&&!seenFiler.has(f)&&!(c.evidence||[]).some(e=>e.by===f)){seenFiler.add(f);score+=0.6*trust(s,p,f);why.push(nm(f)+'의 근거 없는 고발');}}
  const best={};for(const n of nights)if(!best[n.time]||n.w>best[n.time].w)best[n.time]=n;
  Object.values(best).sort((a,b)=>b.w-a.w).forEach((n,i)=>{score+=n.w*(i?0.9:0.5);why.push(n.label+(i?' · 다른 밤에 또 봄':' · 밤이라 변장일 수 있음'));});
  if(p.team!=='mafia')for(const c of cases(s,p))if(c.target===p.id&&filers(c).includes(x)){score+=4;why.push('나를 거짓으로 고발함');}
