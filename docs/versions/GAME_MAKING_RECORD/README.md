@@ -88,3 +88,4 @@
 | [v84](v84.md) | 2026-11-18 01:19 | `a29b070` | Records: CM study 2 continued to mockups (v02 bundle, short report with the six screens) |
 | [v85](v85.md) | 2026-11-18 02:13 | `0e78557` | Record: study reports go to a file on the user's computer with images beside it, as GPT does (user's words kept) |
 | [v86](v86.md) | 2026-11-18 08:16 | `f9e6e94` | CM study 3 at the user's direction: AI plays a short mafia game as a human-like strategist, with and without defeat records (same three games); outcomes identical per game, the record side voiced the record's lessons |
+| [v87](v87.md) | 2026-11-18 13:16 | `0ae6649` | Failure fact: the study 3 report labelled game results as the AI side winning or losing, though the other six seats were code and decided the result too; the report now leads with the AI's own votes. Autonomous studies 4 and 5 started at the user's direction (pre-registered in chat) |
