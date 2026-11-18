@@ -103,3 +103,4 @@
 | [v99](v99.md) | 2026-11-18 18:09 | `b2a8119` | Plain-language summary of the autonomous studies and its bundle pointer (workbench e3beaa3) |
 | [v100](v100.md) | 2026-11-18 18:49 | `84ee63f` | Record the same-game replay design failure and the user's review |
 | [v101](v101.md) | 2026-11-18 18:58 | `0224ff3` | AI_RULES v25: read past records as facts of that time, not of now |
+| [v102](v102.md) | 2026-11-18 20:20 | `d277806` | Record: summary and report corrected to set aside same-game replay studies |
