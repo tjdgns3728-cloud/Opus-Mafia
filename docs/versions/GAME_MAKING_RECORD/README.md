@@ -91,3 +91,4 @@
 | [v87](v87.md) | 2026-11-18 13:16 | `0ae6649` | Failure fact: the study 3 report labelled game results as the AI side winning or losing, though the other six seats were code and decided the result too; the report now leads with the AI's own votes. Autonomous studies 4 and 5 started at the user's direction (pre-registered in chat) |
 | [v88](v88.md) | 2026-11-18 13:35 | `c4759a5` | Autonomous studies 4-9 results so far, and three failure facts: the study 3 report did not say code seats ignore free text, study 5 compared one game per side, and 25 subagents exceeded the limit of 20 |
 | [v89](v89.md) | 2026-11-18 13:46 | `40a577a` | Autonomous studies 10-12 results, audit of 88 game logs, and the sealed bundle pointer (workbench 6a6a80b) |
+| [v90](v90.md) | 2026-11-18 13:57 | `4f88ccd` | Autonomous studies 13-15 results and the v02 bundle pointer (workbench eb39ccb) |
