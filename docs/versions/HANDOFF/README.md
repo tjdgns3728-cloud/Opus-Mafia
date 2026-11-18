@@ -53,3 +53,4 @@
 | [v49](v49.md) | 2026-11-18 08:16 | `f9e6e94` | CM study 3 at the user's direction: AI plays a short mafia game as a human-like strategist, with and without defeat records (same three games); outcomes identical per game, the record side voiced the record's lessons |
 | [v50](v50.md) | 2026-11-18 13:46 | `40a577a` | Autonomous studies 10-12 results, audit of 88 game logs, and the sealed bundle pointer (workbench 6a6a80b) |
 | [v51](v51.md) | 2026-11-18 13:57 | `4f88ccd` | Autonomous studies 13-15 results and the v02 bundle pointer (workbench eb39ccb) |
+| [v52](v52.md) | 2026-11-18 14:07 | `5e4d061` | Autonomous studies 16-17 results and the final v03 bundle pointer (workbench ff2fad2) |

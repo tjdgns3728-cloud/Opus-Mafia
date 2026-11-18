@@ -92,3 +92,4 @@
 | [v88](v88.md) | 2026-11-18 13:35 | `c4759a5` | Autonomous studies 4-9 results so far, and three failure facts: the study 3 report did not say code seats ignore free text, study 5 compared one game per side, and 25 subagents exceeded the limit of 20 |
 | [v89](v89.md) | 2026-11-18 13:46 | `40a577a` | Autonomous studies 10-12 results, audit of 88 game logs, and the sealed bundle pointer (workbench 6a6a80b) |
 | [v90](v90.md) | 2026-11-18 13:57 | `4f88ccd` | Autonomous studies 13-15 results and the v02 bundle pointer (workbench eb39ccb) |
+| [v91](v91.md) | 2026-11-18 14:07 | `5e4d061` | Autonomous studies 16-17 results and the final v03 bundle pointer (workbench ff2fad2) |
