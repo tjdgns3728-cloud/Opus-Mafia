@@ -46,6 +46,7 @@
 |[06StoryDirector.js](game/games/noir-trpg/scripts/06StoryDirector.js)|조건부 사건 발생·후속·개인 기록|
 |[07StoryActions.js](game/games/noir-trpg/scripts/07StoryActions.js)|유품·수첩·종이·협박·돈·NPC 행동, 끌어들이기(`RECRUIT` 표), 얼굴을 가린 조직원 부르기(`callMasked`)|
 |[08StoryFlow.js](game/games/noir-trpg/scripts/08StoryFlow.js)|장소 도착, 낮밤 전환, NPC 일정(`post`·`nightPost`), 끌어들인 사람의 아침 소식(`informantNews`), 재판·신문·폭발 이후|
+|[09Minds.js](game/games/noir-trpg/scripts/09Minds.js)|컴퓨터 자리의 판단: 수첩과 아는 재판 신청으로 센 의심·신용, 고발·동의·표, 마피아의 위협·되받아 고발·습격 대상, AI 자리 지시문에 붙는 원칙과 참고 판단(2026-11-18)|
 |[10Session.js](game/games/noir-trpg/scripts/10Session.js)|공유 단계·시간·AI 요청·행동 제출 연결. 자리가 새 인물을 맡으면 `seatAs`로 화면·행동·말을 그 인물에게 돌림|
 |[15Audio.js](game/games/noir-trpg/scripts/15Audio.js)|오디오. 배경MP3는 개인 파일이라 게시에서 제외|
 |[20Interface.js](game/games/noir-trpg/scripts/20Interface.js)|화면, 개인 기록, 채팅, 행동·대화 선택, 재판 UI|
