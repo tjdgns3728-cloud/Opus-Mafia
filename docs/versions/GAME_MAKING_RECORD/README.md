@@ -118,3 +118,4 @@
 | [v114](v114.md) | 2026-11-18 23:49 | `f0a684f` | Verdict scene: ten-second pause with a drawing and story, execution sound; tests; record |
 | [v115](v115.md) | 2026-11-19 00:00 | `e6a1044` | Verdict scene uses the user's photo with the game's color tone; hall photo for acquittal until a new one; test; record |
 | [v116](v116.md) | 2026-11-19 00:22 | `6f027ef` | 컴퓨터 자리 AI 기록과 무죄 판결 사진 |
+| [v117](v117.md) | 2026-11-19 01:36 | `84b0d30` | NPC 끌어들이기·협박 행동·얼굴 가리기, 판 끝 기록 고침 |
