@@ -51,3 +51,4 @@
 | [v47](v47.md) | 2026-11-18 13:16 | `0ae6649` | Failure fact: the study 3 report labelled game results as the AI side winning or losing, though the other six seats were code and decided the result too; the report now leads with the AI's own votes. Autonomous studies 4 and 5 started at the user's direction (pre-registered in chat) |
 | [v48](v48.md) | 2026-11-18 13:35 | `c4759a5` | Autonomous studies 4-9 results so far, and three failure facts: the study 3 report did not say code seats ignore free text, study 5 compared one game per side, and 25 subagents exceeded the limit of 20 |
 | [v49](v49.md) | 2026-11-18 14:02 | `bb9abdf` | Failure fact: a commit title shown to later game AIs described how the code seats vote; affected comparisons are marked and study 11 is now unanswerable |
+| [v50](v50.md) | 2026-11-18 14:20 | `9da3e92` | Autonomous studies 18-20 rerun outside the repo, and the v04 bundle pointer (workbench e87262b) |
