@@ -27,3 +27,4 @@
 | [v23](v23.md) | 2026-11-16 22:49 | `b9b3d64` | Rules v23: a repeated instruction 'can be read' as the previous result being wrong (the record marks it as an estimate) |
 | [v24](v24.md) | 2026-11-17 23:10 | `1e06ca9` | Clarify questions, uncertainty, and scope of recorded guidance |
 | [v25](v25.md) | 2026-11-18 18:58 | `0224ff3` | AI_RULES v25: read past records as facts of that time, not of now |
+| [v26](v26.md) | 2026-11-18 | `64b208c` | 5절 · 지난 행동을 다시 선택할 근거는 현재 상황에서 찾는다. [당시 상황과 결과](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/83f8b0756d998b1090f51f7b9e3b25c006164e81/docs/AI_LESSONS.md#L536) |
