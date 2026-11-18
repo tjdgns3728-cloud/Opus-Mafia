@@ -95,3 +95,4 @@
 | [v91](v91.md) | 2026-11-18 14:07 | `5e4d061` | Autonomous studies 16-17 results and the final v03 bundle pointer (workbench ff2fad2) |
 | [v92](v92.md) | 2026-11-18 14:20 | `9da3e92` | Autonomous studies 18-20 rerun outside the repo, and the v04 bundle pointer (workbench e87262b) |
 | [v93](v93.md) | 2026-11-18 14:38 | `3a65b3e` | Autonomous studies 21-22 and the v05 bundle pointer (workbench 95475be) |
+| [v94](v94.md) | 2026-11-18 15:11 | `88932d6` | Autonomous studies 23-30 and the v06 bundle pointer (workbench c0073f3) |
