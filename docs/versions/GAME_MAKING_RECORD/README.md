@@ -111,3 +111,4 @@
 | [v107](v107.md) | 2026-11-18 22:14 | `4187d22` | Computer seats: night sightings, who said what, and chosen disguises; record; tests |
 | [v108](v108.md) | 2026-11-18 22:30 | `ab30628` | Computer seats count each person's word once; record; tests |
 | [v109](v109.md) | 2026-11-18 22:43 | `d39ea57` | Record: AI-on games on the current code |
+| [v110](v110.md) | 2026-11-18 22:54 | `14bfa63` | Computer seats read who attacked in a remark and skip faceless records; record; tests |
