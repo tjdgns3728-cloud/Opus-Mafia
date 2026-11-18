@@ -563,3 +563,16 @@ AI가 비슷한 일을 시작할 때와 관련 파일을 고치기 직전에, `t
 - 고친 것: settings.json과 코드 기본값을 함께 고치고, settings.json을 넣어 만든 판의 시간과 화면 글을 함께 보는 tools/sim/timing_test.js를 더함(2026-11-18).
 - 대화: CM 대화 원문 2026-11-18 밤. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
 - 결과물: 저장소 `game/games/noir-trpg/assets/settings.json`, `game/games/noir-trpg/scripts/00World.js`, 커밋 213b3ba.
+
+### 2026-11-19 · CM · 시험 전체를 "실패" 줄만 세어 확인해, 중간에 멈춘 시험 둘을 통과로 보고함
+- 일어난 일: AI 자리 패배기록을 넣은 뒤 시험 38개를 돌리고 사용자에게 "시험 38개가 모두 통과했고"라고 보고했다. 확인 명령은 시험마다 출력에서 "실패"로 시작하는 줄만 셌다(확인: 대화 원문의 명령). playfix4_test.js와 playtest_fix_test.js는 표결에 새로 넣은 `r.ai.mode`에서 TypeError로 멈춰 "실패" 줄 없이 끝났고, 그래서 통과로 셌다(확인: 11-19 다시 돌려 같은 줄의 오류를 봄. 그 사이 바꾼 것은 판결 뒤 기록 쓰기 자리뿐).
+- 원인과 근거: 멈춘 시험은 "실패" 줄을 내지 않는데 종료 코드를 보지 않았다(확인). 시험 두 개의 가짜 방에는 `ai`가 없는데, 실제 방에만 있는 값을 확인 없이 읽는 코드를 넣었다(확인).
+- 고친 것: 표결·동의의 두 곳을 `r.ai?.mode`로 고치고, 종료 코드와 "실패" 줄을 함께 보는 명령으로 다시 돌려 38개 통과(2026-11-19).
+- 대화: CM 대화 원문 2026-11-19 새벽. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
+- 결과물: 저장소 `game/games/noir-trpg/scripts/10Session.js`, `tools/sim/playfix4_test.js`·`tools/sim/playtest_fix_test.js`, 제작 기록의 "패배기록과 모든 컴퓨터 자리 AI" 줄.
+
+### 2026-11-19 · CM · 엔진의 그림 만들기 기능을 찾지 않고 "이 환경에는 사진을 만들 도구가 없다"고 말함
+- 일어난 일: 2026-11-18 판결 장면 사진 작업에서 사용자에게 사진을 만들 도구가 없다고 말하고 제작 기록의 "판결 장면 사진" 줄에도 그렇게 적었다. 사용자가 "클로드는 사진 생성 기능이 없나요?"라고 물었고, 사용자가 준 사진을 그대로 쓰기로 했다. 그러나 엔진에는 ChatGPT 구독의 그림 도구를 Codex CLI로 부르는 그림 만들기가 있다(확인: `game/webengine/server/image.py`, `game/webengine/ai.json`의 "그림", 편집기의 그림 만들기).
+- 원인과 근거: 이 컴퓨터에 깔린 사진 고치기 프로그램(Pillow·OpenCV·ffmpeg·ImageMagick)만 찾고, 저장소 엔진의 기능은 찾지 않았다(확인: 그때 찾은 것). 그 도구로 사용자의 사진을 고칠 수 있는지(사진을 넣어 고치기)는 확인하지 않았다(모름). 2026-11-19 지금은 같은 구독이 사용 한도에 걸려 시험도 못 한다(확인: ai_calls.jsonl의 "usage limit").
+- 대화: CM 대화 원문 2026-11-19 새벽. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
+- 결과물: 저장소 `assets/verdict-released.webp`(사용자가 준 사진 그대로), 제작 기록의 "판결 장면 사진" 줄(고치지 않음)과 "패배기록과 모든 컴퓨터 자리 AI" 줄.

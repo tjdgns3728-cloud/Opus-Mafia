@@ -116,3 +116,4 @@
 | [v112](v112.md) | 2026-11-18 23:14 | `24c18a3` | Longer hall talk, actions and trials in real rooms; game cap 90 minutes; timing test; records |
 | [v113](v113.md) | 2026-11-18 23:35 | `5fc934d` | Play-test fixes: hall chat, guarding for everyone, dynamite handling, trial banner, play records, contest results only; tests; record |
 | [v114](v114.md) | 2026-11-18 23:49 | `f0a684f` | Verdict scene: ten-second pause with a drawing and story, execution sound; tests; record |
+| [v115](v115.md) | 2026-11-19 00:00 | `e6a1044` | Verdict scene uses the user's photo with the game's color tone; hall photo for acquittal until a new one; test; record |

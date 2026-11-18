@@ -10,7 +10,7 @@ let x=11;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};
 const fresh=()=>{const s=C.create(['가람','나래','다온','라희','마루','바다','사랑','아라'].map((n,i)=>({id:'p'+i,name:n,bot:true})),rng);S.start(s);S.afterGathering?.(s);s.day=2;s.turn=0;s.stage='plan';for(const p of s.players){p.location='hall';p.hidden=false;p.used={big:false,small:false};}return s;};
 // 1. 첫 회관 대화: 잡담, 판단 원칙은 큰 행동 지시문에만
 ok(src10.includes('사람들이 처음 회관에 모인 자리다')&&src10.includes('잡담을 한다'),'첫 회관 AI 지시문은 잡담하는 자리');
-ok(src10.split('NoirMinds.principles').length-1===1,'판단 원칙은 큰 행동 지시문 한 곳에만');
+ok(!src10.includes('NoirMinds.principles')&&src10.split('defeatsFor(s,p)').length-1>=4,'AI 지시문에는 공통 판단 원칙 대신 그 자리가 받은 패배기록(2026-11-19 사용자: 각자의 독자성)');
 ok(!/RULE_FACTS|숨긴 폭약의 자리는 처음에 마피아만 안다/.test(src10),'AI 지시문에 폭약 행동을 가르치는 글을 넣지 않음(사용자: 지시 대신 패배기록으로)');
 {const s=fresh(),p=s.players[0];const line=T.cannedTalk(s,p,'hall');ok(line&&!/가 보겠습니다|남아 사람들 이야기/.test(line)&&p.intendPlace,'AI 끈 컴퓨터 자리의 첫 회관 말은 잡담(갈 곳은 따로 정해 둠): '+line);}
 // 2. 곁에서 지키기: 누구나, 낮에만, 같은 곳. 퇴역군인은 막아설 때 보정 +2
@@ -59,5 +59,5 @@ for(const said of [true,false]){const s=fresh(),{maf,place,q}=atBomb(s);q.doyle.
  ok(s.stage==='verdict'&&r.phases.includes('verdict:10')&&!!s.verdict&&s.readingSince,'판결 뒤 10초짜리 판결 장면(그동안 게임 시계는 멈춤)');
  const before=s.pausedMs||0;s.readingSince=Date.now()-10000;r.closePhase();ok((s.pausedMs||0)-before>=9000,'판결 장면 동안의 시간은 게임 시간에서 빠짐');
  const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8'),au=fs.readFileSync(path.join(dir,'15Audio.js'),'utf8');
- const css=fs.readFileSync(path.join(dir,'..','assets','trpg.css'),'utf8');ok(ui.includes("v?.stage==='verdict'&&v.verdict)extra+=this.verdictScene(v)")&&ui.includes("verdict-photo ${g?'guilty':'released'}")&&ui.includes('this.sound?.hang?.()')&&css.includes("url('/project/assets/verdict-guilty.webp')")&&fs.existsSync(path.join(dir,'..','assets','verdict-guilty.webp')),'화면: 유죄면 사용자가 준 처형대 사진(게임 색감으로)과 처형 소리, 무죄면 회관 사진');
+ const css=fs.readFileSync(path.join(dir,'..','assets','trpg.css'),'utf8');ok(ui.includes("v?.stage==='verdict'&&v.verdict)extra+=this.verdictScene(v)")&&ui.includes("verdict-photo ${g?'guilty':'released'}")&&ui.includes('this.sound?.hang?.()')&&css.includes("url('/project/assets/verdict-guilty.webp')")&&css.includes("url('/project/assets/verdict-released.webp')")&&fs.existsSync(path.join(dir,'..','assets','verdict-guilty.webp'))&&fs.existsSync(path.join(dir,'..','assets','verdict-released.webp')),'화면: 유죄면 처형대 사진과 처형 소리, 무죄면 풀려나는 사진(둘 다 사용자가 준 사진을 게임 색감으로)');
  ok(/ hang\(\)\{/.test(au)&&au.includes("burst(t,.45,'lowpass'")&&au.includes("o.type='sawtooth'"),'처형 소리: 발판이 빠지는 소리와 밧줄 소리를 코드로 만듦');}
