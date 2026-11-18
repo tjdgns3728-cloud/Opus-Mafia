@@ -33,4 +33,4 @@ for(const role of ['detective','godfather']){const pa=A.players.find(p=>p.role==
 // 6. 7일이 지나면 열차가 오고, 결말은 네 줄
 {const s=advance(game(19),{day:99,turn:0});ok(s.result&&s.day===8,'일곱째 날 밤이 지나면 끝남 (끝난 때: '+s.day+'일째)');const lines=String(s.result?.text||'').split('\n');ok(lines.length===4,'결말이 네 줄: '+lines.map(l=>l.slice(0,24)+'…').join(' / '));}
 // 7. 한 판 시간 상한 40분
-{const s=game();/* 2026-11-16 사용자 지시로 40분 → 60분(행동 선택 2분) */ok(s.cfg.days===7&&s.cfg.hardSeconds===3600,'설정: 7일, 최대 60분 (지금 '+s.cfg.days+'일, '+s.cfg.hardSeconds/60+'분)');}
+{const s=game();/* 2026-11-16 사용자 지시로 40분 → 60분(행동 선택 2분). 2026-11-18 사용자 선택으로 90분(재판 3분·2분). 실제 방은 settings.json이 덮어쓰므로 timing_test.js도 함께 본다 */ok(s.cfg.days===7&&s.cfg.hardSeconds===5400,'설정: 7일, 최대 90분 (지금 '+s.cfg.days+'일, '+s.cfg.hardSeconds/60+'분)');}

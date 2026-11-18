@@ -556,3 +556,10 @@ AI가 비슷한 일을 시작할 때와 관련 파일을 고치기 직전에, `t
 - 원인과 근거: 회관 대화 지시문에는 원래 있던 "자기 시야에 있는 사실만 쓴다. 오늘 어디로 가서 무엇을 확인할지 말해도 좋다"와 CM이 붙인 판단 원칙이 함께 들어 있다(확인: 10Session.js). 말투가 원칙을 읊는 쪽으로 간 것은 이 두 가지 때문으로 보이고, 원칙을 붙이기 전의 AI 켠 판 첫 회관 말과는 견주지 않았다(추정). 무엇을 고를지 정하는 원칙과 그 자리에서 어떻게 말하는지를 나누지 않았고, AI 자리의 말을 판단이 맞는지로만 보고 그 자리의 사람이 그렇게 말하는지는 보지 않았다(확인: 보고 내용).
 - 대화: CM 대화 원문 2026-11-18 밤. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
 - 결과물: 저장소 `game/games/noir-trpg/scripts/10Session.js`(회관·재판 대화 지시문), 제작 기록의 "AI 켠 판 다시 돌리기" 줄.
+
+### 2026-11-18 · CM이 찾음 · 시간 설정을 코드 기본값에만 바꿔 실제 방에는 들어가지 않음(2026-11-16 작업)
+- 일어난 일: 2026-11-16 사용자 지시("40분 → 60분, 행동 선택 2분")로 00World.js의 기본값을 planSeconds 120, hardSeconds 3600으로 바꿨다(커밋 213b3ba, arc_test.js의 주석). 그러나 실제 방은 assets/settings.json을 읽어 기본값을 덮어쓰고(`cfg:{...config,...settings}`), settings.json에는 planSeconds 60, hardSeconds 2400이 그대로 있었다. 그래서 2026-11-18까지 실제 판의 행동 선택은 60초, 한 판 최대는 40분이었고, 화면 글은 "공통 2분"이라고 적었다(확인: 파일 내용). 사용자는 "그리고 게임 시간이 너무 짧습니다. 처음 시간을 2분으로 늘리고 게임 행동도 2분으로 늘려주세요"라고 했다.
+- 원인과 근거: 설정이 두 곳에 있고 실제 방은 settings.json을 쓴다는 것을 따지지 않고 코드만 고쳤다(확인: 커밋 내용). 시험(arc_test.js, leak_test.js)도 settings.json 없이 만든 판의 값만 봐서 어긋남을 잡지 못했다(확인). 2026-11-14의 "처음 회관 대화 2분 → 40초"는 settings.json까지 고쳐 실제로 들어갔다(확인: 커밋 77d2504).
+- 고친 것: settings.json과 코드 기본값을 함께 고치고, settings.json을 넣어 만든 판의 시간과 화면 글을 함께 보는 tools/sim/timing_test.js를 더함(2026-11-18).
+- 대화: CM 대화 원문 2026-11-18 밤. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
+- 결과물: 저장소 `game/games/noir-trpg/assets/settings.json`, `game/games/noir-trpg/scripts/00World.js`, 커밋 213b3ba.
