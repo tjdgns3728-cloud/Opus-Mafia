@@ -102,3 +102,4 @@
 | [v98](v98.md) | 2026-11-18 16:08 | `6e3ebf1` | Autonomous studies 35-36 and the v10 add-on bundle pointer (workbench 3e4643f) |
 | [v99](v99.md) | 2026-11-18 18:09 | `b2a8119` | Plain-language summary of the autonomous studies and its bundle pointer (workbench e3beaa3) |
 | [v100](v100.md) | 2026-11-18 18:49 | `84ee63f` | Record the same-game replay design failure and the user's review |
+| [v101](v101.md) | 2026-11-18 18:58 | `0224ff3` | AI_RULES v25: read past records as facts of that time, not of now |
