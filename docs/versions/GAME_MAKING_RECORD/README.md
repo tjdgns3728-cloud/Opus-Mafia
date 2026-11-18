@@ -110,3 +110,4 @@
 | [v106](v106.md) | 2026-11-18 21:46 | `5b3e6f6` | Record: causes of wrongful town convictions in simulated games |
 | [v107](v107.md) | 2026-11-18 22:14 | `4187d22` | Computer seats: night sightings, who said what, and chosen disguises; record; tests |
 | [v108](v108.md) | 2026-11-18 22:30 | `ab30628` | Computer seats count each person's word once; record; tests |
+| [v109](v109.md) | 2026-11-18 22:43 | `d39ea57` | Record: AI-on games on the current code |

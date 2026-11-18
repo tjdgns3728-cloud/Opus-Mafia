@@ -93,3 +93,23 @@ ok(M.principles(m1).includes('같은 편')&&M.principles(t1).includes('신용'),
  mk(b.id,c.id,seen.text,[ev]);ok(M.suspicion(s,a,c.id).score===once,'같은 근거가 두 신청에 붙어도 한 번');
  // 17. 근거 없는 고발도 같은 사람이 여러 번 내면 한 번
  mk(d.id,e.id,'수상합니다.');mk(d.id,e.id,'정말 수상합니다.');ok(Math.abs(M.suspicion(s,a,e.id).score-0.6)<0.01,'같은 사람의 근거 없는 고발 둘은 0.6 한 번');}
+// ---- 2026-11-18 추가(AI 켠 판에서 찾은 빈틈): 말 속 공격자를 정확히, 얼굴을 못 본 기록은 빼고 ----
+{const s=C.create(Array.from({length:8},(_,i)=>({id:'u'+i,name:['하준','이안','나린','서아','시온','도현','수현','가람'][i],bot:true})),rng);S.start(s);S.afterGathering?.(s);
+ s.day=7;s.turn=0;for(const q of s.players){q.location='hall';q.hidden=false;q.filedDay=null;}
+ const P=n=>s.players.find(q=>q.name===n),me=s.players.find(q=>q.team==='town'&&!['하준','이안','나린','서아'].includes(q.name))||P('시온');
+ // 18. "하준과 이안이 … 나린의 단검 공격을 봤다"는 이안·하준을 공격자로 짚은 말이 아니다
+ C.learn(s,me.id,'서아: 하준과 이안이 같은 낮에 나린의 단검 공격을 봤다고 근거를 냈고, 하준은 전날 밤에도 같은 사람을 목격했다고 합니다.',P('서아').id,'현장에서 들은 말','claim');
+ ok(M.suspicion(s,me,P('이안').id).score===0&&M.suspicion(s,me,P('하준').id).score===0,'"이안이 … 공격을 봤다"는 이안을 공격자로 세지 않음');
+ // 19. 다른 사람이 주어로 끼면 그 사람이 공격자다
+ C.learn(s,me.id,'도현: 이안이 같은 낮에 나린이 하준을 공격하는 걸 봤다고 합니다.',P('도현').id,'현장에서 들은 말','claim');
+ ok(M.suspicion(s,me,P('이안').id).score===0&&M.suspicion(s,me,P('나린').id).score===2,'"이안이 … 나린이 하준을 공격하는 걸 봤다"는 나린만 짚음');
+ // 20. 얼굴을 천으로 가려 누군지 못 봤다는 기록은 그 이름을 본 기록이 아니다
+ const masked={id:'k'+(++s.serial),text:'밤에 이안이 내 집에 쳐들어왔다. 얼굴을 천으로 가려 누군지는 보지 못했다. 마을 사람의 몸짓이 아니었다.',about:P('이안').id,source:'직접 목격',kind:'observed',time:'4일째 밤'};me.known.push(masked);
+ ok(M.suspicion(s,me,P('이안').id).score===0,'얼굴을 못 봤다고 적힌 기록은 세지 않음');
+ ok(!M.fileTarget(s,me),'그 기록으로 고발하지 않음');
+ // 21. 그 기록이 남의 재판 근거로 붙어 와도 세지 않는다
+ const other=s.players.find(q=>q.team==='town'&&q.id!==me.id&&q.id!==P('이안').id);const cs={id:'c'+(++s.serial),day:s.day,closed:false,target:P('이안').id,by:me.id,reason:masked.text,reasons:[{by:me.id,text:masked.text}],evidence:[{id:masked.id,by:me.id,text:masked.text,source:masked.source,kind:'observed',time:masked.time}],support:[me.id],responses:{[me.id]:true},order:s.serial};s.cases.push(cs);for(const o of C.alive(s)){o.knownCases??=[];o.knownCases.push(cs.id);}
+ ok(M.suspicion(s,other,P('이안').id).score<1&&M.vote(s,other,{target:P('이안').id})==='innocent','얼굴을 못 본 기록이 근거로 붙은 재판은 무죄 쪽');
+ // 22. 바른 말은 그대로 센다
+ C.learn(s,other.id,'수현: 제가 직접 본 것이 있습니다. 나린이 하준을 단검으로 공격했습니다.',P('수현').id,'현장에서 들은 말','claim');
+ ok(M.suspicion(s,other,P('나린').id).score>=2,'"나린이 하준을 단검으로 공격했습니다"는 나린을 짚음');}

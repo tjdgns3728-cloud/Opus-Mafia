@@ -12,7 +12,7 @@ const known=(p)=>(p.known||[]).filter(k=>!k.teamOnly);
 function cases(s,p){return (s.cases||[]).filter(c=>c.by===p.id||(p.knownCases||[]).includes(c.id)||s.trial?.id===c.id);}
 // 신청한 사람들: 처음 낸 사람과 이유를 덧붙여 함께 낸 사람(동의만 한 사람은 넣지 않는다)
 function filers(c){return [...new Set([c.by,...(c.reasons||[]).map(r=>r.by)].filter(Boolean))];}
-function sawAttack(p,x){return known(p).some(k=>k.source==='직접 목격'&&k.about===x&&ATTACK.test(String(k.text)));}
+function sawAttack(p,x){return known(p).some(k=>k.source==='직접 목격'&&k.about===x&&ATTACK.test(String(k.text))&&!FACELESS.test(String(k.text)));}
 // p가 보는 q의 신용(0.1~1.5)
 function trust(s,p,q){if(!q||q===p.id)return 1;let t=1;
  for(const c of cases(s,p)){if(!filers(c).includes(q))continue;
@@ -24,8 +24,16 @@ const byName=(s,name)=>(s.players||[]).find(q=>q.name===name)||null;
 // 들은 말을 나눈다: 전해 들은 증언은 "이름의 증언: 말", 그 자리에서 들은 말은 "이름: 말"(그 자리 말은 수첩에 말한 사람 앞으로 적힌다)
 function claimInfo(s,text){text=String(text||'');let m=text.match(/^(.{1,20}?)의 증언: ([\s\S]*)$/);if(m)return {speaker:byName(s,m[1])?.id||null,body:m[2]};
  m=text.match(/^([^:]{1,20}):\s([\s\S]*)$/);if(m)return {speaker:byName(s,m[1])?.id||null,body:m[2]};return {speaker:null,body:text};}
-// 그 말이 x를 공격한 사람으로 짚는가("x이/가 … 공격")
-function accuses(s,body,x){const name=C().find(s,x)?.name;return !!name&&ATTACK.test(body)&&new RegExp(esc(name)+'(이|가)\\s').test(body);}
+// 그 말이 x를 공격한 사람으로 짚는가. 한 문장 안에서 "x이/가" 뒤에 공격하는 동사("공격했다", "공격하는", "쳐들어")가 오고,
+// 그 사이에 다른 사람이 주어로 나오지 않아야 한다(2026-11-18 AI 켠 판: "하준과 이안이 … 나린의 단검 공격을 봤다"를 이안을 짚은 말로 셈).
+const ATTACK_VERB=/공격(했|하|한|해)|쳐들어/;
+function accuses(s,body,x){const name=C().find(s,x)?.name;if(!name)return false;const others=(s.players||[]).map(q=>q.name).filter(n=>n&&n!==name);
+ for(const sentence of String(body).split(/[.!?。]\s*/)){const m=sentence.match(new RegExp(esc(name)+'(이|가)\\s'));if(!m)continue;
+  const after=sentence.slice(m.index+m[0].length),v=after.match(ATTACK_VERB);if(!v)continue;
+  const between=after.slice(0,v.index);if(others.some(n=>new RegExp(esc(n)+'(이|가)\\s').test(between)))continue;return true;}
+ return false;}
+// 얼굴을 보지 못했다고 적힌 기록은 그 이름의 사람을 본 기록이 아니다(얼굴을 가린 조직원이 꾸민 경우 등)
+const FACELESS=/누군지(는)?\s?(보지 못|모르|알 수 없)|얼굴을 (천으로 )?가려/;
 const isNight=k=>/밤/.test(String(k.time||''));
 // 시민 자리가 x를 얼마나 의심하는가. why는 사람이 읽을 까닭
 function suspicion(s,p,x){if(!x||x===p.id)return {score:0,why:[]};const nm=id=>C().find(s,id)?.name||'누군가';let score=0;const why=[];
@@ -35,20 +43,20 @@ function suspicion(s,p,x){if(!x||x===p.id)return {score:0,why:[]};const nm=id=>C
  /* 한 사람의 말은 한 번만 센다(2026-11-18): 목격 근거를 낸 사람이 회관에서 같은 일을 말해도 따로 더하지 않고,
     같은 사람이 여러 번 말해도, 같은 근거가 여러 신청에 붙어도, 같은 사람이 여러 번 고발해도 한 번으로 센다. */
  const vis=cases(s,p).filter(c=>c.target===x);
- const witnesses=new Set(vis.flatMap(c=>c.caught?[]:(c.evidence||[]).filter(e=>e.by!==p.id&&(e.kind==='evidence'||e.kind==='observed'&&ATTACK.test(String(e.text)))).map(e=>e.by)));
+ const witnesses=new Set(vis.flatMap(c=>c.caught?[]:(c.evidence||[]).filter(e=>e.by!==p.id&&!FACELESS.test(String(e.text))&&(e.kind==='evidence'||e.kind==='observed'&&ATTACK.test(String(e.text)))).map(e=>e.by)));
  const spoke=new Set(),seenEv=new Set(),seenFiler=new Set();
  const claim=(text,w,label)=>{const c=claimInfo(s,text);/* 피고 자신의 말은 피고를 짚는 근거가 아니다 */if(c.speaker===x||!accuses(s,c.body,x))return;
   const key=c.speaker||'?'+c.body;if(spoke.has(key)||(c.speaker&&witnesses.has(c.speaker)))return;spoke.add(key);score+=w*trust(s,p,c.speaker);why.push(label(c));};
  for(const k of known(p)){const text=String(k.text);
   if(k.kind==='claim'){claim(text,2,c=>(c.speaker?nm(c.speaker)+'의 ':'')+'들은 증언');continue;}
-  if(k.about!==x)continue;
+  if(k.about!==x||FACELESS.test(text))continue;
   if(k.source==='직접 목격'&&ATTACK.test(text))add(8,'내가 직접 본 공격',k);
   else if(k.source==='직접 목격'&&/집에 들어가는 것을 봤다/.test(text))add(3,'밤에 남의 집에 들어가는 것을 봄',k);
   else if(k.kind==='evidence'&&ATTACK.test(text))add(4,'공격 장면 사진',k);}
  for(const c of vis){
   if(c.caught){if(c.caughtKind==='npc'){score+=1;why.push('NPC의 고발');}else{score+=6;why.push('여럿 앞에서 붙잡힘');}continue;}
   for(const e of c.evidence||[]){if(e.by===p.id)continue;const key=e.by+'|'+e.text+'|'+e.time;if(seenEv.has(key))continue;seenEv.add(key);
-   const t=Math.max(0.6,trust(s,p,e.by)),text=String(e.text);
+   const t=Math.max(0.6,trust(s,p,e.by)),text=String(e.text);if(FACELESS.test(text))continue;
    if(e.kind==='observed'&&ATTACK.test(text))add(4*t,nm(e.by)+'의 목격 근거',e);
    else if(e.kind==='evidence'){score+=2.5*t;why.push(nm(e.by)+'의 사진 근거');}
    else if(e.kind==='claim')claim(text,1.5,()=>nm(e.by)+'가 붙인 증언');
@@ -59,7 +67,7 @@ function suspicion(s,p,x){if(!x||x===p.id)return {score:0,why:[]};const nm=id=>C
  if(p.team!=='mafia')for(const c of cases(s,p))if(c.target===p.id&&filers(c).includes(x)){score+=4;why.push('나를 거짓으로 고발함');}
  return {score:Math.round(score*10)/10,why:[...new Set(why)]};}
 // q에 대해 재판 근거로 붙일 만한 내 기록: q를 직접 본 것·사진, q를 공격한 사람으로 짚는 들은 증언(q 자신의 말은 빼고)
-function factsAbout(s,p,q){return known(p).filter(k=>k.kind==='claim'?(c=>c.speaker!==q&&accuses(s,c.body,q))(claimInfo(s,k.text)):k.about===q&&(k.kind==='observed'||k.kind==='evidence'));}
+function factsAbout(s,p,q){return known(p).filter(k=>k.kind==='claim'?(c=>c.speaker!==q&&accuses(s,c.body,q))(claimInfo(s,k.text)):k.about===q&&!FACELESS.test(String(k.text))&&(k.kind==='observed'||k.kind==='evidence'));}
 const partners=(s,p)=>C().alive(s).filter(q=>q.id!==p.id&&q.team==='mafia').map(q=>q.id);
 // 마피아 자리가 보는 위협: 자기나 같은 편을 고발했거나 근거를 낸 사람, 숨어 있던 자기를 본 사람
 function threat(s,p,q){if(!q||q===p.id||C().find(s,q)?.team==='mafia')return 0;const ours=[p.id,...partners(s,p)];let t=0;
