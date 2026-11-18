@@ -51,3 +51,4 @@
 | [v47](v47.md) | 2026-11-18 00:49 | `ab9d121` | CM study 2 at the user's request: redesigned from scratch with the same aim, one real request (strategy), kind-matched records handed or not, 3 runs each; all six proposed the same strategy window; one failure fact (backslash path passed through bash to tar); HANDOFF points to the sealed study 2 bundle |
 | [v48](v48.md) | 2026-11-18 01:19 | `a29b070` | Records: CM study 2 continued to mockups (v02 bundle, short report with the six screens) |
 | [v49](v49.md) | 2026-11-18 08:16 | `f9e6e94` | CM study 3 at the user's direction: AI plays a short mafia game as a human-like strategist, with and without defeat records (same three games); outcomes identical per game, the record side voiced the record's lessons |
+| [v50](v50.md) | 2026-11-18 13:46 | `40a577a` | Autonomous studies 10-12 results, audit of 88 game logs, and the sealed bundle pointer (workbench 6a6a80b) |
