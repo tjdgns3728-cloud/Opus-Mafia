@@ -59,3 +59,4 @@
 | [v55](v55.md) | 2026-11-18 15:11 | `88932d6` | Autonomous studies 23-30 and the v06 bundle pointer (workbench c0073f3) |
 | [v56](v56.md) | 2026-11-18 15:15 | `95e2867` | Autonomous study 31 and the v07 add-on bundle pointer (workbench 9c983b1) |
 | [v57](v57.md) | 2026-11-18 15:23 | `867cc70` | Autonomous study 32 and the v08 add-on bundle pointer (workbench b61c2fa) |
+| [v58](v58.md) | 2026-11-18 15:32 | `6500668` | Autonomous studies 33-34 and the v09 add-on bundle pointer (workbench 58ee748) |
