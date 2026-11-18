@@ -58,3 +58,4 @@
 | [v54](v54.md) | 2026-11-18 20:40 | `83f8b07` | Lessons: record an uncounted claim about AI statements in the summary |
 | [v55](v55.md) | 2026-11-18 23:04 | `0c64b0d` | Lessons: decision principles were attached to the talk prompts too |
 | [v56](v56.md) | 2026-11-18 23:14 | `24c18a3` | Longer hall talk, actions and trials in real rooms; game cap 90 minutes; timing test; records |
+| [v57](v57.md) | 2026-11-19 00:22 | `6f027ef` | 컴퓨터 자리 AI 기록과 무죄 판결 사진 |

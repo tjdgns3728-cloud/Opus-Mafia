@@ -13,15 +13,15 @@ ok(['barkeep','nurse','bellringer','landlady'].every(k=>st.npcs[k]?.hp===10),'�
 ok(st.npcs.barkeep.location==='tavern'&&st.npcs.nurse.location==='clinic'&&st.npcs.bellringer.location==='chapel'&&st.npcs.landlady.location==='home','각자 낮의 자리에 있음');
 ok(C.view(s,town[0].id).story.cast.length===8&&C.view(s,town[0].id).story.cast.every(n=>n.title),'NPC 명단 8명(2026-11-16 암거래 상인 더함), 모두 하는 일이 적혀 있음');
 // 2. 끌어들이기 선택지: NPC마다 해 주는 일이 다르게 적힘
-s.day=1;s.turn=1;s.stage='plan';s.scenario.discovered=true;for(const p of s.players)p.location='hall';
+s.day=1;s.turn=1;s.stage='plan';s.scenario.discovered=true;s.scenario.mineClosed=true;/* 2026-11-19: 갱도가 닫혀 술집 주인·종지기·하숙집 주인이 흔들리는 때 */for(const p of s.players)p.location='hall';
 gf.location='tavern';const optB=S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep');
 ok(optB&&/어제 술집에 누가 왔는지/.test(optB.hint)&&/두 번 성공할 때마다/.test(optB.hint),'술집 주인 끌어들이기 설명: '+(optB?.hint||'없음').slice(0,80));
 ok(!S.choices(s,gf,'big').some(a=>a.verb==='threatNpc'&&a.npc==='barkeep'),'술집 주인에게는 협박장(노조·회관용)을 보내지 않음');
 // 3. 끌어들이기 전에는 간호사가 약상자 귀띔을 하고, 끌어들인 뒤에는 하지 않는다
 s.scenario.spots=['medbox','barrel'];s.scenario.rumor={...s.scenario.rumor,medbox:true,barrel:true};/* 간호사가 약상자 이야기를 하는 판 */const [tA,tB,tC,tD]=town;tA.location='clinic';S.arrival(s,tA);ok(tA.npcHeard.includes('lead:medbox'),'끌어들이기 전: 간호사가 약상자 이야기를 함');
 // 4. 술집 주인 끌어들이기(실패 → 성공)
-S.resolve(s,gf,optB,lo);ok(!st.npcs.barkeep.recruited&&got(gf,/내 술집에서 그런 말 마시오/),'실패하면 술집 주인의 거절 대사');
-S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);
+gf.faceCover=s.epoch;S.resolve(s,gf,optB,lo);gf.faceCover=null;/* 얼굴을 가리고 권해 거절당함(고발 대신 말만 퍼짐) */ok(!st.npcs.barkeep.recruited&&got(gf,/내 술집에서 그런 말 마시오/),'실패하면 술집 주인의 거절 대사');
+S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);ok(!st.npcs.barkeep.recruited&&got(gf,/생각해 보겠소/),'처음 이긴 판정은 "생각해 보겠소"(2026-11-19)');s.epoch++;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);
 ok(st.npcs.barkeep.recruited&&st.recruitWins===1,'성공하면 우리 편, 성공 1번');
 ok(got(gf,/외상만 지워 준다면/)&&got(gf,/내일 아침부터 어제 술집에 누가 왔는지/),'성공 대사와 해 줄 일');
 /* 2026-11-16부터 흔적은 후보 셋 가운데 하나(또는 없음) */ok(st.artifacts.some(a=>a.kind==='trace'&&['지워진 외상 장부','새 술통','영수증 조각'].includes(a.title)),'술집 주인을 끌어들이면 그 사람의 흔적 후보 가운데 하나가 남음');
@@ -29,7 +29,7 @@ ok(got(gf,/외상만 지워 준다면/)&&got(gf,/내일 아침부터 어제 술�
 tB.location='tavern';s.events.push({type:'move',day:s.day,turn:1,location:'tavern',actor:mf.id},{type:'move',day:s.day,turn:1,location:'tavern',actor:tC.id});
 S.talk(s,tB,'npc:barkeep:who');const said=s.feed.filter(e=>e.kind==='speech'&&e.to.includes(tB.id)).at(-1)?.text||'';ok(said.includes(tC.name)&&!said.includes(mf.name),'끌어들인 술집 주인은 마피아 이름을 빼고 말함: '+said);
 // 5. 간호사도 끌어들이면 약상자 귀띔이 끊기고, 붕대가 늘어난다
-gf.location='clinic';const stock=st.stock;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='nurse'),hi);
+gf.location='clinic';const stock=st.stock;st.npcs.nurse.pressure=3;/* 협박 행동이 쌓인 간호사 */S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='nurse'),hi);s.epoch++;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='nurse'),hi);
 ok(st.npcs.nurse.recruited&&st.recruitWins===2&&st.stock===stock+2,'간호사 끌어들임: 성공 2번, 진료소 붕대 +2');
 ok(got(gf,/끌어들이기에 2번 성공했습니다\. 같은 편이 쓰러지면/),'두 번째 성공: 같은 편이 쓰러지면 새 조직원을 부른다고 알려 줌');
 tD.location='clinic';tD.npcHeard=[];S.arrival(s,tD);ok(!tD.npcHeard.includes('lead:medbox'),'끌어들인 뒤: 간호사는 약상자 이야기를 하지 않음');
@@ -68,8 +68,8 @@ const tE=town.find(p=>p.hp>0&&p.location==='home');ok(!!tE&&got(tE,/얼굴을 �
 m.hp=0;m.downed=null;C.death(s,m,'공격');ok(m.hp===0&&!m.downed&&m.deathCause,'복면 조직원은 쓰러짐 없이 바로 숨짐');
 s.turn=2;S.nextChapter(s);C.nextTurn(s);S.nextChapter(s);ok(s.scenario.continuation.placeScenes.some(e=>/얼굴을 천으로 가린 낯선 사내가 숨진 채/.test(e.text)),'이튿날 아침 복면 사내의 시신 이야기');
 // 13. 끌어들이기 두 번이 더 쌓이면, 다시 죽은 자리가 새 조직원을 맡는다
-s.turn=1;s.stage='plan';gf.location='chapel';S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='bellringer'),hi);ok(st.artifacts.some(a=>a.kind==='trace'&&['새 종줄','묵직한 헌금함','이름 적힌 쪽지'].includes(a.title)),'종지기를 끌어들이면 새 종줄 흔적');
-gf.location='home';S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='landlady'),hi);ok(got(gf,/오늘 밤 마을 밖에서 얼굴을 가린 조직원이 본거지로 옵니다/),'네 번째 성공: 오늘 밤 새 조직원이 온다고 알림');
+s.turn=1;s.stage='plan';gf.location='chapel';S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='bellringer'),hi);s.epoch++;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='bellringer'),hi);ok(st.artifacts.some(a=>a.kind==='trace'&&['새 종줄','묵직한 헌금함','이름 적힌 쪽지'].includes(a.title)),'종지기를 끌어들이면 새 종줄 흔적');
+gf.location='home';S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='landlady'),hi);s.epoch++;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='landlady'),hi);ok(got(gf,/오늘 밤 마을 밖에서 얼굴을 가린 조직원이 본거지로 옵니다/),'네 번째 성공: 오늘 밤 새 조직원이 온다고 알림');
 s.turn=2;S.nextChapter(s);const m2=s.players.find(p=>p.masked&&p.hp>0);ok(!!m2&&m2.name==='회색 복면'&&s.seatAs[mf.id]===m2.id,'두 번째 새 조직원: '+(m2?.name||'없음'));
 // 14. 컴퓨터 자리 대부도 NPC를 끌어들인다
 s.turn=0;gf.location='hall';st.npcs.mayor.location='hall';st.npcs.mayor.houseId=null;const b=S.botAction(s,gf,'big');

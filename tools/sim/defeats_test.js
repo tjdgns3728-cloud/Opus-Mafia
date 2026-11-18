@@ -25,6 +25,12 @@ const wait=()=>new Promise(r=>setTimeout(r,20));
  {const s=fresh();s.result={team:'town'};const r=room(s,()=>({situation:'마피아로 살아남았지만 편이 졌다',did:'숨었다',result:'외부 지원이 왔다',cause:'추정: 너무 조용했다',shows:'조용히 있으면 졌다',tags:['숨기']}));
   const before=D.loadDefeats().length;D.writeEndDefeats(r);await wait();await wait();const added=D.loadDefeats().slice(before);
   ok(added.length===s.players.filter(p=>p.bot&&p.team==='mafia').length&&added.every(d=>d.team==='mafia'&&d.why==='편이 짐'),'판이 끝나면 진 편(마피아)의 AI 자리만 씀');}
+ // 2-1. 판이 끝날 때 쓰러져 있는(체력 0, 아직 숨지지 않은) 진 편 AI 자리도 쓴다(2026-11-19 Claude 첫 판에서 나린이 쓰러진 채 판이 끝남)
+ {const s=fresh();s.result={team:'mafia'};const down=s.players.find(p=>p.bot&&p.team==='town');down.hp=0;down.downed={left:1};down.deathCause=null;
+  const r=room(s,()=>({situation:'쓰러진 채 판이 끝났다',did:'도움을 기다렸다',result:'마피아가 이겼다',cause:'추정: 아무도 오지 않았다',shows:'쓰러진 채 기다리기만 했다',tags:['기타']}));
+  const before=D.loadDefeats().length;D.writeEndDefeats(r);await wait();await wait();const added=D.loadDefeats().slice(before);
+  ok(added.some(d=>d.name===down.name&&d.why==='쓰러진 채 편이 짐'),'판이 끝날 때 쓰러져 있던 진 편 AI 자리도 씀');
+  ok(added.every(d=>d.team==='town')&&added.length===s.players.filter(p=>p.bot&&p.team==='town').length,'진 편(시민) AI 자리 모두, 이긴 편은 쓰지 않음');}
  // 3. AI를 끄면 쓰지 않는다
  {const s=fresh(),p=s.players.find(q=>q.bot);const r=room(s,()=>({situation:'x',tags:['기타']}));r.ai.mode='off';const n=D.loadDefeats().length;await D.writeDefeat(r,p,'공격');ok(D.loadDefeats().length===n,'AI를 끈 판에서는 쓰지 않음');}
  // 4. 판을 시작할 때 자리마다 꼬리표별로 무작위로 넷까지

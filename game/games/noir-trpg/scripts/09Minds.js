@@ -33,7 +33,7 @@ function accuses(s,body,x){const name=C().find(s,x)?.name;if(!name)return false;
   const between=after.slice(0,v.index);if(others.some(n=>new RegExp(esc(n)+'(이|가)\\s').test(between)))continue;return true;}
  return false;}
 // 얼굴을 보지 못했다고 적힌 기록은 그 이름의 사람을 본 기록이 아니다(얼굴을 가린 조직원이 꾸민 경우 등)
-const FACELESS=/누군지(는)?\s?(보지 못|모르|알 수 없)|얼굴을 (천으로 )?가려/;
+const FACELESS=/누군지(는)?\s?(보지 못|모르|알 수 없)|얼굴을 (천으로 )?가려|얼굴을 가린 사람/;
 const isNight=k=>/밤/.test(String(k.time||''));
 // 시민 자리가 x를 얼마나 의심하는가. why는 사람이 읽을 까닭
 function suspicion(s,p,x){if(!x||x===p.id)return {score:0,why:[]};const nm=id=>C().find(s,id)?.name||'누군가';let score=0;const why=[];
@@ -54,7 +54,7 @@ function suspicion(s,p,x){if(!x||x===p.id)return {score:0,why:[]};const nm=id=>C
   else if(k.source==='직접 목격'&&/집에 들어가는 것을 봤다/.test(text))add(3,'밤에 남의 집에 들어가는 것을 봄',k);
   else if(k.kind==='evidence'&&ATTACK.test(text))add(4,'공격 장면 사진',k);}
  for(const c of vis){
-  if(c.caught){if(c.caughtKind==='npc'){if(c.explained){score+=0.5;why.push('NPC의 폭약 고발 · 꺼내기 전에 찾았다고 말함');}else{score+=4;why.push('NPC의 폭약 고발 · 찾았다는 말 없이 꺼냄(처음엔 마피아만 숨긴 자리를 안다)');}}else{score+=6;why.push('여럿 앞에서 붙잡힘');}continue;}
+  if(c.caught){if(c.caughtKind==='npc'&&c.npcKind&&c.npcKind!=='dynamite'){score+=4;why.push(c.npcKind==='recruit'?'NPC가 직접 들은 끌어들이기 권유':'NPC가 직접 본 협박 행동');}else if(c.caughtKind==='npc'){if(c.explained){score+=0.5;why.push('NPC의 폭약 고발 · 꺼내기 전에 찾았다고 말함');}else{score+=4;why.push('NPC의 폭약 고발 · 찾았다는 말 없이 꺼냄(처음엔 마피아만 숨긴 자리를 안다)');}}else{score+=6;why.push('여럿 앞에서 붙잡힘');}continue;}
   for(const e of c.evidence||[]){if(e.by===p.id)continue;const key=e.by+'|'+e.text+'|'+e.time;if(seenEv.has(key))continue;seenEv.add(key);
    const t=Math.max(0.6,trust(s,p,e.by)),text=String(e.text);if(FACELESS.test(text))continue;
    if(e.kind==='observed'&&ATTACK.test(text))add(4*t,nm(e.by)+'의 목격 근거',e);

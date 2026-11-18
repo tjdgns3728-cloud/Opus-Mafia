@@ -6,7 +6,7 @@ const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1
 const PLACE={barkeep:'tavern',nurse:'clinic',bellringer:'chapel',miner:'warehouse',landlady:'home',mayor:'hall'};
 for(const [npc,place] of Object.entries(PLACE)){const seen={},where=new Set();let none=0;
  for(let i=0;i<60;i++){const s=C.create(Array.from({length:8},(_,k)=>({id:'p'+k,name:'자리'+k,bot:true})),rng);S.start(s);S.afterGathering?.(s);s.day=2;s.turn=0;s.stage='plan';
-  const gf=s.players.find(p=>p.role==='godfather');for(const p of s.players){p.location='hall';p.used={big:false,small:false};}const n=ST.npc(s,npc);n.location=place;n.recruited=false;n.protected=false;gf.location=place;
+  const gf=s.players.find(p=>p.role==='godfather');for(const p of s.players){p.location='hall';p.used={big:false,small:false};}const n=ST.npc(s,npc);n.location=place;n.recruited=false;n.protected=false;gf.location=place;n.wavering=s.epoch-1;n.pressure=3;/* 2026-11-19: 압박이 쌓이고 지난번에 "생각해 보겠소"를 들은 뒤 끌어들인다 */
   const opt=S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc===npc);if(!opt)continue;
   const before=s.scenario.continuation.artifacts.length;let first=true;S.resolve(s,gf,opt,()=>{if(first){first=false;return 0.99;}return rng();});
   if(!n.recruited)continue;const added=s.scenario.continuation.artifacts.slice(before).filter(a=>a.kind==='trace');if(!added.length)none++;for(const a of added){seen[a.title]=(seen[a.title]||0)+1;where.add(a.where);}}
