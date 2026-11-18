@@ -45,3 +45,31 @@ ok(M.vote(s,t2,{target:t5.id})==='innocent','NPC의 폭약 고발만으로는 �
 // 8. AI 자리 지시문에 붙는 글: 자기 시야 안의 것만, 다른 사람의 진영은 쓰지 않음
 const b=M.brief(s,t2);ok(b.includes(m1.name)&&!/마피아|진영|godfather|mafioso/.test(b),'시민의 참고 판단에는 의심하는 사람과 까닭만 있고 진영은 없음');
 ok(M.principles(m1).includes('같은 편')&&M.principles(t1).includes('신용'),'편마다 다른 판단 원칙');
+// ---- 2026-11-18 추가: 밤의 변장, 들은 말의 말한 사람, 마피아의 노린 변장 ----
+{const s=C.create(Array.from({length:8},(_,i)=>({id:'q'+i,name:['가람','나래','다온','라희','마루','바다','사랑','아라'][i],bot:true})),rng);S.start(s);S.afterGathering?.(s);
+ s.day=3;s.turn=0;for(const q of s.players){q.location='hall';q.hidden=false;q.filedDay=null;}
+ const [m1,m2]=s.players.filter(p=>p.team==='mafia'),[a,b,c,d,e]=s.players.filter(p=>p.team==='town');
+ const saw=(p,x,time)=>{const ev={id:'e'+(++s.serial),type:'attack',actor:m1.id,target:p.id,day:2,turn:2};s.events.push(ev);const k={id:'k'+(++s.serial),text:`밤에 ${x.name}이 내 집에 쳐들어왔다. 불침번을 서다 얼굴을 똑똑히 봤다.`,about:x.id,source:'직접 목격',kind:'observed',time,event:ev.id};p.known.push(k);return k;};
+ // 9. 밤에 한 번 본 얼굴: 변장일 수 있어 반만 센다(고발까지는 안 가고, 재판이 열리면 유죄 쪽)
+ saw(a,c,'2일째 밤');const one=M.suspicion(s,a,c.id);
+ ok(one.score===4&&one.why.some(w=>/변장일 수 있음/.test(w)),'밤에 한 번 본 얼굴은 반만 셈(8 → 4)');
+ ok(!M.fileTarget(s,a)&&M.vote(s,a,{target:c.id})==='guilty','밤에 한 번 본 것만으로는 고발하지 않지만, 재판이 열리면 유죄 쪽');
+ // 10. 같은 밤의 기록이 둘이어도 하나로, 서로 다른 밤에 또 봤다면 더 믿는다
+ saw(a,c,'2일째 밤');ok(M.suspicion(s,a,c.id).score===4,'같은 밤의 기록 둘은 하나로 셈(같은 변장일 수 있음)');
+ saw(a,c,'3일째 밤');const two=M.suspicion(s,a,c.id);
+ ok(two.score>=11&&two.why.some(w=>/다른 밤에 또 봄/.test(w))&&M.fileTarget(s,a)?.target===c.id,'서로 다른 밤에 또 보면 거의 그대로 믿고 고발함(4 + 7.2)');
+ // 11. 그 자리에서 들은 말은 말한 사람 앞으로 수첩에 적힌다: 말한 사람이 아니라 말 속의 공격자를 의심하고, 말한 사람의 신용을 곱한다
+ const heard=C.learn(s,b.id,`${d.name}: 제가 직접 본 것이 있습니다. ${e.name}이 ${a.name}을 단검으로 공격했습니다.`,d.id,'현장에서 들은 말','claim');
+ ok(M.suspicion(s,b,d.id).score===0,'말한 사람(다온)은 그 말 때문에 의심받지 않음');
+ ok(M.suspicion(s,b,e.id).score===2,'말 속의 공격자(아라)를 들은 증언 2만큼 의심');
+ const mk=(by,target,reason,evidence=[])=>{const c={id:'c'+(++s.serial),day:s.day,closed:false,target,by,reason,reasons:[{by,text:reason}],evidence,support:[by],responses:{[by]:true},order:s.serial};s.cases.push(c);for(const o of C.alive(s)){o.knownCases??=[];o.knownCases.push(c.id);}return c;};
+ mk(d.id,b.id,'수상합니다.');ok(Math.abs(M.suspicion(s,b,e.id).score-0.6)<0.01,'나를 거짓으로 고발한 사람의 말은 신용만큼만(2 × 0.3)');
+ // 12. 재판 근거로 붙은 피고 자신의 말은 피고를 짚는 근거가 아니다
+ const own=C.learn(s,c.id,`${e.name}: 직접 본 사람이 없다면 표는 신중하게 합시다.`,e.id,'현장에서 들은 말','claim');
+ mk(c.id,e.id,own.text,[{id:own.id,by:c.id,text:own.text,source:own.source,kind:'claim'}]);
+ ok(M.suspicion(s,d,e.id).score<1,'피고 자신의 말을 근거로 붙여도 의심이 거의 늘지 않음');
+ ok(!M.fileTarget(s,c)||!M.fileTarget(s,c).facts.includes(own.id),'고발할 때 상대 자신의 말은 근거로 붙이지 않음');
+ // 13. 마피아의 변장: 이미 고발받은 시민으로 꾸민다
+ const ds=[a,b,c].map(x=>({type:'disguise',target:x.id}));
+ ok(M.disguiseTarget(s,m2,ds,()=>0)?.target===b.id,'마피아는 이미 고발받은 시민(나래)으로 꾸밈');
+ ok(M.disguiseTarget(s,m2,[{type:'disguise',target:a.id}],()=>0)===null,'고발받은 사람이 없으면 따로 고르지 않음(아무나)');}
