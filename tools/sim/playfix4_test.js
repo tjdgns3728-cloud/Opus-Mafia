@@ -19,14 +19,14 @@ const fakeRoom=s=>({state:s,engine:{time:0},random:rng,ph:null,phase(name,o){thi
  const r=fakeRoom(s);let doneCalled=false;T.seekConsent(r,()=>{doneCalled=true;});
  ok(s.stage!=='consent'&&s.trial?.target===p.id,'붙잡힌 고발은 동의를 묻지 않고 재판으로 감 (단계 '+s.stage+')');
  ok(s.cases.find(c=>c.target===p.id)?.status==='현장 고발로 개정','재판 상태: '+s.cases.find(c=>c.target===p.id)?.status);
- // 2-1. 폭약을 꺼내다 NPC에게 붙잡힌 재판은 폭약을 찾아낸 시민도 걸린다(60판에서 시민 대상 45건). 시민 편 컴퓨터 자리는 전처럼 자기가 본 것으로 정한다
- T.vote(r);const votes=s.trial.votes;const town=s.players.filter(o=>o.team==='town'&&o.hp>0),mates=s.players.filter(o=>o.team==='mafia'&&o.id!==p.id);
- ok(town.every(o=>votes[o.id]==='innocent'),'폭약 붙잡힘 재판: 본 것이 없는 시민 편 컴퓨터 자리는 무죄 ('+town.map(o=>votes[o.id]).join(',')+')');
+ // 2-1. 폭약을 꺼내다 NPC에게 붙잡힌 재판은 폭약을 찾아낸 시민도 걸린다(60판에서 시민 대상 45건). 2026-11-18부터 꺼내기 전에 찾았다고 말했으면 약하게 센다(말없이 꺼낸 경우는 playtest_fix_test.js)
+ s.trial.explained=true;s.cases.find(c=>c.id===s.trial.id).explained=true;T.vote(r);const votes=s.trial.votes;const town=s.players.filter(o=>o.team==='town'&&o.hp>0),mates=s.players.filter(o=>o.team==='mafia'&&o.id!==p.id);
+ ok(town.every(o=>votes[o.id]==='innocent'),'폭약 붙잡힘 재판(꺼내기 전에 찾았다고 말함): 본 것이 없는 시민 편 컴퓨터 자리는 무죄 ('+town.map(o=>votes[o.id]).join(',')+')');
  ok(mates.every(o=>votes[o.id]==='innocent'),'폭약 붙잡힘 재판: 같은 편 컴퓨터 자리는 무죄');
  // 2-2. 재판 대화: 아는 것이 없는 시민 편은 NPC가 본 일을 그대로 말한다("직접 본 사람이 없다면"이라고 하지 않는다)
  const line=T.cannedTalk(s,town.find(o=>!o.known.some(k=>k.about===p.id)),'trial');ok(/종지기가 본 것은 폭약을 꺼낸 일입니다/.test(line)&&!/직접 본 사람이 없다면/.test(line),'재판 대화: '+line);
  // 2-3. 피고 컴퓨터 자리는 NPC가 본 일을 부정하지 않는다
- const def=T.cannedTalk(s,p,'trial');ok(/폭약을 꺼낸 것은 맞습니다/.test(def)&&!/하지 않았습니다/.test(def),'피고의 말: '+def);}
+ const def=T.cannedTalk(s,p,'trial');ok(/폭약을 꺼낸 것은 맞습니다|꺼내기 전에 그렇게 말했습니다/.test(def)&&!/하지 않았습니다/.test(def),'피고의 말(꺼낸 일은 부정하지 않음): '+def);}
 
 // 2-4. 여럿이 보는 앞에서 사람을 공격해 붙잡힌 재판은 시민 편 컴퓨터 자리가 유죄, 같은 편은 무죄
 {const s=fresh(),[a,mate]=s.players.filter(p=>p.team==='mafia'),[v,w1,w2]=s.players.filter(p=>p.team==='town');

@@ -40,8 +40,8 @@ mk(t3.id,m1.id,'저 사람이 수상합니다.');ok(M.trust(s,t1,t3.id)>=1.3,'�
 // 7. 여럿 앞에서 붙잡힌 재판은 강하게, NPC의 폭약 고발은 약하게
 const c4={...mk(t3.id,t4.id,'붙잡힘'),caught:true,caughtKind:'attack'};s.cases[s.cases.length-1]=c4;
 ok(M.vote(s,t2,{target:t4.id})==='guilty','여럿 앞에서 공격하다 붙잡힌 재판은 유죄');
-const c5={...mk(t3.id,t5.id,'폭약'),caught:true,caughtKind:'npc'};s.cases[s.cases.length-1]=c5;
-ok(M.vote(s,t2,{target:t5.id})==='innocent','NPC의 폭약 고발만으로는 무죄(찾아낸 시민도 걸리므로)');
+const c5={...mk(t3.id,t5.id,'폭약'),caught:true,caughtKind:'npc',explained:true};s.cases[s.cases.length-1]=c5;
+ok(M.vote(s,t2,{target:t5.id})==='innocent','NPC의 폭약 고발이어도 꺼내기 전에 찾았다고 말했으면 무죄(찾아낸 시민도 걸리므로)');
 // 8. AI 자리 지시문에 붙는 글: 자기 시야 안의 것만, 다른 사람의 진영은 쓰지 않음
 const b=M.brief(s,t2);ok(b.includes(m1.name)&&!/마피아|진영|godfather|mafioso/.test(b),'시민의 참고 판단에는 의심하는 사람과 까닭만 있고 진영은 없음');
 ok(M.principles(m1).includes('같은 편')&&M.principles(t1).includes('신용'),'편마다 다른 판단 원칙');

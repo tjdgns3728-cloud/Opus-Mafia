@@ -57,3 +57,4 @@
 | [v53](v53.md) | 2026-11-18 18:50 | `2a37969` | Fix the two paths lost from the last failure entry and record the repeat |
 | [v54](v54.md) | 2026-11-18 20:40 | `83f8b07` | Lessons: record an uncounted claim about AI statements in the summary |
 | [v55](v55.md) | 2026-11-18 23:04 | `0c64b0d` | Lessons: decision principles were attached to the talk prompts too |
+| [v56](v56.md) | 2026-11-18 23:14 | `24c18a3` | Longer hall talk, actions and trials in real rooms; game cap 90 minutes; timing test; records |

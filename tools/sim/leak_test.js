@@ -5,16 +5,15 @@ const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios;let seed=57;const rng=()=
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 const fresh=()=>{const seats=Array.from({length:8},(_,i)=>({id:'p'+i,name:['가람','나래','다온','라희','마루','바다','사랑','아라'][i],bot:true}));const s=C.create(seats,rng);S.start(s);S.afterGathering?.(s);s.day=2;s.turn=0;s.stage='plan';for(const p of s.players){p.location='hall';p.houseId=null;p.used={big:false,small:false};p.hidden=false;}return s;};
 const look=(s,viewer,target)=>C.view(s,viewer.id).people.find(p=>p.id===target.id);
-const opposedFor=(s,who)=>C.view(s,who.id).feed.filter(e=>e.roll?.kind==='opposed').map(e=>e.roll);
+const opposedFor=(s,who)=>C.view(s,who.id).feed.filter(e=>e.roll?.kind==='contest').map(e=>e.roll);const noNumbers=r=>!/"(stat|total|roll|rolls|terms|env|actor|opponent)":/.test(JSON.stringify(r));
 const bare=r=>r.secret&&!('stat' in r)&&!('total' in r)&&!('roll' in r)&&!('rolls' in r)&&!('terms' in r);
 
-// 1. 맞붙는 판정: 내 수치는 보이고 상대 수치는 보이지 않는다
+// 1. 맞붙는 판정: 2026-11-18 사용자 지시로 양쪽 모두 주사위·능력치·합계 없이 어느 정도 이겼는지만 받는다(직업을 유추하지 않게)
 {let s,P,T,mine,theirs;for(let i=0;i<60;i++){s=fresh();[P,T]=s.players.filter(p=>p.team==='town');s.plans={[P.id]:{type:'track',target:T.id},[T.id]:{type:'wait'}};C.resolveBig(s,rng);mine=opposedFor(s,P)[0];theirs=opposedFor(s,T)[0];if(mine&&theirs)break;}
- ok(!!mine&&!!theirs,'추적에 실패해 양쪽 모두 판정 기록을 받음');
- ok(mine&&!mine.actor.secret&&typeof mine.actor.stat==='number','뒤를 밟은 사람: 내 은신 수치는 보임');
- ok(mine&&bare(mine.opponent),'뒤를 밟은 사람: 상대 관찰의 주사위·능력치·합계는 오지 않음');
- ok(theirs&&bare(theirs.actor),'뒤를 밟힌 사람: 상대 은신의 주사위·능력치·합계는 오지 않음');
- ok(theirs&&!theirs.opponent.secret&&typeof theirs.opponent.stat==='number','뒤를 밟힌 사람: 내 관찰 수치는 보임');
+ ok(!!mine&&!!theirs,'추적에 실패해 양쪽 모두 판정 결과를 받음');
+ ok(mine?.side==='actor'&&theirs?.side==='opponent','각자 자기 쪽에서 본 결과(뒤를 밟은 사람·밟힌 사람)');
+ ok(mine&&theirs&&noNumbers(mine)&&noNumbers(theirs),'양쪽 모두 주사위·능력치·합계·보정을 받지 않음');
+ ok(mine&&typeof mine.margin==='number'&&(mine.tie||mine.won===!theirs.won),'어느 쪽이 얼마나 이겼는지는 받음');
  ok(s.feed.some(e=>e.roll?.kind==='opposed'&&typeof e.roll.opponent.stat==='number'),'게임 안의 원래 기록은 그대로(화면으로 보낼 때만 가림)');}
 
 // 2. 낮에도 집은 각자의 집이다

@@ -113,3 +113,4 @@
 | [v109](v109.md) | 2026-11-18 22:43 | `d39ea57` | Record: AI-on games on the current code |
 | [v110](v110.md) | 2026-11-18 22:54 | `14bfa63` | Computer seats read who attacked in a remark and skip faceless records; record; tests |
 | [v111](v111.md) | 2026-11-18 23:09 | `571c6b9` | Record: problems found in the user's play test |
+| [v112](v112.md) | 2026-11-18 23:14 | `24c18a3` | Longer hall talk, actions and trials in real rooms; game cap 90 minutes; timing test; records |

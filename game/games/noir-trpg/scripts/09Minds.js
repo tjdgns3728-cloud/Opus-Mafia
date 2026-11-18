@@ -54,7 +54,7 @@ function suspicion(s,p,x){if(!x||x===p.id)return {score:0,why:[]};const nm=id=>C
   else if(k.source==='직접 목격'&&/집에 들어가는 것을 봤다/.test(text))add(3,'밤에 남의 집에 들어가는 것을 봄',k);
   else if(k.kind==='evidence'&&ATTACK.test(text))add(4,'공격 장면 사진',k);}
  for(const c of vis){
-  if(c.caught){if(c.caughtKind==='npc'){score+=1;why.push('NPC의 고발');}else{score+=6;why.push('여럿 앞에서 붙잡힘');}continue;}
+  if(c.caught){if(c.caughtKind==='npc'){if(c.explained){score+=0.5;why.push('NPC의 폭약 고발 · 꺼내기 전에 찾았다고 말함');}else{score+=4;why.push('NPC의 폭약 고발 · 찾았다는 말 없이 꺼냄(처음엔 마피아만 숨긴 자리를 안다)');}}else{score+=6;why.push('여럿 앞에서 붙잡힘');}continue;}
   for(const e of c.evidence||[]){if(e.by===p.id)continue;const key=e.by+'|'+e.text+'|'+e.time;if(seenEv.has(key))continue;seenEv.add(key);
    const t=Math.max(0.6,trust(s,p,e.by)),text=String(e.text);if(FACELESS.test(text))continue;
    if(e.kind==='observed'&&ATTACK.test(text))add(4*t,nm(e.by)+'의 목격 근거',e);

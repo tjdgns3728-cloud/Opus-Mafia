@@ -12,7 +12,7 @@ function setup(seed){let x=seed;const rng=()=>{x=(x*16807)%2147483647;return x/2
 // 2. 보호하면 공격받던 사람은 다치지 않고, 막아선 사람이 막기 +2로 대신 맞선다
 {const {s,rng,V,G}=setup(13);s.protects={[V.id]:G.id};G.hidden=true;s.stage='plan';C.resolveBig(s,rng);
  ok(V.hp===10,'공격받던 사람은 다치지 않음 (체력 '+V.hp+')');ok(s.feed.some(e=>/앞을 막아서 대신 맞섭니다/.test(e.text)),'막아서는 장면이 나옴');
- const chk=s.feed.find(e=>e.kind==='check'&&e.roll&&/막아서기/.test(JSON.stringify(e.roll)));ok(!!chk||s.feed.some(e=>/막아서기 방어 보정/.test(JSON.stringify(e))),'막아서기 방어 보정 +2가 판정에 들어감');}
+ ok(/막아서기 방어 보정 \+2/.test(C.attackRoll(s,s.players.find(p=>p.team==='mafia'),G,{weapon:'knife',guarded:true},rng).defReason||''),'막아서기 방어 보정 +2가 판정에 들어감(화면에는 대결 결과만 보임)');}
 // 3. 결과가 비슷하면(차이 2 이하) 공격한 사람도 다친다. 차이가 크면 다치지 않는다
 {let close=null,wide=null;for(let seed=1;seed<400&&(!close||!wide);seed++){const {s,rng,A,V,G}=setup(seed);s.protects={[V.id]:G.id};s.stage='plan';const before=A.hp;C.resolveBig(s,rng);const ev=s.events.filter(e=>e.type==='attack').at(-1);const r=s.feed.some(e=>/막상막하였습니다/.test(e.text));if(r&&!close)close={hurt:A.hp<before};if(!r&&!wide)wide={hurt:A.hp<before};}
  ok(close&&close.hurt,'비슷한 결과에서는 공격한 사람도 다침');ok(wide&&!wide.hurt,'차이가 큰 결과에서는 공격한 사람이 다치지 않음');}
