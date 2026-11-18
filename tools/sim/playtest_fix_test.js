@@ -59,5 +59,5 @@ for(const said of [true,false]){const s=fresh(),{maf,place,q}=atBomb(s);q.doyle.
  ok(s.stage==='verdict'&&r.phases.includes('verdict:10')&&!!s.verdict&&s.readingSince,'판결 뒤 10초짜리 판결 장면(그동안 게임 시계는 멈춤)');
  const before=s.pausedMs||0;s.readingSince=Date.now()-10000;r.closePhase();ok((s.pausedMs||0)-before>=9000,'판결 장면 동안의 시간은 게임 시간에서 빠짐');
  const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8'),au=fs.readFileSync(path.join(dir,'15Audio.js'),'utf8');
- ok(ui.includes("v?.stage==='verdict'&&v.verdict)extra+=this.verdictScene(v)")&&ui.includes('aria-label="처형대"')&&ui.includes('aria-label="열린 회관 문"')&&ui.includes('this.sound?.hang?.()'),'화면: 유죄면 처형대 그림과 처형 소리, 무죄면 열린 문 그림');
+ const css=fs.readFileSync(path.join(dir,'..','assets','trpg.css'),'utf8');ok(ui.includes("v?.stage==='verdict'&&v.verdict)extra+=this.verdictScene(v)")&&ui.includes("verdict-photo ${g?'guilty':'released'}")&&ui.includes('this.sound?.hang?.()')&&css.includes("url('/project/assets/verdict-guilty.webp')")&&fs.existsSync(path.join(dir,'..','assets','verdict-guilty.webp')),'화면: 유죄면 사용자가 준 처형대 사진(게임 색감으로)과 처형 소리, 무죄면 회관 사진');
  ok(/ hang\(\)\{/.test(au)&&au.includes("burst(t,.45,'lowpass'")&&au.includes("o.type='sawtooth'"),'처형 소리: 발판이 빠지는 소리와 밧줄 소리를 코드로 만듦');}
