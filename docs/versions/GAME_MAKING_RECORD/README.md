@@ -104,3 +104,5 @@
 | [v100](v100.md) | 2026-11-18 18:49 | `84ee63f` | Record the same-game replay design failure and the user's review |
 | [v101](v101.md) | 2026-11-18 18:58 | `0224ff3` | AI_RULES v25: read past records as facts of that time, not of now |
 | [v102](v102.md) | 2026-11-18 20:20 | `d277806` | Record: summary and report corrected to set aside same-game replay studies |
+| [v103](v103.md) | 2026-11-18 20:55 | `57f8bff` | Record: read the other team's notes and compared them with the current game |
+| [v104](v104.md) | 2026-11-18 21:06 | `8f5097e` | Witness notice under fight text: the scene is in the notebook and can be chosen as trial evidence; test |

@@ -1,6 +1,6 @@
 // 2026-11-16 밤 시험 플레이에서 찾아 고친 것. 사용: node playfix4_test.js <저장소 경로>
 const fs=require('fs'),path=require('path');const dir=path.join(path.resolve(process.argv[2]||'.'),'game','games','noir-trpg','scripts');
-for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow'])require(path.join(dir,f+'.js'));
+for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow','09Minds'])require(path.join(dir,f+'.js'));
 globalThis.WebEngine={room(){},Component:class{},define(name,cls){globalThis.__UI=cls;}};
 let src=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');src=src.replace(/\}\)\(\);\s*$/,'globalThis.__t={seekConsent,vote,cannedTalk,fallback};})();');eval(src);
 eval(fs.readFileSync(path.join(dir,'20Interface.js'),'utf8'));
