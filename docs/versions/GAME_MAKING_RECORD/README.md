@@ -100,3 +100,4 @@
 | [v96](v96.md) | 2026-11-18 15:23 | `867cc70` | Autonomous study 32 and the v08 add-on bundle pointer (workbench b61c2fa) |
 | [v97](v97.md) | 2026-11-18 15:32 | `6500668` | Autonomous studies 33-34 and the v09 add-on bundle pointer (workbench 58ee748) |
 | [v98](v98.md) | 2026-11-18 16:08 | `6e3ebf1` | Autonomous studies 35-36 and the v10 add-on bundle pointer (workbench 3e4643f) |
+| [v99](v99.md) | 2026-11-18 18:09 | `b2a8119` | Plain-language summary of the autonomous studies and its bundle pointer (workbench e3beaa3) |
