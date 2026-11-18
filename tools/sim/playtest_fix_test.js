@@ -51,3 +51,13 @@ for(const said of [true,false]){const s=fresh(),{maf,place,q}=atBomb(s);q.doyle.
  const n=rec.length;C.emit(s,[s.players[0].id],'story','새 글');T.saveRecord(r,'시험');ok(rec.slice(n).filter(b=>b.event==='feed').flatMap(b=>b.entries).length===1,'다음 기록에는 새로 늘어난 글만');
  s.cases.push({id:'c88',day:s.day,closed:false,target:s.players[2].id,by:s.players[3].id,reason:'수상',reasons:[],evidence:[],support:[],responses:{},order:2});C.beginTrial(s,s.cases.at(-1));s.trial.votes={[s.players[4].id]:'guilty'};
  T.recordTrial(r);ok(rec.at(-1).event==='trial'&&rec.at(-1).votes[s.players[4].id]==='guilty','재판마다 누가 어디에 표를 냈는지 남김');}
+// 7. 판결 장면(2026-11-18 사용자): 판결 뒤 10초 동안 시간이 멈추고, 유죄면 처형대 그림·처형 소리, 무죄면 열린 문 그림
+{eval(src10.replace(/\}\)\(\);\s*$/,'globalThis.__v={vote};})();'));const s=fresh(),t=s.players[2];
+ s.cases.push({id:'c99',day:s.day,closed:false,target:t.id,by:s.players[3].id,reason:'수상',reasons:[],evidence:[],support:[],responses:{},order:3});C.beginTrial(s,s.cases.at(-1));
+ const r={state:s,engine:{time:0},random:rng,ph:null,phases:[],phase(name,o){this.ph=o;this.phases.push(name+':'+o.seconds);},after(){},refresh(){},seat(){return {on:true};},record(){return true;},end(){},closePhase(){const o=this.ph;this.ph=null;o?.done?.();}};
+ globalThis.__v.vote(r);for(const p of s.players)if(p.id!==t.id)s.trial.votes[p.id]='guilty';r.closePhase();
+ ok(s.stage==='verdict'&&r.phases.includes('verdict:10')&&!!s.verdict&&s.readingSince,'판결 뒤 10초짜리 판결 장면(그동안 게임 시계는 멈춤)');
+ const before=s.pausedMs||0;s.readingSince=Date.now()-10000;r.closePhase();ok((s.pausedMs||0)-before>=9000,'판결 장면 동안의 시간은 게임 시간에서 빠짐');
+ const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8'),au=fs.readFileSync(path.join(dir,'15Audio.js'),'utf8');
+ ok(ui.includes("v?.stage==='verdict'&&v.verdict)extra+=this.verdictScene(v)")&&ui.includes('aria-label="처형대"')&&ui.includes('aria-label="열린 회관 문"')&&ui.includes('this.sound?.hang?.()'),'화면: 유죄면 처형대 그림과 처형 소리, 무죄면 열린 문 그림');
+ ok(/ hang\(\)\{/.test(au)&&au.includes("burst(t,.45,'lowpass'")&&au.includes("o.type='sawtooth'"),'처형 소리: 발판이 빠지는 소리와 밧줄 소리를 코드로 만듦');}
