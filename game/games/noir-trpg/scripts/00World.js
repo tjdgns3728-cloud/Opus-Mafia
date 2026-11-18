@@ -230,7 +230,8 @@ function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const a
  const roll=seesTarget?{...(seesAttacker&&pov!=='witness'?r:{damage:r.damage}),before,after:t.hp}:null;
  const cameraText=seesAttacker&&seesTarget?narrative().combat({...facts,pov:'witness',visibleWitnesses:[]}):null;
  const localSummary=seesTarget?(t.hp===0?`${t.name}이 쓰러져 움직이지 않습니다.`:t.bleeding?`${t.name}의 상처에서 피가 흐릅니다.`:r.damage?`${t.name}에게 상처가 보입니다.`:'눈앞에서 다툼이 있었지만 새로 다친 사람은 보이지 않습니다.'):'모습이 잘 보이지 않는 쪽에서 다툼이 벌어졌습니다.';
- emit(s,[viewerId],'combat',text,{roll,target:seesTarget?t.id:null,impact:r.weapon==='권총'?'gun':r.weapon==='단검'?'blade':'blunt',event:event.id,localEvent:true,localSummary,cameraText,actionRecord:true,cameraFrame:seesAttacker&&seesTarget?{attacker:{id:idFor(s,viewer,p),name:nameFor(s,viewer,p)},target:{id:t.id,name:t.name},weapon:r.weapon,defense:r.defenseType,damage:r.damage,reduction:r.reduction,after:t.hp,bleeding:t.bleeding}:null});
+ /* 2026-11-18 사용자 요청: 공격을 직접 봐서 수첩에 목격 기록이 생긴 사람(공격한 사람·쓰러진 사람 제외)에게 그 기록을 재판 근거로 고를 수 있다고 알린다 */const noteGuide=seen.includes(viewerId)&&viewerId!==p.id&&viewer.hp>0;
+ emit(s,[viewerId],'combat',text,{roll,noteGuide,target:seesTarget?t.id:null,impact:r.weapon==='권총'?'gun':r.weapon==='단검'?'blade':'blunt',event:event.id,localEvent:true,localSummary,cameraText,actionRecord:true,cameraFrame:seesAttacker&&seesTarget?{attacker:{id:idFor(s,viewer,p),name:nameFor(s,viewer,p)},target:{id:t.id,name:t.name},weapon:r.weapon,defense:r.defenseType,damage:r.damage,reduction:r.reduction,after:t.hp,bleeding:t.bleeding}:null});
  }}
  // Photography records the same resolved moment, before surviving travellers leave.
  for(const [id,a] of acts){const p=find(s,id);s.actionContext=true;try{if(a.type==='photograph')press().capture(s,p,a);else if(a.type==='publish')press().publish(s,p,a);}finally{s.actionContext=false;}}
