@@ -27,7 +27,7 @@ const roles={
  pharmacist:{name:'약제사',desc:'지혈에 능하고 붕대를 넉넉히 갖습니다. 붕대로는 피를 멎게 할 뿐이고, 잃은 체력은 치료제가 있어야 돌아옵니다.',stats:{fight:3,observe:6,agility:5,medical:9,persuade:6},items:{knife:1,bandage:4}},
  lawyer:{name:'변호사',desc:'설득과 관찰이 장점입니다.',stats:{fight:3,observe:7,agility:4,medical:3,persuade:10},items:{knife:1}},
 
- sheriff:{name:'보안관',desc:'관찰이 뛰어나고 인물 조사에 익숙해 조사 판정에 +3을 받습니다.',stats:{fight:5,observe:9,agility:5,medical:3,persuade:5},items:{knife:1}},
+ sheriff:{name:'보안관',desc:'범죄를 다루는 사람이라 몸싸움에 익숙하고, 사람을 캐묻는 일에 익숙해 인물 조사 판정에 +3을 받습니다.',stats:{fight:8,observe:6,agility:5,medical:3,persuade:5}/* 2026-11-19 사용자: 싸움 5·관찰 9 → 싸움 8·관찰 6(합계 그대로). 관찰가는 탐정 */,items:{knife:1}},
  doctor:{name:'의사',desc:'치료제로 잃은 체력을 돌립니다(체력 3, 진료소에서는 4). 치료제를 다른 사람에게 건넬 수 있지만, 의사가 아닌 사람은 진료소에서만 쓸 수 있고 조금만 돌아옵니다. 치료제는 한정되어 있습니다.',stats:{fight:3,observe:6,agility:5,medical:10,persuade:5},items:{knife:1,bandage:3,medicine:3}},
  jailor:{name:'간수',desc:'같은 장소의 상대를 하루 한 번 구금할 수 있습니다. 대결에서 이기면 다음 턴의 큰 행동을 막습니다. 작은 행동과 말하기는 가능합니다.',stats:{fight:9,observe:5,agility:4,medical:3,persuade:5},items:{club:1}},
  reporter:{name:'기자',desc:'큰 행동으로 보이는 인물과 현장을 촬영합니다. 다음 큰 행동에서 보관한 사진으로 신문을 만들어 모두에게 공개할 수 있습니다.',stats:{fight:3,observe:7,agility:9,medical:3,persuade:5},items:{knife:1,camera:1}},
