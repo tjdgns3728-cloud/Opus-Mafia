@@ -15,7 +15,7 @@ const places={
  hideout:{name:'마피아 본거지',short:'본거지',direction:'외딴 본거지',photo:6,light:-1,cover:2,secret:true,text:'마을 밖 버려진 광산 창고입니다. 마피아 편만 아는 곳입니다. 밤이면 이곳에 모여 계획을 나눕니다.'}
 };
 const roles={
- godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 설득이 높아 도일을 협박하거나 돈으로 넘기는 일을 잘합니다. 해먼드를 끌어들이거나 도일을 넘기면 이기는 조건을 셀 때 마피아 한 명으로 셉니다. 다른 사람을 끌어들이면 그가 보고 들은 것을 매일 아침 전해 줍니다. 끌어들이기에 두 번 성공할 때마다, 죽은 같은 편이 있으면 마을 밖에서 얼굴을 가린 조직원을 부릅니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1}},
+ godfather:{name:'대부',team:'mafia',desc:'마피아의 협상 담당입니다. 설득이 높아 도일을 협박하는 일을 잘합니다. 해먼드를 끌어들이거나 도일을 넘기면 이기는 조건을 셀 때 마피아 한 명으로 셉니다. 다른 사람을 끌어들이면 그가 보고 들은 것을 매일 아침 전해 줍니다. 끌어들이기에 두 번 성공할 때마다, 죽은 같은 편이 있으면 마을 밖에서 얼굴을 가린 조직원을 부릅니다.',stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1}},
  mafioso:{name:'대행자',team:'mafia',desc:'마피아의 공격 담당입니다. 전투 능력치가 높고 단검, 리스의 권총, 탄환 세 발을 갖고 시작합니다. 자신의 큰 행동으로 공격합니다.',stats:{fight:10,observe:5,agility:6,medical:3,persuade:4},items:{knife:1}},
  consigliere:{name:'조언자',team:'mafia',desc:'마피아의 정보 담당입니다. 인물 조사에 익숙해 조사 판정에 +3을 받습니다.',stats:{fight:7,observe:10,agility:5,medical:3,persuade:8},items:{knife:1}},
  kidnapper:{name:'납치범',team:'mafia',desc:'마피아의 구금 담당입니다. 같은 장소의 상대에게 하루 한 번 구금을 시도해 대결에서 이기면 다음 턴의 큰 행동을 막습니다.',stats:{fight:9,observe:5,agility:7,medical:3,persuade:4},items:{club:1}},
