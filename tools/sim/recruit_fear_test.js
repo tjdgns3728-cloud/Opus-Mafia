@@ -11,16 +11,17 @@ const roles=s=>({gf:s.players.find(p=>p.role==='godfather'),town:s.players.filte
 const got=(s,p,re)=>s.feed.some(e=>e.to?.includes(p.id)&&re.test(String(e.text)));
 const big=(s,p)=>S.choices(s,p,'big'),find=(s,p,verb,npc)=>big(s,p).find(a=>a.verb===verb&&a.npc===npc);
 
-// 1. 얼굴 가리기: 누구나, 같은 편이 아닌 사람에게는 "얼굴을 가린 사람", 누군지는 null
+// 1. 얼굴 가리기(변장): 누구나, 모르는 사람에게는 "변장한 사람 n"(먼저 변장한 차례로 번호), 벗을 때까지 이어짐. 자세한 것은 disguise_test.js
+const veil=(s,p)=>{s.aliases??={};s.aliases[p.id]=(s.aliasSeq=(s.aliasSeq||0)+1);p.faceCover=true;};/* 아무도 보지 않는 데서 변장한 것과 같음 */
 {const s=fresh(),{gf,town}=roles(s),t=town[0],o=town[1];
  ok(C.choices(s,t.id,'small').some(a=>a.type==='cover')&&C.choices(s,gf.id,'small').some(a=>a.type==='cover'),'시민도 마피아도 작은 행동으로 얼굴을 가릴 수 있음');
  ok(C.validate(s,t.id,{type:'cover'},'small')===null,'얼굴 가리기는 검사를 통과');
- t.faceCover=s.epoch;ok(C.nameFor(s,o,t)==='얼굴을 가린 사람'&&C.idFor(s,o,t)===null,'다른 사람에게는 "얼굴을 가린 사람", 누군지 모름(id null)');
+ veil(s,t);ok(C.nameFor(s,o,t)==='변장한 사람 1'&&C.idFor(s,o,t)==='v1','다른 사람에게는 "변장한 사람 1"(번호로 따로 된 사람)');
  ok(C.nameFor(s,t,t)===t.name,'자기 자신에게는 자기 이름');
- gf.faceCover=s.epoch;const mates=s.players.filter(p=>p.team==='mafia'&&p.id!==gf.id);ok(mates.every(m=>C.nameFor(s,m,gf)===gf.name)&&C.nameFor(s,o,gf)==='얼굴을 가린 사람','마피아끼리는 알아봄, 시민에게는 얼굴을 가린 사람');
- ok(!C.choices(s,t.id,'small').some(a=>a.type==='cover'),'이미 가렸으면 다시 고르지 않음');
- s.epoch++;ok(C.nameFor(s,o,t)===t.name,'다음 턴에는 다시 이름이 보임');
- ok(/얼굴을 가린 사람이 /.test(C.korean(s,'얼굴을 가린 사람가 왔다')),'조사도 "얼굴을 가린 사람이"로 맞춤');}
+ veil(s,gf);const mates=s.players.filter(p=>p.team==='mafia'&&p.id!==gf.id);ok(mates.every(m=>C.nameFor(s,m,gf)===gf.name)&&C.nameFor(s,o,gf)==='변장한 사람 2','마피아끼리는 알아봄, 시민에게는 두 번째로 변장한 사람이라 변장한 사람 2');
+ ok(!C.choices(s,t.id,'small').some(a=>a.type==='cover')&&C.choices(s,t.id,'small').some(a=>a.type==='uncover'),'이미 변장했으면 다시 고르지 않고, 벗기를 고를 수 있음');
+ s.epoch++;ok(C.nameFor(s,o,t)==='변장한 사람 1','다음 턴에도 변장은 이어짐');
+ ok(/변장한 사람 2가 /.test(C.korean(s,'변장한 사람 2이 왔다'))&&/변장한 사람 1이 /.test(C.korean(s,'변장한 사람 1가 왔다')),'조사는 번호를 읽는 소리에 맞춤(2가, 1이)');}
 
 // 2. 돈 끌어들이기 없음, 흔들리지 않으면 판정 없이 거절, 맨얼굴이면 공포 0에서 고발
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
@@ -30,10 +31,10 @@ const big=(s,p)=>S.choices(s,p,'big'),find=(s,p,verb,npc)=>big(s,p).find(a=>a.ve
  const c=s.cases.find(c=>c.target===gf.id&&c.by==='barkeep');ok(!!c&&c.npcKind==='recruit'&&c.caught,'맨얼굴로 권했다 거절당하면 공포 0인 술집 주인이 고발');}
 
 // 3. 얼굴을 가리고 권했다 거절당하면 고발 없이 말만 퍼진다
-{const s=fresh(),{gf,town}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';gf.faceCover=s.epoch;const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
+{const s=fresh(),{gf,town}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';veil(s,gf);const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
  S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);
  ok(!s.cases.some(c=>c.target===gf.id),'얼굴을 가렸으면 고발하지 않음');
- ok(town.every(t=>t.known.some(k=>/얼굴을 가린 사람이 나더러 마피아 편에 서라고 했소/.test(k.text)&&k.about===null)),'"얼굴을 가린 사람이 권했다"는 말이 누군지 모른 채 퍼짐');}
+ ok(town.every(t=>t.known.some(k=>/변장한 사람 1이 나더러 마피아 편에 서라고 했소/.test(k.text)&&k.about==='v1')),'"변장한 사람 1이 권했다"는 말이 그 번호의 일로 퍼짐(누군지는 모름)');}
 
 // 4. 흔들린 NPC: 처음 이긴 판정은 "생각해 보겠소", 다른 때에 다시 이기면 넘어옴
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=true;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
@@ -75,9 +76,9 @@ const atBomb=s=>{s.scenario.continuation&&(s.scenario.continuation.discoveredBy=
  ok(take&&!s.cases.some(c=>c.target===maf.id)&&got(s,maf,/겁에 질린 얼굴로 눈을 돌립니다/),'공포가 10이면 도일이 폭약을 꺼내는 것을 보고도 눈을 돌림');}
 {const s=fresh(),{maf}=atBomb(s);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);
  const c=s.cases.find(c=>c.target===maf.id&&c.caughtKind==='npc');ok(c&&c.npcKind==='dynamite','공포 0이면 지금처럼 고발(npcKind dynamite)');}
-for(const flee of [true,false]){const s=fresh(),{maf}=atBomb(s);maf.faceCover=s.epoch;const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,flee?hi:lo);
+for(const flee of [true,false]){const s=fresh(),{maf}=atBomb(s);veil(s,maf);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,flee?hi:lo);
  const town=s.players.filter(p=>p.team==='town');const named=s.cases.some(c=>c.target===maf.id);
- ok(town.every(t=>t.known.some(k=>/얼굴을 가린 사람이 .*폭약을 꺼냈소/.test(k.text)&&k.about===null))&&(flee?!named:named),flee?'얼굴을 가리고 달아나면 "얼굴을 가린 사람"이라는 말만 퍼지고 고발 없음':'얼굴을 가렸어도 붙잡히면 얼굴이 드러나 고발됨');}
+ ok(town.every(t=>t.known.some(k=>/변장한 사람 1이 .*폭약을 꺼냈소/.test(k.text)&&k.about==='v1'))&&(flee?!named:named)&&(flee?!!maf.faceCover:!maf.faceCover),flee?'변장하고 달아나면 "변장한 사람 1"이 했다는 말만 퍼지고 고발 없음':'변장했어도 붙잡히면 가리개가 벗겨지고 고발됨');}
 
 // 8. 규칙 판단: 끌어들이기·협박 고발은 폭약 고발과 다른 까닭으로 센다
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';s.scenario.continuation.npcs.barkeep.location='tavern';S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);

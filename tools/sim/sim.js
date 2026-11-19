@@ -3,9 +3,9 @@
 const {spawn}=require('child_process'),path=require('path');
 const repo=process.argv[2],seed=Number(process.argv[3]||1),scale=Number(process.argv[4]||40),seats=Number(process.argv[5]||8),verbose=process.argv[6]==='v';
 const web=path.join(repo,'game','webengine','server','room_host.js'),proj=path.join(repo,'game','games','noir-trpg');
-const host=spawn(process.execPath,[web,proj,'--timescale',String(scale),'--seed',String(seed),'--hold','0','--ai','off'],{stdio:['pipe','pipe','inherit']});
-let buf='',nextId=0;const waits=new Map(),logs=[];
-host.stdout.setEncoding('utf8');host.stdout.on('data',c=>{buf+=c;for(let at;(at=buf.indexOf('\n'))>=0;){const line=buf.slice(0,at);buf=buf.slice(at+1);if(!line.trim())continue;let m;try{m=JSON.parse(line);}catch{continue;}if(m.log)logs.push(m.log);if(m.id!==undefined&&waits.has(m.id)){waits.get(m.id)(m.res);waits.delete(m.id);}if(m.ready!==undefined&&waits.has('ready')){waits.get('ready')(m);waits.delete('ready');}}});
+const host=spawn(process.execPath,[web,proj,'--timescale',String(scale),'--seed',String(seed),'--hold','0','--ai','off','--records','1'],{stdio:['pipe','pipe','inherit']});
+let buf='',nextId=0;const metrics=[];/* 게임이 남긴 지표(2026-11-19) */const waits=new Map(),logs=[];
+host.stdout.setEncoding('utf8');host.stdout.on('data',c=>{buf+=c;for(let at;(at=buf.indexOf('\n'))>=0;){const line=buf.slice(0,at);buf=buf.slice(at+1);if(!line.trim())continue;let m;try{m=JSON.parse(line);}catch{continue;}if(m.log)logs.push(m.log);if(m.record){try{const b=JSON.parse(m.record);if(b.data?.event==='metrics')metrics.push(...(b.data.list||[]));}catch{}}if(m.id!==undefined&&waits.has(m.id)){waits.get(m.id)(m.res);waits.delete(m.id);}if(m.ready!==undefined&&waits.has('ready')){waits.get('ready')(m);waits.delete('ready');}}});
 const ask=req=>new Promise(ok=>{const id=++nextId;waits.set(id,ok);host.stdin.write(JSON.stringify({id,req})+'\n');});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
@@ -26,6 +26,6 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
   await sleep(60);
  }
  const v=last||{};const people=v.people||[];
- const out={seed,seats,ended:!!v.result,winner:v.result?v.result.team:null,why:v.result?String(v.result.text||v.result.reason||'').slice(0,60):null,day:v.day,time:v.time,stage:v.stage,alive:people.filter(p=>p.hp>0).length,mafiaAlive:people.filter(p=>p.hp>0&&p.team==='mafia').length,mafiaTotal:people.filter(p=>p.team==='mafia').length,humanRole:v.me&&v.me.role,humanTeam:v.me&&v.me.team,humanAlive:v.me?v.me.hp>0:null,realSeconds:Math.round((Date.now()-t0)/1000),stuck:!v.result,logs:logs.slice(-3)};
+ const out={seed,seats,ended:!!v.result,winner:v.result?v.result.team:null,why:v.result?String(v.result.text||v.result.reason||'').slice(0,60):null,day:v.day,time:v.time,stage:v.stage,alive:people.filter(p=>p.hp>0).length,mafiaAlive:people.filter(p=>p.hp>0&&p.team==='mafia').length,mafiaTotal:people.filter(p=>p.team==='mafia').length,humanRole:v.me&&v.me.role,humanTeam:v.me&&v.me.team,humanAlive:v.me?v.me.hp>0:null,realSeconds:Math.round((Date.now()-t0)/1000),stuck:!v.result,logs:logs.slice(-3),metrics};
  console.log(JSON.stringify(out));host.stdin.end();setTimeout(()=>process.exit(0),200);
 })();

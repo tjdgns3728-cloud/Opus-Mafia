@@ -9,6 +9,7 @@ function saveRecord(r,why){const s=r.state;if(!s||typeof r.record!=='function')r
  const from=s.recordedUpTo||0,entries=s.feed.filter(e=>e.i>from).map(e=>({i:e.i,time:e.time,kind:e.kind,to:e.to,text:e.text,name:e.name||null,who:e.who||null,place:e.place||null,roll:e.roll||null}));
  let chunk=[],size=0;const flush=()=>{if(chunk.length)r.record({event:'feed',why,day:s.day,turn:s.turn,entries:chunk});chunk=[];size=0;};
  for(const e of entries){const n=JSON.stringify(e).length;if(size+n>48000)flush();chunk.push(e);size+=n;}flush();if(entries.length)s.recordedUpTo=entries.at(-1).i;
+ /* 지표(2026-11-19 사용자): 쌓인 지표를 판 기록에 남기고 비운다 */if(s.metrics?.length)r.record({event:'metrics',why,day:s.day,turn:s.turn,list:s.metrics.splice(0)});
  r.record({event:'state',why,day:s.day,turn:s.turn,players:s.players.map(p=>({id:p.id,name:p.name,team:p.team,role:p.role,hp:p.hp,location:p.location,downed:!!p.downed,deathCause:p.deathCause||null})),
   cases:(s.cases||[]).map(c=>({id:c.id,day:c.day,target:c.target,by:c.by,byName:c.byName||null,reason:c.reason,evidence:(c.evidence||[]).map(e=>({by:e.by,kind:e.kind,source:e.source,text:e.text})),caught:!!c.caught,caughtKind:c.caughtKind||null,explained:!!c.explained,status:c.status||null}))});
 }catch(e){}}

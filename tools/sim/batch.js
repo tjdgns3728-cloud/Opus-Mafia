@@ -10,4 +10,5 @@ const run=seed=>new Promise(ok=>{const p=spawn(process.execPath,[path.join(__dir
  console.log(`\n합계: ${res.length}판 중 끝난 판 ${done.length} | 마피아 승 ${m} (${done.length?Math.round(100*m/done.length):0}%) · 시민 승 ${t} (${done.length?Math.round(100*t/done.length):0}%)`);
  console.log(`일곱째 날 밤 전에 끝난 판: ${early} | 끝날 때 평균 생존자 ${(done.reduce((a,r)=>a+r.alive,0)/Math.max(1,done.length)).toFixed(1)}명 / ${seats}명 | 사람 자리가 죽은 판: ${done.filter(r=>!r.humanAlive).length}`);
  console.log(`사람 자리가 마피아였던 판 ${hm.length} (그중 마피아 승 ${hm.filter(r=>r.winner==='mafia').length})`);
+ /* 지표(2026-11-19 사용자): 판마다 게임이 남긴 지표를 모아 본다 */console.log('\n지표:\n'+require('./metrics_lib.js').summarize(done).text);
 })();

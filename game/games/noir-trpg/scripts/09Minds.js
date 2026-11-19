@@ -7,7 +7,7 @@
    숨은 사실(다른 사람의 진영·직업, 남의 수첩)은 쓰지 않는다. */
 const C=()=>root.NoirTRPG;
 const ATTACK=/공격|쳐들어/;/* 불침번의 기록은 "밤에 ○○이 내 집에 쳐들어왔다"로 적힌다 */
-const known=(p)=>(p.known||[]).filter(k=>!k.teamOnly);
+const known=(p)=>(p.known||[]).filter(k=>!k.teamOnly).map(k=>{const m=/^v([0-9]+)$/.exec(k.about||''),r=m&&p.aliasKnown?.[m[1]];return r?{...k,about:r.id,text:String(k.text).split('변장한 사람 '+m[1]).join(r.name)}:k;});
 // p가 아는 재판 신청: 자기가 낸 것, 공고로 받은 것, 지금 모두 앞에서 열린 재판
 function cases(s,p){return (s.cases||[]).filter(c=>c.by===p.id||(p.knownCases||[]).includes(c.id)||s.trial?.id===c.id);}
 // 신청한 사람들: 처음 낸 사람과 이유를 덧붙여 함께 낸 사람(동의만 한 사람은 넣지 않는다)

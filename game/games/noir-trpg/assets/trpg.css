@@ -138,7 +138,7 @@ button.term-player:focus-visible{outline:1px solid #e1c28d;outline-offset:2px}
 .speech{font-size:17px;line-height:1.75}
 .line small,.speech small{font-size:12px}
 /* 왼쪽 목록: 위쪽 버튼으로 플레이어와 NPC를 바꿔 본다. */
-.people-tabs{display:flex;gap:5px;margin:8px 0 10px}
+.people-tabs{display:flex;gap:5px;margin:8px 0 10px}.people-empty{margin:10px 4px;font-size:13px;color:#9a948c}.people-tabs button{word-break:keep-all;line-height:1.2;padding:6px 2px}.people-tabs button small{display:block;font-size:11px;opacity:.8;margin-top:2px}.picker-warn{margin:10px 0;padding:8px 10px;border:1px solid #8a5a32;border-radius:4px;background:#2b1f16;color:#f0b77a;font-size:14px;line-height:1.5}
 .people-tabs button{flex:1;padding:8px 6px;font-size:14px;font-family:'Batang',serif;border-color:#4a443b;color:#b9ac94;background:#1d1b19}
 .people-tabs [aria-selected="true"]{background:#5a4431;border-color:#b49a6f;color:#f1debd}
 .npc-card{cursor:default}
