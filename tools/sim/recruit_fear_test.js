@@ -58,7 +58,11 @@ const veil=(s,p)=>{s.aliases??={};s.aliases[p.id]=(s.aliasSeq=(s.aliasSeq||0)+1)
 // 4-2. 규칙 봇 마피아는 흔들릴 까닭이 있는 NPC에게만 권한다(같은 날 규칙을 바꾸고 규칙 봇을 맞추지 않았던 것을 고침)
 {const pick=(prep)=>{for(let e=0;e<6;e++){const s=fresh(),{gf}=roles(s);gf.stats.persuade=9;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';s.epoch=e;prep(s,n);const a=S.botAction(s,gf,'big');if(a&&a.verb==='recruitNpc')return a;}return null;};
  ok(!pick((s,n)=>{s.scenario.mineClosed=false;}),'흔들릴 까닭이 없으면 규칙 봇이 권하지 않음');
- ok(!!pick((s,n)=>{s.scenario.mineClosed=true;}),'갱도가 닫혀 흔들린 술집 주인에게는 규칙 봇이 권함');}
+ ok(!!pick((s,n)=>{s.scenario.mineClosed=true;}),'갱도가 닫혀 흔들린 술집 주인에게는 규칙 봇이 권함');
+ // 흔들리기만 한 NPC는 다른 때에 다시 찾아가 권한다(두 번 이겨야 넘어오는 규칙에 맞춤)
+ {const s=fresh(),{gf}=roles(s);gf.stats.persuade=9;s.scenario.mineClosed=true;const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';n.wavering=s.epoch-1;gf.location='chapel';
+  const mv=S.botAction(s,gf,'big');ok(mv&&mv.type==='move'&&mv.place==='tavern','흔들리기만 한 술집 주인이 다른 곳에 있으면 그리로 감');
+  gf.location='tavern';const a=S.botAction(s,gf,'big');ok(a&&a.verb==='recruitNpc'&&a.npc==='barkeep','그 자리에 오면 다시 권함');}}
 
 // 5. 행동 협박: 일터에서만, 하루에 한 번, 압박(지위가 높으면 덜)과 공포가 쌓이고 보이지 않음, 암거래 상인은 없음
 {const s=fresh(),{gf,town}=roles(s);gf.location='tavern';const st=s.scenario.continuation,n=st.npcs.barkeep;n.location='hall';
