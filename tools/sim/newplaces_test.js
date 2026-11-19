@@ -35,7 +35,7 @@ const NEW=['rail','office','union','bridge'];
 // 4. 노조 장부는 노조 사무실에 있고(술집 뒤가 아님), 적힌 내용은 도일에게 손을 뻗었는지에 따라 다르다
 {let s=game(),t=s.players.find(q=>q.team==='town');t.location='tavern';for(let i=0;i<8;i++)S.investigate(s,t,hi);ok(!t.storyKnown.includes('ledger'),'술집에서는 노조 장부가 나오지 않음');
  t.location='union';for(let i=0;i<8;i++)S.investigate(s,t,hi);ok(t.storyKnown.includes('ledger')&&t.known.some(k=>/임금 지급 기록만/.test(String(k.text))),'노조 사무실에서 장부를 찾음(아무도 손을 뻗지 않았으면 임금 기록만)');
- s=game();t=s.players.find(q=>q.team==='town');s.scenario.doyle.threatened=true;t.location='union';for(let i=0;i<8;i++)S.investigate(s,t,hi);ok(t.known.some(k=>/돈을 내밀며 노조를 넘기라고/.test(String(k.text))),'도일이 협박받은 판에는 거절 메모가 적혀 있음');}
+ s=game();t=s.players.find(q=>q.team==='town');s.scenario.doyle.threatened=true;t.location='union';for(let i=0;i<8;i++)S.investigate(s,t,hi);ok(t.known.some(k=>/노조를 넘기지 않으면 세 집을 해치겠다는 협박장/.test(String(k.text))),'도일이 협박받은 판에는 협박장 메모가 적혀 있음');}
 
 // 5. 협곡 다리의 흔적은 판마다 다르고, 광부의 다리 이야기도 판마다 다르다
 {const kinds={};let lead=0,none=0;for(let i=0;i<150;i++){const s=game();kinds[s.scenario.rumor.bridge]=(kinds[s.scenario.rumor.bridge]||0)+1;(s.scenario.rumor.bridgeLead?lead++:none++);}
