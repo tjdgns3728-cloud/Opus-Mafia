@@ -13,7 +13,7 @@ const kinds=s=>(s.metrics||[]).map(m=>m.kind);
 {const s=fresh(),t=s.players.find(p=>p.team==='town'&&p.name!=='사람'),gf=s.players.find(p=>p.role==='godfather');
  t.location='hall';C.smallAct(s,t.id,{type:'cover'},rng);const cv=s.metrics.find(m=>m.kind==='cover');ok(cv&&cv.alias===1&&cv.actor===t.id&&cv.team==='town'&&cv.seenBy===0,'변장: 번호·누가·보는 사람 수');
  s.scenario.mineClosed=false;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';gf.used.big=false;
- const rec=S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep');S.resolve(s,gf,rec,hi);
+ const rec=S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep');S.resolve(s,gf,rec,()=>0.5);/* 주사위 6: 아무 이유 없이 권하면 난이도 20이라 거절 */
  const r=s.metrics.find(m=>m.kind==='recruit');ok(r&&r.npc==='barkeep'&&r.outcome==='refusedNotOpen'&&r.team==='mafia','끌어들이기: 흔들림 없는 NPC에게 권해 거절당함');
  const nr=s.metrics.find(m=>m.kind==='npcReact');ok(nr&&nr.act==='recruit'&&nr.outcome==='accused','NPC 반응: 거절한 NPC가 고발(지표 종류가 덮이지 않음)');
  const c=s.cases.find(q=>q.target===gf.id);C.beginConsent(s,c);C.beginTrial(s,c);s.stage='vote';for(const o of C.alive(s))s.trial.votes[o.id]='guilty';C.judge(s);

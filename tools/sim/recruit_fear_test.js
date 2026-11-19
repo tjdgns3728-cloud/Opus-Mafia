@@ -23,12 +23,17 @@ const veil=(s,p)=>{s.aliases??={};s.aliases[p.id]=(s.aliasSeq=(s.aliasSeq||0)+1)
  s.epoch++;ok(C.nameFor(s,o,t)==='변장한 사람 1','다음 턴에도 변장은 이어짐');
  ok(/변장한 사람 2가 /.test(C.korean(s,'변장한 사람 2이 왔다'))&&/변장한 사람 1이 /.test(C.korean(s,'변장한 사람 1가 왔다')),'조사는 번호를 읽는 소리에 맞춤(2가, 1이)');}
 
-// 2. 돈 끌어들이기 없음, 흔들리지 않으면 판정 없이 거절, 맨얼굴이면 공포 0에서 고발
+// 2. 돈 끌어들이기 없음. 아무것도 하지 않았을 때 난이도 20(설득 10인 대부가 주사위 10 = 10%), 해먼드는 22. 거절당하면 맨얼굴이면 공포 0에서 고발
+// 2026-11-19 사용자 "그러니깐 아무것도 안했을 때 확률은 10%정도이고 뭔가 겁을 먹게하거나 이야기 전개 방식이 마피아를 따를 수 밖에 없으면 난이도를 낮추는 식으로 해달라는 의미였어요"
+const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.feed.filter(e=>e.to?.includes(p.id)&&e.roll?.label===label).at(-1)?.roll;
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
  ok(!big(s,gf).some(a=>a.verb==='recruitNpcPaid'),'돈을 쥐여 주며 끌어들이기는 없음');
- S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);
- ok(!n.recruited&&n.refusals===1&&got(s,gf,/흔들릴 까닭이 없어 보입니다/),'흔들릴 까닭이 없으면 판정 없이 거절');
- const c=s.cases.find(c=>c.target===gf.id&&c.by==='barkeep');ok(!!c&&c.npcKind==='recruit'&&c.caught,'맨얼굴로 권했다 거절당하면 공포 0인 술집 주인이 고발');}
+ S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.85));const r1=rollOf(s,gf,'술집 주인 끌어들이기');
+ ok(r1&&r1.difficulty===20&&!n.recruited&&n.refusals===1&&got(s,gf,/흔들릴 까닭이 없어 보입니다/),'아무것도 하지 않았으면 난이도 20: 주사위 9면 거절(판정은 함)');
+ const c=s.cases.find(c=>c.target===gf.id&&c.by==='barkeep');ok(!!c&&c.npcKind==='recruit'&&c.caught,'맨얼굴로 권했다 거절당하면 공포 0인 술집 주인이 고발');
+ const s2=fresh(),g2=roles(s2).gf;s2.scenario.mineClosed=false;g2.location='tavern';const n2=s2.scenario.continuation.npcs.barkeep;n2.location='tavern';S.resolve(s2,g2,find(s2,g2,'recruitNpc','barkeep'),hi);
+ ok(n2.recruited,'아무것도 하지 않았어도 주사위 10이면 넘어옴(10%)');
+ const s3=fresh(),g3=roles(s3).gf;g3.location='hall';const m3=s3.scenario.continuation.npcs.mayor;m3.location='hall';const a3=find(s3,g3,'recruitNpc','mayor');if(a3){S.resolve(s3,g3,a3,hi);ok(rollOf(s3,g3,'해먼드 끌어들이기')?.difficulty===22&&!m3.recruited,'지위가 높은 해먼드는 난이도 22: 아무것도 하지 않으면 주사위 10이어도 넘어오지 않음');}else ok(false,'해먼드 끌어들이기 선택지 없음');}
 
 // 3. 얼굴을 가리고 권했다 거절당하면 고발 없이 말만 퍼진다
 {const s=fresh(),{gf,town}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';veil(s,gf);const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
@@ -36,19 +41,21 @@ const veil=(s,p)=>{s.aliases??={};s.aliases[p.id]=(s.aliasSeq=(s.aliasSeq||0)+1)
  ok(!s.cases.some(c=>c.target===gf.id),'얼굴을 가렸으면 고발하지 않음');
  ok(town.every(t=>t.known.some(k=>/변장한 사람 1이 나더러 마피아 편에 서라고 했소/.test(k.text)&&k.about==='v1')),'"변장한 사람 1이 권했다"는 말이 그 번호의 일로 퍼짐(누군지는 모름)');}
 
-// 4. 흔들린 NPC: 처음 이긴 판정은 "생각해 보겠소", 다른 때에 다시 이기면 넘어옴
+// 4. 이야기가 마피아를 따를 수밖에 없게 흘렀으면(흔들린 까닭) +4: 대부는 주사위 6 이상(50%). 판정은 한 번, 성공하면 바로 넘어옴
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=true;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
- S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);ok(!n.recruited&&n.wavering===s.epoch&&got(s,gf,/마음이 흔들렸지만 아직 넘어오지 않았습니다/),'처음 이긴 판정: 흔들리기만 함(넘어오지 않음)');
- S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);ok(!n.recruited,'같은 때에 다시 이겨도 넘어오지 않음');
- S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),lo);ok(!n.recruited&&!s.cases.some(c=>c.target===gf.id)&&got(s,gf,/아직 마음을 정하지 못했소/),'망설이는 중에 판정에 지면 고발 없이 "아직 마음을 정하지 못했소"');
- s.epoch++;S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);ok(n.recruited,'다른 때에 다시 이기면 넘어옴');
- const roll=s.feed.filter(e=>e.to?.includes(gf.id)&&e.roll?.label==='술집 주인 끌어들이기').at(-1)?.roll;ok(roll&&roll.terms.some(t=>t.label==='광부들이 외상을 갚지 못함')&&!roll.terms.some(t=>/공포|압박/.test(t.label)),'판정에는 이야기의 까닭만 보이고 공포·압박은 보이지 않음');}
+ S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.45));ok(!n.recruited,'흔들린 술집 주인: 주사위 5면 거절');
+ const roll=rollOf(s,gf,'술집 주인 끌어들이기');ok(roll&&roll.terms.some(t=>t.label==='광부들이 외상을 갚지 못함'&&t.value===4)&&!roll.terms.some(t=>/공포|압박/.test(t.label)),'판정에는 이야기의 까닭(+4)만 보이고 공포·압박은 보이지 않음');
+ const s2=fresh(),g2=roles(s2).gf;s2.scenario.mineClosed=true;g2.location='tavern';const n2=s2.scenario.continuation.npcs.barkeep;n2.location='tavern';
+ S.resolve(s2,g2,find(s2,g2,'recruitNpc','barkeep'),mid(0.55));ok(n2.recruited,'흔들린 술집 주인: 주사위 6이면 첫 판정에 바로 넘어옴');
+ // 겁(공포)과 행동 협박도 보이지 않게 난이도를 낮춤
+ const s3=fresh(),g3=roles(s3).gf;s3.scenario.mineClosed=false;g3.location='tavern';const n3=s3.scenario.continuation.npcs.barkeep;n3.location='tavern';n3.fear=6;n3.pressure=3;
+ S.resolve(s3,g3,find(s3,g3,'recruitNpc','barkeep'),mid(0.85));ok(rollOf(s3,g3,'술집 주인 끌어들이기')?.difficulty===20-3-3,'행동 협박(압박 3)과 공포 6이면 난이도 20 → 14');}
 
 // 4-1. 넘어올 때의 말은 흔들린 까닭(행동 협박 → 이야기 → 겁)에 따라 다르고, 돈을 받는 말은 없다(2026-11-19 사용자 "어떻게 행동 했냐에 따라 협박하는 대사랑 협박당하는 사람의 대사가 달라질 것입니다")
 {const lines=[];for(const how of ['pressure','shaken','fear']){const s=fresh(),{gf}=roles(s);gf.location='home';const n=s.scenario.continuation.npcs.landlady;n.location='home';gf.houseId=null;
   s.scenario.mineClosed=how==='shaken';if(how==='pressure')n.pressure=3;if(how==='fear')n.fear=6;
   const a=find(s,gf,'recruitNpc','landlady');if(!a){ok(false,'하숙집 주인 끌어들이기 선택지 없음('+how+')');continue;}
-  S.resolve(s,gf,a,hi);s.epoch++;S.resolve(s,gf,find(s,gf,'recruitNpc','landlady'),hi);
+  S.resolve(s,gf,a,hi);
   const said=s.feed.filter(e=>e.to?.includes(gf.id)).map(e=>String(e.text)).join(' ');lines.push(said);
   ok(n.recruited&&/낮은 목소리로 말합니다/.test(said),'하숙집 주인: '+how+'로 흔들렸을 때 마피아의 말과 함께 넘어옴');}
  ok(/창문은 갈면 그만이지/.test(lines[0])&&/하숙비 낼 광부도 없겠군/.test(lines[1])&&/문단속만으로 되겠소/.test(lines[2]),'까닭마다 마피아의 말이 다름(창문 협박 / 갱도가 닫힘 / 겁)');
@@ -58,11 +65,7 @@ const veil=(s,p)=>{s.aliases??={};s.aliases[p.id]=(s.aliasSeq=(s.aliasSeq||0)+1)
 // 4-2. 규칙 봇 마피아는 흔들릴 까닭이 있는 NPC에게만 권한다(같은 날 규칙을 바꾸고 규칙 봇을 맞추지 않았던 것을 고침)
 {const pick=(prep)=>{for(let e=0;e<6;e++){const s=fresh(),{gf}=roles(s);gf.stats.persuade=9;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';s.epoch=e;prep(s,n);const a=S.botAction(s,gf,'big');if(a&&a.verb==='recruitNpc')return a;}return null;};
  ok(!pick((s,n)=>{s.scenario.mineClosed=false;}),'흔들릴 까닭이 없으면 규칙 봇이 권하지 않음');
- ok(!!pick((s,n)=>{s.scenario.mineClosed=true;}),'갱도가 닫혀 흔들린 술집 주인에게는 규칙 봇이 권함');
- // 흔들리기만 한 NPC는 다른 때에 다시 찾아가 권한다(두 번 이겨야 넘어오는 규칙에 맞춤)
- {const s=fresh(),{gf}=roles(s);gf.stats.persuade=9;s.scenario.mineClosed=true;const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';n.wavering=s.epoch-1;gf.location='chapel';
-  const mv=S.botAction(s,gf,'big');ok(mv&&mv.type==='move'&&mv.place==='tavern','흔들리기만 한 술집 주인이 다른 곳에 있으면 그리로 감');
-  gf.location='tavern';const a=S.botAction(s,gf,'big');ok(a&&a.verb==='recruitNpc'&&a.npc==='barkeep','그 자리에 오면 다시 권함');}}
+ ok(!!pick((s,n)=>{s.scenario.mineClosed=true;}),'갱도가 닫혀 흔들린 술집 주인에게는 규칙 봇이 권함');}
 
 // 5. 행동 협박: 일터에서만, 하루에 한 번, 압박(지위가 높으면 덜)과 공포가 쌓이고 보이지 않음, 암거래 상인은 없음
 {const s=fresh(),{gf,town}=roles(s);gf.location='tavern';const st=s.scenario.continuation,n=st.npcs.barkeep;n.location='hall';
@@ -101,6 +104,6 @@ for(const flee of [true,false]){const s=fresh(),{maf}=atBomb(s);veil(s,maf);cons
  ok(town.every(t=>t.known.some(k=>/변장한 사람 1이 .*폭약을 꺼냈소/.test(k.text)&&k.about==='v1'))&&(flee?!named:named)&&(flee?!!maf.faceCover:!maf.faceCover),flee?'변장하고 달아나면 "변장한 사람 1"이 했다는 말만 퍼지고 고발 없음':'변장했어도 붙잡히면 가리개가 벗겨지고 고발됨');}
 
 // 8. 규칙 판단: 끌어들이기·협박 고발은 폭약 고발과 다른 까닭으로 센다
-{const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';s.scenario.continuation.npcs.barkeep.location='tavern';S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);
+{const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';s.scenario.continuation.npcs.barkeep.location='tavern';S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.5));
  const c=s.cases.find(c=>c.target===gf.id);const t=s.players.find(p=>p.team==='town'&&p.bot),m=M.suspicion(s,t,gf.id);
  ok(!!c&&m.why.some(w=>w==='NPC가 직접 들은 끌어들이기 권유')&&!m.why.some(w=>/폭약 고발/.test(w)),'규칙 판단은 폭약 고발이 아니라 "NPC가 직접 들은 끌어들이기 권유"로 셈: '+m.why.join(' / '));}
