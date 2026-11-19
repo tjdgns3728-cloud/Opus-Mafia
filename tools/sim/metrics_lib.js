@@ -25,6 +25,16 @@ function summarize(games){
  const c=of('cover');line(`변장 ${c.length}: ${fmt(by(c,x=>x.team))} | 보는 사람 앞에서 ${c.filter(x=>x.seenBy>0).length} · 숨어서 ${c.filter(x=>x.hidden).length} · 벗기 ${of('uncover').length}`);
  const sz=of('seize');line(`붙잡아 고발하기 ${sz.length}: 붙잡힌 쪽 ${fmt(by(sz,x=>x.targetTeam))} · 가리개 벗겨짐(그 밖의 까닭 포함) ${of('unmasked').length}`);
  const w=of('warnIgnored');line(`경고를 보고도 한 행동 ${w.length}: ${fmt(by(w,x=>(x.sceneKey||x.type)+(x.bot?'(컴퓨터)':'(사람)')))}`);
+ // 모든 행동(act): 편마다 많이 한 것, 재판 신청, 동의·반대, 사람마다의 표, 판정
+ const top=(o,n=12)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,n).map(([k,v])=>k+' '+v).join(', ')||'-';
+ const act=of('act'),aname=x=>x.slot+':'+(x.verb||x.sceneKey||x.type);
+ line(`행동 ${act.length}(큰 ${act.filter(x=>x.slot==='big').length} · 작은 ${act.filter(x=>x.slot==='small').length}) · 얼굴을 가리고 ${act.filter(x=>x.masked).length} · 컴퓨터 자리 ${act.filter(x=>x.bot).length}`);
+ line(`  마피아: ${top(by(act.filter(x=>x.team==='mafia'&&x.type!=='wait'),aname))}`);
+ line(`  시민: ${top(by(act.filter(x=>x.team==='town'&&x.type!=='wait'),aname))}`);
+ const fl=act.filter(x=>x.type==='file');line(`재판 신청 ${fl.length}: ${fmt(by(fl,x=>x.team+'→'+(x.targetTeam||'?')))}`);
+ const cr=of('caseResponse');line(`재판 동의·반대 ${cr.length}: ${fmt(by(cr,x=>x.team+(x.yes?' 동의':' 반대')+'(피고 '+(x.targetTeam||'?')+')'))}`);
+ const vo=of('vote');line(`재판 표 ${vo.length}: ${fmt(by(vo,x=>x.team+'→'+x.targetTeam+' 피고 '+({guilty:'유죄',innocent:'무죄',abstain:'기권'}[x.vote]||x.vote)))}`);
+ const ro=of('roll');line(`판정 ${ro.length}: 성공 ${pct(ro.filter(x=>x.success).length,ro.length)} | ${top(by(ro,x=>(x.opposed?'대결·':'')+(x.statKey||x.a?.statKey||'능력치 없음')),8)}`);
  // 이긴 판과 진 판에서 마피아가 한 일(판마다 평균)
  const per=(k,team,win)=>{const gs=games.filter(g=>(g.winner==='mafia')===win);return gs.length?((gs.flatMap(g=>(g.metrics||[]).filter(x=>x.kind===k&&x.team===team)).length)/gs.length).toFixed(1):'-';};
  line(`마피아가 한 일, 판마다 평균(마피아 이긴 판 / 진 판): 끌어들이기 ${per('recruit','mafia',true)} / ${per('recruit','mafia',false)} · 협박 ${per('pressure','mafia',true)} / ${per('pressure','mafia',false)} · 변장 ${per('cover','mafia',true)} / ${per('cover','mafia',false)} · 폭약 꺼내기 ${per('take','mafia',true)} / ${per('take','mafia',false)}`);
