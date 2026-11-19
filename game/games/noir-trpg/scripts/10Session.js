@@ -24,11 +24,21 @@ function assignDefeats(r){const s=r.state,pool=loadDefeats();s.defeatSets={};if(
  for(const p of s.players.filter(p=>p.bot)){const tags=[...new Set(pool.flatMap(d=>d.tags))].map(t=>[t,rnd()]).sort((a,b)=>a[1]-b[1]).map(x=>x[0]),picked=[];
   for(const t of tags){const list=pool.filter(d=>d.tags.includes(t)&&!picked.includes(d));if(list.length)picked.push(list[Math.floor(rnd()*list.length)]);if(picked.length>=4)break;}s.defeatSets[p.id]=picked;}
  if(typeof r.record==='function')r.record({event:'defeat-sets',pool:pool.length,sets:Object.fromEntries(Object.entries(s.defeatSets).map(([id,l])=>[id,l.map(d=>d.id)]))});}
-function defeatsFor(s,p){const list=s.defeatSets?.[p.id]||[];if(!list.length)return '';return '지난 판에서 진 AI가 남긴 패배기록이다. 그때의 일이므로 지금 판과 같은 점과 다른 점을 가려 읽는다: '+list.map((d,i)=>'['+(i+1)+'] 상황: '+d.situation+' / 한 일: '+d.did+' / 결과: '+d.result+' / 원인: '+d.cause+' / 보여 주는 것: '+d.shows).join(' ');}
+/* 기록을 줄 때만 그 판의 사람 이름을 사람A·사람B로 바꾼다(2026-11-19 사용자: 이름이 판마다 다른 배역으로 돌아와 엉뚱한 의심을 줄 수 있음). 저장된 기록은 그대로.
+   이름 목록은 기록에 남긴 그 판의 이름(names), 없으면 컴퓨터 자리 이름. NPC·배역·흔한 낱말과 같은 이름은 바꾸지 않는다. 글자는 모두 모음으로 끝나게 읽혀(에이·비·씨…) 조사를 가·를·는·와로 맞춘다 */
+const NAME_KEEP=new Set(['사람','누군가','시민','마피아','주민','이웃','아이','나','너','해먼드','도일','리스','간호사','광부','술집 주인','종지기','하숙집 주인','시장','상인']),NAME_TAGS='ABCDEFGHIJKOPQSTUVWXYZ'.split('');
+function hideNames(list){const keep=new Set([...NAME_KEEP,...Object.values(C.roles||{}).map(x=>x?.name)]),label=new Map(),FIELDS=['situation','did','result','cause','shows'];
+ const tag=n=>{if(!label.has(n)){const i=label.size;label.set(n,'사람'+NAME_TAGS[i%NAME_TAGS.length]+(i>=NAME_TAGS.length?Math.floor(i/NAME_TAGS.length)+1:''));}return label.get(n);};
+ return list.map(d=>{const who=[...new Set(Array.isArray(d.names)&&d.names.length?d.names:names)].filter(n=>typeof n==='string'&&n.length>=2&&!keep.has(n)).sort((a,b)=>b.length-a.length),out={};
+  const all=FIELDS.map(f=>String(d[f]||'')).join(' '),order=who.filter(n=>all.includes(n)).sort((a,b)=>all.indexOf(a)-all.indexOf(b));for(const n of order)tag(n);/* 처음 나온 차례로 A·B… */
+  for(const f of FIELDS){let t=String(d[f]||'');for(const n of who)if(label.has(n))t=t.split(n).join(label.get(n));
+   for(const l of new Set(label.values()))t=t.replace(new RegExp(l+'(이|을|은|과)(?=[\\s,.!?·)\'"]|$)','g'),(m,j)=>l+({'이':'가','을':'를','은':'는','과':'와'})[j]);out[f]=t;}
+  return out;});}
+function defeatsFor(s,p){const list=s.defeatSets?.[p.id]||[];if(!list.length)return '';return '지난 판에서 진 AI가 남긴 패배기록이다. 그때의 일이므로 지금 판과 같은 점과 다른 점을 가려 읽는다. 그 판의 사람 이름은 사람A·사람B처럼 바꿔 두었고, 지금 판의 사람과 상관없다: '+hideNames(list).map((d,i)=>'['+(i+1)+'] 상황: '+d.situation+' / 한 일: '+d.did+' / 결과: '+d.result+' / 원인: '+d.cause+' / 보여 주는 것: '+d.shows).join(' ');}
 async function writeDefeat(r,p,why){const s=r.state;if(r.ai?.mode!=='on'||!p?.bot)return;s.defeatWritten??={};if(s.defeatWritten[p.id])return;s.defeatWritten[p.id]=true;const roleName=C.roles?.[p.role]?.name||p.role;
  const a=await ask(r,'너는 방금 마피아 TRPG 한 판에서 진 '+p.name+'('+roleName+', '+(p.team==='mafia'?'마피아':'시민')+' 편)이다. 진 까닭: '+why+'. 아래는 네가 그 판에서 알았던 것과 본 것이다. 다음 판의 AI가 읽을 패배기록을 경험으로 쓴다. situation: 그때 너의 처지와 주변. did: 네가 고른 행동과 말. result: 실제로 일어난 일. cause: 원인을 확인한 것과 추정으로 나눠서. shows: 이 경험이 보여 주는 것(그때의 일로 쓰고, 명령이나 규칙으로 쓰지 않는다). tags: 다음에서 1~3개 '+DEFEAT_TAGS.join(', ')+'. 다른 사람의 진영은 네가 그 판에서 안 것만 쓴다. 각 칸은 한두 문장. JSON {"situation":"","did":"","result":"","cause":"","shows":"","tags":[]}. view='+JSON.stringify(C.view(s,p.id)),'패배기록',90);/* 판이 끝난 뒤라 급하지 않다: 90초까지 기다린다 */
  if(!a||!a.situation)return;const cut=x=>String(x||'').slice(0,400);
- const rec={id:'d'+Date.now().toString(36)+Math.floor(r.random()*1e6).toString(36),time:new Date().toISOString(),day:s.day,name:p.name,role:p.role,roleName,team:p.team,why,situation:cut(a.situation),did:cut(a.did),result:cut(a.result),cause:cut(a.cause),shows:cut(a.shows),tags:(Array.isArray(a.tags)?a.tags:[]).filter(t=>DEFEAT_TAGS.includes(t)).slice(0,3),given:(s.defeatSets?.[p.id]||[]).map(d=>d.id)};
+ const rec={id:'d'+Date.now().toString(36)+Math.floor(r.random()*1e6).toString(36),time:new Date().toISOString(),day:s.day,name:p.name,role:p.role,roleName,team:p.team,why,situation:cut(a.situation),did:cut(a.did),result:cut(a.result),cause:cut(a.cause),shows:cut(a.shows),tags:(Array.isArray(a.tags)?a.tags:[]).filter(t=>DEFEAT_TAGS.includes(t)).slice(0,3),given:(s.defeatSets?.[p.id]||[]).map(d=>d.id),names:s.players.filter(q=>!q.masked).map(q=>q.name).filter(Boolean)};
  if(!rec.tags.length)rec.tags=['기타'];saveDefeat(r,rec);}
 /* 죽거나 처형된 AI 자리는 그때, 판이 끝나면 진 편에 남은 AI 자리가 쓴다 */
 function writeNewDefeats(r){const s=r.state;for(const p of s.players.filter(p=>p.bot&&p.hp<=0&&p.deathCause))writeDefeat(r,p,p.deathCause);}

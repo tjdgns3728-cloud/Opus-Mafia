@@ -55,6 +55,20 @@ const wait=()=>new Promise(r=>setTimeout(r,20));
   const errs=[],h=e=>errs.push(e);process.on('unhandledRejection',h);const r=room(s,purpose=>purpose==='패배기록'?{situation:'재판에서 처형됐다',did:'변론했다',result:'유죄',cause:'추정: 근거가 약했다',shows:'변론만으로는 표가 바뀌지 않았다',tags:['재판']}:null);
   r.engine={time:0};const before=D.loadDefeats().length;D.verdictScene(r,()=>{});await wait();await wait();process.off('unhandledRejection',h);
   ok(t.hp<=0&&s.stage==='verdict'&&errs.length===0,'판결 장면에서 처리 안 된 오류 없음');ok(D.loadDefeats().slice(before).some(d=>d.name===t.name&&d.situation==='재판에서 처형됐다'),'처형된 AI 자리가 판결 장면이 시작된 뒤 기록을 씀');}
+ // 8. 기록을 줄 때만 그 판의 사람 이름을 사람A·사람B로(2026-11-19 사용자 "네, 지워 주세요"). 저장된 기록은 그대로
+ {const s=fresh(),p=s.players.find(q=>q.bot);
+  const oldRec={id:'n1',situation:'도현과 서아가 회관에 있었다. 종지기가 교회에 있었다.',did:'서아를 지켰다',result:'도현이 단검으로 나를 찔렀다',cause:'확인: 도현이 공격했다. 추정: 해먼드는 몰랐을 것이다',shows:'같은 자리의 사람들은 서아만 봤다',tags:['습격']};
+  const newRec={id:'n2',situation:'민수와 이안은 광부 막사에 있었다',did:'민수를 의심했다',result:'민수, 이안과 함께 처형됐다',cause:'추정: 민수가 거짓말을 했다',shows:'도현은 이 판에 없었다',tags:['재판'],names:['민수','이안','사람']};
+  s.defeatSets={[p.id]:[oldRec,newRec]};const txt=D.defeatsFor(s,p);
+  ok(!/도현|서아|민수|이안/.test(txt.replace('도현은 이 판에 없었다','')),'기록 속 사람 이름이 지시문에 남지 않음');
+  ok(txt.includes('사람A와 사람B가 회관에')&&txt.includes('사람B를 지켰다')&&txt.includes('사람A가 단검으로'),'처음 나온 차례로 사람A·사람B, 조사는 가·를·와로 맞춤');
+  ok(txt.includes('종지기가 교회에')&&txt.includes('해먼드는 몰랐을')&&txt.includes('같은 자리의 사람들은'),'NPC 이름과 "사람" 같은 낱말은 그대로');
+  ok(txt.includes('사람C와 사람D는 광부')&&txt.includes('사람C, 사람D와 함께')&&txt.includes('도현은 이 판에 없었다'),'기록에 그 판의 이름이 있으면 그것만 바꿈(다른 기록과 겹치지 않게 사람C부터)');
+  ok(/사람 이름은 사람A·사람B처럼 바꿔 두었고, 지금 판의 사람과 상관없다/.test(txt),'바꿨다는 것을 지시문에 알림');
+  ok(oldRec.situation.startsWith('도현과 서아가')&&newRec.result.startsWith('민수, 이안과'),'저장된 기록은 바꾸지 않음');
+  const w=s.players.find(q=>q.bot&&q.team==='mafia');w.hp=0;w.deathCause='공격';const before=D.loadDefeats().length;
+  await D.writeDefeat(room(s,()=>({situation:'밤에 쓰러졌다',did:'숨었다',result:'숨을 거뒀다',cause:'추정: 들켰다',shows:'혼자였다',tags:['습격']})),w,'공격');
+  const saved=D.loadDefeats().slice(before)[0];ok(saved&&Array.isArray(saved.names)&&saved.names.join()===s.players.filter(q=>!q.masked).map(q=>q.name).join(),'새 기록에는 그 판의 사람 이름 목록을 남김');}
  // 6. AI를 켜면 컴퓨터 자리 모두 AI로
  ok(src.includes('const selected=group.map(p=>p.id);'),'AI를 켜면 한 턴에 두 자리가 아니라 컴퓨터 자리 모두 AI로');
  try{fs.unlinkSync(tmp);}catch{}
