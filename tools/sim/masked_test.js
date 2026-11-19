@@ -30,7 +30,7 @@ tB.location='tavern';s.events.push({type:'move',day:s.day,turn:1,location:'taver
 S.talk(s,tB,'npc:barkeep:who');const said=s.feed.filter(e=>e.kind==='speech'&&e.to.includes(tB.id)).at(-1)?.text||'';ok(said.includes(tC.name)&&!said.includes(mf.name),'끌어들인 술집 주인은 마피아 이름을 빼고 말함: '+said);
 // 5. 간호사도 끌어들이면 약상자 귀띔이 끊기고, 붕대가 늘어난다
 gf.location='clinic';const stock=st.stock;st.npcs.nurse.pressure=3;/* 협박 행동이 쌓인 간호사 */S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='nurse'),hi);s.epoch++;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='nurse'),hi);
-ok(st.npcs.nurse.recruited&&st.recruitWins===2&&st.stock===stock+2,'간호사 끌어들임: 성공 2번, 진료소 붕대 +2');
+ok(st.npcs.nurse.recruited&&st.recruitWins===2&&st.stock===stock,'간호사 끌어들임: 성공 2번, 진료소 붕대는 늘지 않음(2026-11-19 사용자 결정)');
 ok(got(gf,/끌어들이기에 2번 성공했습니다\. 같은 편이 쓰러지면/),'두 번째 성공: 같은 편이 쓰러지면 새 조직원을 부른다고 알려 줌');
 tD.location='clinic';tD.npcHeard=[];S.arrival(s,tD);ok(!tD.npcHeard.includes('lead:medbox'),'끌어들인 뒤: 간호사는 약상자 이야기를 하지 않음');
 // 6. 이기는 조건: 술집 주인·간호사는 마피아로 세지 않는다. 해먼드는 센다
