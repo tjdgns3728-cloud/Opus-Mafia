@@ -29,11 +29,12 @@ const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.fe
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
  ok(!big(s,gf).some(a=>a.verb==='recruitNpcPaid'),'돈을 쥐여 주며 끌어들이기는 없음');
  S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.85));const r1=rollOf(s,gf,'술집 주인 끌어들이기');
- ok(r1&&r1.difficulty===20&&!n.recruited&&n.refusals===1&&got(s,gf,/흔들릴 까닭이 없어 보입니다/),'아무것도 하지 않았으면 난이도 20: 주사위 9면 거절(판정은 함)');
+ ok(r1&&r1.difficulty===10&&!n.recruited&&n.refusals===1&&got(s,gf,/흔들릴 까닭이 없어 보입니다/),'아무것도 하지 않았으면 난이도 10(설득은 더하지 않음): 주사위 9면 거절(판정은 함)');
  const c=s.cases.find(c=>c.target===gf.id&&c.by==='barkeep');ok(!!c&&c.npcKind==='recruit'&&c.caught,'맨얼굴로 권했다 거절당하면 공포 0인 술집 주인이 고발');
  const s2=fresh(),g2=roles(s2).gf;s2.scenario.mineClosed=false;g2.location='tavern';const n2=s2.scenario.continuation.npcs.barkeep;n2.location='tavern';S.resolve(s2,g2,find(s2,g2,'recruitNpc','barkeep'),hi);
  ok(n2.recruited,'아무것도 하지 않았어도 주사위 10이면 넘어옴(10%)');
- const s3=fresh(),g3=roles(s3).gf;g3.location='hall';const m3=s3.scenario.continuation.npcs.mayor;m3.location='hall';const a3=find(s3,g3,'recruitNpc','mayor');if(a3){S.resolve(s3,g3,a3,hi);ok(rollOf(s3,g3,'해먼드 끌어들이기')?.difficulty===22&&!m3.recruited,'지위가 높은 해먼드는 난이도 22: 아무것도 하지 않으면 주사위 10이어도 넘어오지 않음');}else ok(false,'해먼드 끌어들이기 선택지 없음');}
+ const s4=fresh(),maf=s4.players.find(p=>p.role==='mafioso');if(maf){maf.location='tavern';const n4=s4.scenario.continuation.npcs.barkeep;n4.location='tavern';s4.scenario.mineClosed=false;const a4=S.choices(s4,maf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep');if(a4){S.resolve(s4,maf,a4,hi);ok(n4.recruited&&rollOf(s4,maf,'술집 주인 끌어들이기')?.stat===0,'설득이 4인 대행자도 대부와 같은 확률(설득을 더하지 않음, 주사위 10이면 넘어옴)');}else ok(false,'대행자 끌어들이기 선택지 없음');}
+ const s3=fresh(),g3=roles(s3).gf;g3.location='hall';const m3=s3.scenario.continuation.npcs.mayor;m3.location='hall';const a3=find(s3,g3,'recruitNpc','mayor');if(a3){S.resolve(s3,g3,a3,hi);ok(rollOf(s3,g3,'해먼드 끌어들이기')?.difficulty===12&&!m3.recruited,'지위가 높은 해먼드는 난이도 12: 아무것도 하지 않으면 주사위 10이어도 넘어오지 않음');}else ok(false,'해먼드 끌어들이기 선택지 없음');}
 
 // 3. 얼굴을 가리고 권했다 거절당하면 고발 없이 말만 퍼진다
 {const s=fresh(),{gf,town}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';veil(s,gf);const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
@@ -41,7 +42,7 @@ const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.fe
  ok(!s.cases.some(c=>c.target===gf.id),'얼굴을 가렸으면 고발하지 않음');
  ok(town.every(t=>t.known.some(k=>/변장한 사람 1이 나더러 마피아 편에 서라고 했소/.test(k.text)&&k.about==='v1')),'"변장한 사람 1이 권했다"는 말이 그 번호의 일로 퍼짐(누군지는 모름)');}
 
-// 4. 이야기가 마피아를 따를 수밖에 없게 흘렀으면(흔들린 까닭) +4: 대부는 주사위 6 이상(50%). 판정은 한 번, 성공하면 바로 넘어옴
+// 4. 이야기가 마피아를 따를 수밖에 없게 흘렀으면(흔들린 까닭) +4: 주사위 6 이상(50%). 판정은 한 번, 성공하면 바로 넘어옴
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=true;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
  S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.45));ok(!n.recruited,'흔들린 술집 주인: 주사위 5면 거절');
  const roll=rollOf(s,gf,'술집 주인 끌어들이기');ok(roll&&roll.terms.some(t=>t.label==='광부들이 외상을 갚지 못함'&&t.value===4)&&!roll.terms.some(t=>/공포|압박/.test(t.label)),'판정에는 이야기의 까닭(+4)만 보이고 공포·압박은 보이지 않음');
@@ -49,7 +50,7 @@ const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.fe
  S.resolve(s2,g2,find(s2,g2,'recruitNpc','barkeep'),mid(0.55));ok(n2.recruited,'흔들린 술집 주인: 주사위 6이면 첫 판정에 바로 넘어옴');
  // 겁(공포)과 행동 협박도 보이지 않게 난이도를 낮춤
  const s3=fresh(),g3=roles(s3).gf;s3.scenario.mineClosed=false;g3.location='tavern';const n3=s3.scenario.continuation.npcs.barkeep;n3.location='tavern';n3.fear=6;n3.pressure=3;
- S.resolve(s3,g3,find(s3,g3,'recruitNpc','barkeep'),mid(0.85));ok(rollOf(s3,g3,'술집 주인 끌어들이기')?.difficulty===20-3-3,'행동 협박(압박 3)과 공포 6이면 난이도 20 → 14');}
+ S.resolve(s3,g3,find(s3,g3,'recruitNpc','barkeep'),mid(0.85));ok(rollOf(s3,g3,'술집 주인 끌어들이기')?.difficulty===10-3-3,'행동 협박(압박 3)과 공포 6이면 난이도 10 → 4');}
 
 // 4-1. 넘어올 때의 말은 흔들린 까닭(행동 협박 → 이야기 → 겁)에 따라 다르고, 돈을 받는 말은 없다(2026-11-19 사용자 "어떻게 행동 했냐에 따라 협박하는 대사랑 협박당하는 사람의 대사가 달라질 것입니다")
 {const lines=[];for(const how of ['pressure','shaken','fear']){const s=fresh(),{gf}=roles(s);gf.location='home';const n=s.scenario.continuation.npcs.landlady;n.location='home';gf.houseId=null;
