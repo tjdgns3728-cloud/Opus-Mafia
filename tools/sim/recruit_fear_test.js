@@ -38,11 +38,27 @@ const veil=(s,p)=>{s.aliases??={};s.aliases[p.id]=(s.aliasSeq=(s.aliasSeq||0)+1)
 
 // 4. 흔들린 NPC: 처음 이긴 판정은 "생각해 보겠소", 다른 때에 다시 이기면 넘어옴
 {const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=true;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
- S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);ok(!n.recruited&&n.wavering===s.epoch&&got(s,gf,/생각해 보겠소/),'처음 이긴 판정: 생각해 보겠소(넘어오지 않음)');
+ S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);ok(!n.recruited&&n.wavering===s.epoch&&got(s,gf,/마음이 흔들렸지만 아직 넘어오지 않았습니다/),'처음 이긴 판정: 흔들리기만 함(넘어오지 않음)');
  S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);ok(!n.recruited,'같은 때에 다시 이겨도 넘어오지 않음');
  S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),lo);ok(!n.recruited&&!s.cases.some(c=>c.target===gf.id)&&got(s,gf,/아직 마음을 정하지 못했소/),'망설이는 중에 판정에 지면 고발 없이 "아직 마음을 정하지 못했소"');
  s.epoch++;S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),hi);ok(n.recruited,'다른 때에 다시 이기면 넘어옴');
  const roll=s.feed.filter(e=>e.to?.includes(gf.id)&&e.roll?.label==='술집 주인 끌어들이기').at(-1)?.roll;ok(roll&&roll.terms.some(t=>t.label==='광부들이 외상을 갚지 못함')&&!roll.terms.some(t=>/공포|압박/.test(t.label)),'판정에는 이야기의 까닭만 보이고 공포·압박은 보이지 않음');}
+
+// 4-1. 넘어올 때의 말은 흔들린 까닭(행동 협박 → 이야기 → 겁)에 따라 다르고, 돈을 받는 말은 없다(2026-11-19 사용자 "어떻게 행동 했냐에 따라 협박하는 대사랑 협박당하는 사람의 대사가 달라질 것입니다")
+{const lines=[];for(const how of ['pressure','shaken','fear']){const s=fresh(),{gf}=roles(s);gf.location='home';const n=s.scenario.continuation.npcs.landlady;n.location='home';gf.houseId=null;
+  s.scenario.mineClosed=how==='shaken';if(how==='pressure')n.pressure=3;if(how==='fear')n.fear=6;
+  const a=find(s,gf,'recruitNpc','landlady');if(!a){ok(false,'하숙집 주인 끌어들이기 선택지 없음('+how+')');continue;}
+  S.resolve(s,gf,a,hi);s.epoch++;S.resolve(s,gf,find(s,gf,'recruitNpc','landlady'),hi);
+  const said=s.feed.filter(e=>e.to?.includes(gf.id)).map(e=>String(e.text)).join(' ');lines.push(said);
+  ok(n.recruited&&/낮은 목소리로 말합니다/.test(said),'하숙집 주인: '+how+'로 흔들렸을 때 마피아의 말과 함께 넘어옴');}
+ ok(/창문은 갈면 그만이지/.test(lines[0])&&/하숙비 낼 광부도 없겠군/.test(lines[1])&&/문단속만으로 되겠소/.test(lines[2]),'까닭마다 마피아의 말이 다름(창문 협박 / 갱도가 닫힘 / 겁)');
+ ok(new Set(lines.map(t=>(t.match(/\.\.\.|…[^"]*"/g)||[]).join())).size===3,'까닭마다 NPC의 대답이 다름');
+ ok(!lines.some(t=>/하숙비만 채워 준다면|외상만 지워|임금만 나온다면|들여 준다면|배가 고프오/.test(t)),'돈을 받는 말이 없음');}
+
+// 4-2. 규칙 봇 마피아는 흔들릴 까닭이 있는 NPC에게만 권한다(같은 날 규칙을 바꾸고 규칙 봇을 맞추지 않았던 것을 고침)
+{const pick=(prep)=>{for(let e=0;e<6;e++){const s=fresh(),{gf}=roles(s);gf.stats.persuade=9;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';s.epoch=e;prep(s,n);const a=S.botAction(s,gf,'big');if(a&&a.verb==='recruitNpc')return a;}return null;};
+ ok(!pick((s,n)=>{s.scenario.mineClosed=false;}),'흔들릴 까닭이 없으면 규칙 봇이 권하지 않음');
+ ok(!!pick((s,n)=>{s.scenario.mineClosed=true;}),'갱도가 닫혀 흔들린 술집 주인에게는 규칙 봇이 권함');}
 
 // 5. 행동 협박: 일터에서만, 하루에 한 번, 압박(지위가 높으면 덜)과 공포가 쌓이고 보이지 않음, 암거래 상인은 없음
 {const s=fresh(),{gf,town}=roles(s);gf.location='tavern';const st=s.scenario.continuation,n=st.npcs.barkeep;n.location='hall';

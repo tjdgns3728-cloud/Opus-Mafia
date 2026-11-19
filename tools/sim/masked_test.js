@@ -21,9 +21,9 @@ ok(!S.choices(s,gf,'big').some(a=>a.verb==='threatNpc'&&a.npc==='barkeep'),'술�
 s.scenario.spots=['medbox','barrel'];s.scenario.rumor={...s.scenario.rumor,medbox:true,barrel:true};/* 간호사가 약상자 이야기를 하는 판 */const [tA,tB,tC,tD]=town;tA.location='clinic';S.arrival(s,tA);ok(tA.npcHeard.includes('lead:medbox'),'끌어들이기 전: 간호사가 약상자 이야기를 함');
 // 4. 술집 주인 끌어들이기(실패 → 성공)
 gf.faceCover=s.epoch;S.resolve(s,gf,optB,lo);gf.faceCover=null;/* 얼굴을 가리고 권해 거절당함(고발 대신 말만 퍼짐) */ok(!st.npcs.barkeep.recruited&&got(gf,/내 술집에서 그런 말 마시오/),'실패하면 술집 주인의 거절 대사');
-S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);ok(!st.npcs.barkeep.recruited&&got(gf,/생각해 보겠소/),'처음 이긴 판정은 "생각해 보겠소"(2026-11-19)');s.epoch++;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);
+S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);ok(!st.npcs.barkeep.recruited&&got(gf,/마음이 흔들렸지만 아직 넘어오지 않았습니다/),'처음 이긴 판정은 흔들리기만 함(2026-11-19)');s.epoch++;S.resolve(s,gf,S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep'),hi);
 ok(st.npcs.barkeep.recruited&&st.recruitWins===1,'성공하면 우리 편, 성공 1번');
-ok(got(gf,/외상만 지워 준다면/)&&got(gf,/내일 아침부터 어제 술집에 누가 왔는지/),'성공 대사와 해 줄 일');
+ok(got(gf,/내 귀는 당신들 것이오/)&&!got(gf,/외상만 지워 준다면/)&&got(gf,/내일 아침부터 어제 술집에 누가 왔는지/),'성공 대사(돈을 받는 말 없이)와 해 줄 일');
 /* 2026-11-16부터 흔적은 후보 셋 가운데 하나(또는 없음) */ok(st.artifacts.some(a=>a.kind==='trace'&&['지워진 외상 장부','새 술통','영수증 조각'].includes(a.title)),'술집 주인을 끌어들이면 그 사람의 흔적 후보 가운데 하나가 남음');
 // 술집 주인은 남이 물으면 우리 편 이름을 뺀다
 tB.location='tavern';s.events.push({type:'move',day:s.day,turn:1,location:'tavern',actor:mf.id},{type:'move',day:s.day,turn:1,location:'tavern',actor:tC.id});
