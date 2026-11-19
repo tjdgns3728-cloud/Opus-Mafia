@@ -46,7 +46,7 @@ const wait=()=>new Promise(r=>setTimeout(r,20));
  {const s=fresh(),t=s.players[2];s.cases.push({id:'c1',day:s.day,closed:false,target:t.id,by:s.players[3].id,reason:'수상',reasons:[],evidence:[],support:[],responses:{},order:1});for(const o of C.alive(s)){o.knownCases??=[];o.knownCases.push('c1');}
   C.beginConsent(s,s.cases[0]);const p=s.players.find(q=>q.bot&&q.id!==t.id),r=room(s,purpose=>purpose==='재판 동의'?{agree:true}:null);await D.aiConsent(r,s.cases[0],p,false);
   ok(s.cases[0].responses[p.id]===true,'AI가 답한 대로 동의(규칙 판단은 반대였음)');
-  const q=s.players.find(o=>o.bot&&o.id!==t.id&&o.id!==p.id),r2=room(s,()=>null);await D.aiConsent(r2,s.cases[0],q,false);ok(s.cases[0].responses[q.id]===false,'AI가 답하지 못하면 규칙 판단(반대)으로');
+  const q=s.players.find(o=>o.bot&&o.id!==t.id&&o.id!==p.id),r2=room(s,()=>null);await D.aiConsent(r2,s.cases[0],q,false);ok(!(q.id in (s.cases[0].responses||{})),'AI가 답하지 못하면 응답하지 않음(2026-11-20 사용자 "네, 모두 AI로": 규칙 판단으로 채우지 않음)');
   C.beginTrial(s,s.cases[0]);s.stage='vote';const r3=room(s,purpose=>purpose==='재판 표'?{vote:'innocent'}:null);D.aiVotes(r3);await wait();await wait();
   const bots=C.alive(s).filter(o=>o.bot&&!o.masked&&o.id!==t.id);ok(bots.every(o=>s.trial.votes[o.id]==='innocent'),'표도 AI가 답한 대로');}
  // 7. 판결로 처형된 AI 자리: 판결 직후(단계 vote, 재판 비었음)에는 화면을 읽을 수 없으니 판결 장면이 시작된 뒤에 쓴다(2026-11-19 세 판에서 처리 안 된 오류 4번)
