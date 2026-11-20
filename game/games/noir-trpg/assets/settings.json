@@ -13,5 +13,5 @@
   "townMoney": 1,
   "mafiaMoney": 3,
   "bandagePrice": 1,
-  "gatheringSeconds": 120
+  "gatheringSeconds": 60
 }
