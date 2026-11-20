@@ -4,7 +4,7 @@ const fs=require('fs'),path=require('path'),os=require('os');const dir=path.join
 const tmp=path.join(os.tmpdir(),'noir_all_ai_test_'+process.pid+'.jsonl');process.env.NOIR_DEFEAT_FILE=tmp;try{fs.unlinkSync(tmp);}catch{}
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow','09Minds'])require(path.join(dir,f+'.js'));
 globalThis.WebEngine={room(cfg){globalThis.__cfg=cfg;},Component:class{},define(){}};
-const src=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');eval(src.replace(/\}\)\(\);\s*$/,'globalThis.__a={aiTurn,aiReact,aiConsent,aiVotes,vote,botTalk,fileOptions,checkText};})();'));
+const src=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');eval(src.replace(/\}\)\(\);\s*$/,'globalThis.__a={aiTurn,aiReact,aiConsent,aiVotes,vote,botTalk,fileOptions,checkText,readAnswer};})();'));
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,A=globalThis.__a;
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 let x=11;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};
@@ -49,5 +49,12 @@ const opts=(p,name)=>{const m=new RegExp('\\n'+name+'=(\\[.*\\])').exec(p);retur
   ok(r.state.players.length===8&&r.state.players.every(p=>p.bot),'NOIR_ALL_AI=1이면 만든 자리까지 8자리 모두 AI 자리');
   ok(phases.length>0&&phases.every(o=>(o.seats&&o.seats.length)||o.seconds>0),'사람이 없어도 단계마다 기다릴 자리나 시간이 있음(엔진이 단계를 엶)');
   const s=r.state;s.readingStep='text';s.ai.pending=0;r.closed=false;A.checkText(r);ok(r.closed===true,'사람이 없는 판의 글 읽기는 이야기가 다 나오면 닫힘');}
+ // 9. AI 답 읽기: JSON 블록이나 JSON 뒤에 설명이 붙어도 고른 것을 읽고, JSON이 없는 글만의 답은 답 없음(2026-11-20: 확인 서버 앞 10판에서 행동 답 1916번 중 140번이 블록 뒤 설명 때문에 버려졌음)
+ {const R=A.readAnswer,F='```',th=t=>{try{R(t);return false;}catch{return true;}};
+  ok(R('{"small":1,"big":2}').big===2,'JSON만 있는 답');
+  ok(R(F+'json\n{"small":null,"big":3}\n'+F).big===3,'JSON 블록만 있는 답');
+  ok(R(F+'json\n{"small":2,"big":11,"speech":""}\n'+F+'\n\n**선택 이유**\n- 지난 판에서 {얼굴}을 드러냈다').big===11,'JSON 블록 뒤에 설명이 붙은 답');
+  ok(R('{"small":0,"big":4,"speech":"그가 } 라고 했다"} 이렇게 정했습니다.').big===4,'JSON 뒤에 설명이 붙은 답(글 속 괄호는 무시)');
+  ok(th('얼굴을 가리고 종지기를 끌어들이기로 정했습니다.'),'JSON이 없는 글만의 답은 읽지 않음(답 없음)');}
  try{fs.unlinkSync(tmp);}catch{}
 })();
