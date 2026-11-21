@@ -2,16 +2,16 @@
 const particle=(name,a,b)=>{const n=String(name),c=n.charCodeAt(n.length-1);return n+(c>=44032&&c<=55203?(c-44032)%28?a:b:a);};
 function combat(f){
  const selfAttack=f.pov==='attacker',selfTarget=f.pov==='target',a=selfAttack?'당신':f.attacker||'모습을 알 수 없는 상대',t=selfTarget?'당신':f.target||'그 사람',as=particle(a,'이','가'),ts=particle(t,'은','는'),obj=particle(t,'을','를');
- const weapon=f.weaponKnown?f.weapon:null,attack=weapon==='권총'?`${as} ${obj} 향해 방아쇠를 당긴다.`:weapon==='단검'?`${as} 단검을 내질러 ${obj} 노린다.`:weapon==='곤봉'?`${as} 곤봉을 휘둘러 ${obj} 덮친다.`:weapon==='맨손'?`${as} ${obj} 향해 주먹을 뻗는다.`:`누군가의 공격이 ${selfTarget?'당신에게':t+' 쪽으로'} 들이닥친다.`;
- const setup=f.ambush?'미처 대비할 틈을 주지 않고 공격이 시작된다.':f.publicAttack?'주변에 사람들이 있는 자리에서 공격하려는 움직임이 드러난다.':f.dark?'어두운 시야 속에서 두 사람의 움직임이 엇갈린다.':'';
- let response=f.defenseType==='block'?`${ts} ${weapon==='권총'?'총구를 비껴서려고 맞선다':'다가오는 공격을 받아내려고 맞선다'}.`:`${ts} 몸을 틀어 공격을 벗어나려 한다.`;
- let outcome;if(f.damage===0)outcome=f.defenseType==='block'?`맞서 버틴 끝에 ${selfTarget?'당신은':particle(t,'은','는')} 이번 공격에 새로 다치지 않았다.`:`공격이 비껴간다. ${selfTarget?'당신은':particle(t,'은','는')} 이번 공격에 새로 다치지 않았다.`;
- else if(f.reduction>0)outcome=`${f.defenseType==='block'?'맞서 버티며 충격을 흘렸지만':'몸을 비틀어 공격을 조금 벗어났지만'}, 완전히 피하지는 못했다. ${selfTarget?'몸에':t+'의 몸에'} 상처가 남는다.`;
- else outcome=`${f.defenseType==='block'?'막아내려던 움직임이 밀리고':'몸을 피하려던 움직임이 늦어'}, 공격이 ${selfTarget?'당신에게':t+'에게'} 닿는다.`;
- if(f.damage>0){if(f.after===0)outcome+=selfTarget?' 다리에 힘이 풀려 바닥으로 무너진다. 더는 몸을 움직일 수 없다.':` ${particle(t,'이','가')} 바닥으로 무너지고 움직임이 멎는다.`;else if(f.bleeding)outcome+=selfTarget?' 상처에서 피가 멎지 않는다. 아직 움직일 수 있지만 이대로 버티기에는 위태롭다.':` ${t}의 상처에서 피가 멎지 않는다. 쓰러지지는 않았지만 몸을 지탱하기 버거워 보인다.`;else if(f.weapon==='권총'&&f.damage>=5)outcome+=selfTarget?' 총상을 입은 몸이 크게 휘청인다. 중상을 입었지만 아직 대응할 수 있다.':` ${particle(t,'은','는')} 총상을 입고 크게 휘청인다. 중상을 입었지만 아직 움직인다.`;else outcome+=selfTarget?' 몸을 가눌 수는 있다. 눈앞의 위협은 아직 남아 있다.':` ${particle(t,'은','는')} 상처를 입었지만 쓰러지지 않는다.`;}
- const exposed=selfAttack&&f.visibleWitnesses?.length?` ${f.visibleWitnesses.join(', ')}에게도 당신의 공격이 고스란히 드러났다.`:'';
- const setting={hall:'회관 탁자 사이에서',warehouse:'어두운 갱도 입구에서',tavern:'술집의 좁은 통로에서',chapel:'교회 의자 사이에서',clinic:'진료소 처치대 옆에서',home:'주택가에서'}[f.place];
- return [setting?setting+' 갑자기 거리가 좁혀진다.':'',setup,attack,response,outcome+exposed].filter(Boolean).join(' ');
+ const weapon=f.weaponKnown?f.weapon:null,attack=weapon==='권총'?`${as} ${obj} 향해 방아쇠를 당깁니다.`:weapon==='단검'?`${as} 단검을 내질러 ${obj} 노립니다.`:weapon==='곤봉'?`${as} 곤봉을 휘둘러 ${obj} 덮칩니다.`:weapon==='맨손'?`${as} ${obj} 향해 주먹을 뻗습니다.`:`누군가의 공격이 ${selfTarget?'당신에게':t+' 쪽으로'} 들이닥칩니다.`;
+ const setup=f.ambush?'미처 대비할 틈을 주지 않고 공격이 시작됩니다.':f.publicAttack?'주변에 사람들이 있는 자리에서 공격하려는 움직임이 드러납니다.':f.dark?'어두운 시야 속에서 두 사람의 움직임이 엇갈립니다.':'';
+ let response=f.defenseType==='block'?`${ts} ${weapon==='권총'?'총구를 비껴서려고 맞섭니다':'다가오는 공격을 받아내려고 맞섭니다'}.`:`${ts} 몸을 틀어 공격을 벗어나려 합니다.`;
+ let outcome;if(f.damage===0)outcome=f.defenseType==='block'?`맞서 버틴 끝에 ${selfTarget?'당신은':particle(t,'은','는')} 이번 공격에 새로 다치지 않았습니다.`:`공격이 비껴갑니다. ${selfTarget?'당신은':particle(t,'은','는')} 이번 공격에 새로 다치지 않았습니다.`;
+ else if(f.reduction>0)outcome=`${f.defenseType==='block'?'맞서 버티며 충격을 흘렸지만':'몸을 비틀어 공격을 조금 벗어났지만'}, 완전히 피하지는 못했습니다. ${selfTarget?'몸에':t+'의 몸에'} 상처가 남습니다.`;
+ else outcome=`${f.defenseType==='block'?'막아내려던 움직임이 밀리고':'몸을 피하려던 움직임이 늦어'}, 공격이 ${selfTarget?'당신에게':t+'에게'} 닿습니다.`;
+ if(f.damage>0){if(f.after===0)outcome+=selfTarget?' 다리에 힘이 풀려 바닥으로 무너집니다. 더는 몸을 움직일 수 없습니다.':` ${particle(t,'이','가')} 바닥으로 무너지고 움직임이 멎습니다.`;else if(f.bleeding)outcome+=selfTarget?' 상처에서 피가 멎지 않습니다. 아직 움직일 수 있지만 이대로 버티기에는 위태롭습니다.':` ${t}의 상처에서 피가 멎지 않습니다. 쓰러지지는 않았지만 몸을 지탱하기 버거워 보입니다.`;else if(f.weapon==='권총'&&f.damage>=5)outcome+=selfTarget?' 총상을 입은 몸이 크게 휘청입니다. 중상을 입었지만 아직 대응할 수 있습니다.':` ${particle(t,'은','는')} 총상을 입고 크게 휘청입니다. 중상을 입었지만 아직 움직입니다.`;else outcome+=selfTarget?' 몸을 가눌 수는 있습니다. 눈앞의 위협은 아직 남아 있습니다.':` ${particle(t,'은','는')} 상처를 입었지만 쓰러지지 않습니다.`;}
+ const exposed=selfAttack&&f.visibleWitnesses?.length?` ${f.visibleWitnesses.join(', ')}에게도 당신의 공격이 고스란히 드러났습니다.`:'';
+ const setting={hall:'회관 탁자 사이에서',warehouse:'어두운 갱도 입구에서',tavern:'술집의 좁은 통로에서',chapel:'교회 의자 사이에서',clinic:'진료소 처치대 옆에서',home:f.dark?'집 안에서':'주택가 골목에서'}[f.place];
+ return [setting?setting+' 갑자기 거리가 좁혀집니다.':'',setup,attack,response,outcome+exposed].filter(Boolean).join(' ');
 }
 function attempt(label){
  const verbs={'확인하기':'확인하려고 살핀다','대조하기':'나란히 놓고 대조한다','비교하기':'비교한다','살피기':'살핀다','읽기':'읽어 나간다','찾기':'찾으려고 뒤진다','묻기':'묻는다','요구하기':'요구한다','맞추기':'맞춰 본다','구분하기':'구분하려고 살핀다','나누기':'나누어 살핀다','복원하기':'복원하려고 살핀다','재현하기':'재현해 본다','좁히기':'좁히려고 기록을 살핀다'};
