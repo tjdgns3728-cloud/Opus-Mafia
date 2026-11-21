@@ -79,7 +79,7 @@ function withRo(word){word=String(word);const t=tailOf(word);return word+(t>0&&t
 function pp(word,a,b){word=String(word);return word+(tailOf(word)!==0?a:b);}
 function korean(s,text){let t=String(text);const names=[...s.players.map(p=>p.name),'해먼드','도일','리스','간호사','광부','술집 주인','종지기','하숙집 주인',...Object.values(s.aliases||{}).map(n=>'변장한 사람 '+n)].filter(Boolean).sort((a,b)=>b.length-a.length);for(const name of names){const tail=tailOf(name)!==0;for(const [a,b] of [['이','가'],['을','를'],['은','는'],['과','와']])for(const used of [a,b])t=t.split(name+used+' ').join(name+(tail?a:b)+' ');}return t;}
 function learn(s,id,text,about,source,kind='observed',event=null){text=korean(s,text);if(kind==='observed'||kind==='evidence'){const m=maskText(s,id,text,about);text=m.text;about=m.about;}const p=find(s,id);if(!p)return;const n={id:'k'+(++s.serial),text,about:about||null,source,kind,time:label(s),event};p.known.push(n);return n;}
-/* 주택가는 낮에도 각자의 집이다. 같은 집에 있을 때만 서로 보인다 */function sameSpace(s,a,b){return a.location===b.location&&(a.location!=='home'||(a.houseId||a.id)===(b.houseId||b.id));}
+/* 주택가는 낮에도 각자의 집이다. 같은 집에 있을 때만 서로 보인다 */function sameSpace(s,a,b){return a.location===b.location&&(a.location!=='home'||(a.alley||b.alley?a.alley===b.alley:(a.houseId||a.id)===(b.houseId||b.id)));}
 // 변장: 같은 편이거나 간파한 사람에게는 통하지 않는다. 간파는 사람마다 한 턴에 한 번 정해진다(주사위 + 관찰 ≥ 9 + 변장한 사람의 은신).
 function hashN(str){let h=2166136261;for(const c of String(str)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return Math.abs(h);}
 function seesThrough(s,viewer,p){if(!viewer||viewer.id===p.id||viewer.team==='mafia'&&p.team==='mafia')return true;const roll=1+hashN(viewer.id+'|'+p.id+'|'+s.epoch)%10;return roll+(viewer.stats?.observe||0)>=9+(p.stats?.agility||0);}
@@ -222,6 +222,7 @@ function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const a
  const raiders={};for(const [rid,ra] of acts)if(ra.type==='attack')(raiders[ra.target]??=[]).push(rid);
  for(const [id] of acts)find(s,id).used.big=true;
  for(const [id,a] of acts)metric(s,'act',find(s,id),actInfo(s,find(s,id),a,'big'));
+ /* 2026-11-21 사용자 결정: 낮 주택가에서 NPC나 사건 선택지를 고른 사람은 이때만 골목으로 나간 것으로 친다. 같은 NPC·같은 사건을 고른 사람끼리 서로 보인다 */if(s.turn!==2)for(const [id,a] of acts){const p=find(s,id),k=a.type!=='scene'?null:a.npc?'npc:'+a.npc:a.verb==='silenceChild'?'npc:child':a.sceneKey==='incident'?'inc:'+a.incident:null;if(p.location==='home'&&k)p.alley=k;}
  const stance=Object.fromEntries(acts.filter(([id,a])=>NIGHT_TOWN.includes(a.type)).map(([id,a])=>[id,a.type])),raidsTried=acts.filter(([id,a])=>a.type==='attack'&&a.nightRaid).map(([id,a])=>({p:find(s,id),t:find(s,a.target)}));
  for(const [id,type] of Object.entries(stance))narrate(s,id,{sleep:'문을 걸고 잠자리에 듭니다.',watch:'불을 끄고 창가에 앉아 밤길을 지켜봅니다.',shelter:'집 안 깊은 곳에 몸을 숨기고 숨을 죽입니다.'}[type]);
  /* 2026-11-18 곁에서 지키기(누구나, 퇴역군인은 막아설 때 보정 +2): 공격을 처리하기 전에 대신 맞설 사람으로 올려 둔다 */for(const [id,a] of acts)if(a.type==='guardPlayer'){const g=find(s,id),t=find(s,a.target);if(g&&t&&g.hp>0&&t.hp>0&&sameSpace(s,g,t))(s.protects??={})[t.id]=id;}
@@ -269,6 +270,7 @@ function resolveBig(s,rng){const active=alive(s).map(p=>p.id),attacks=[];const a
  trackAll(s,acts,rng);checkDisguises(s);if(s.turn===2)nightAfter(s,acts,raidsTried,rng);
  for(const id of active){const p=find(s,id);if(p.hp===0)death(s,p,'공격');}
  root.NoirStory?.afterActions(s,acts,attacks);
+ for(const p of s.players)delete p.alley;
  s.plans={};return finish(s);
 }
 function smallAct(s,id,a,rng){const prev=s.actionContext;s.actionContext=a.type!=='wait';try{return smallAction(s,id,a,rng);}finally{s.actionContext=prev;}}
