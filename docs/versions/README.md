@@ -8,7 +8,7 @@
 | 문서 | 지금 파일 | 사본 수 |
 |---|---|---|
 | [공통 규칙](AI_RULES/README.md) | `AI_RULES.md` | 27 |
-| [실패 기록](AI_LESSONS/README.md) | `docs/AI_LESSONS.md` | 76 |
+| [실패 기록](AI_LESSONS/README.md) | `docs/AI_LESSONS.md` | 77 |
 | [제작 기록](GAME_MAKING_RECORD/README.md) | `docs/GAME_MAKING_RECORD.md` | 147 |
 | [인계 문서](HANDOFF/README.md) | `HANDOFF.md` | 61 |
 | [이야기 설정](SETTING/README.md) | `story/SETTING.md` | 14 |
