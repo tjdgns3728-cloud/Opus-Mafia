@@ -78,6 +78,7 @@ function validAction(s,p,a,slot){return acts(s,p,slot).some(b=>b.verb===a.verb&&
  if(a.verb==='takeArtifact'){const art=z(s).artifacts.find(x=>x.id===a.artifact);if(!art||art.taken||art.destroyed||art.owner)return '그 물건은 이미 누군가 가져갔습니다.';}
  if(a.verb==='buyItem'){const m=mer(s),g=GOODS[a.item];if(m&&g&&!(m.stock[a.item]>0))return '상인에게 '+pp(g.name,'이','가')+' 남아 있지 않습니다.';if(g&&p.money<g.price)return '돈이 모자랍니다.';}
  if(a.target){const t=C().find(s,a.target);if(t&&t.hp<=0)return pp(t.name,'은','는')+' 이미 쓰러져 있습니다.';if(t&&(t.location!==p.location||!C().visible(s,p,t)))return pp(t.name,'이','가')+' 이 자리에 없습니다.';}
+ /* 2026-11-21: 같은 때 다른 사람이 먼저 리스의 종이를 가져간 경우 */if(a.verb==='reesePapers'&&z(s).flags.reesePapersTaken)return '리스의 빈집 서랍이 이미 열려 있습니다. 누군가 먼저 종이를 가져갔습니다.';
  if(a.verb==='pickHouse'){const t=C().find(s,a.house);if(t&&t.hp>0&&t.location==='home'&&t.houseId===t.id)return '집주인이 집에 돌아와 있습니다.';}
  return '현재 장소·소지품·대상 상태에서 실행할 수 없습니다.';}
 function revealArtifact(s,p,a){if(!a)return;const t=a.kind==='gun'?(a.reese?'손잡이에 리스의 이니셜이 새겨진 권총입니다. 탄환 ':'남겨진 권총입니다. 탄환 ')+a.ammo+'발이 남아 있습니다.':a.text;D.emit(s,[p.id],t,{actionRecord:true});D.observed(s,p,t,null,a.kind==='note'||a.kind==='extra'?'claim':'evidence','artifact:'+a.id);(a.seen??=[]).push(p.id);}

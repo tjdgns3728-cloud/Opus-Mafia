@@ -63,3 +63,4 @@
 | [v59](v59.md) | 2026-11-18 16:08 | `6e3ebf1` | Autonomous studies 35-36 and the v10 add-on bundle pointer (workbench 3e4643f) |
 | [v60](v60.md) | 2026-11-18 18:09 | `b2a8119` | Plain-language summary of the autonomous studies and its bundle pointer (workbench e3beaa3) |
 | [v61](v61.md) | 2026-11-18 20:20 | `d277806` | Record: summary and report corrected to set aside same-game replay studies |
+| [v62](v62.md) | 2026-11-21 20:18 | `e8ecee0` | 기록: 인계 문서에 2026-11-18~21의 일과 진행 중인 일을 적음 |

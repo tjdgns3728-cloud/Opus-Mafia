@@ -138,7 +138,7 @@ function validate(s,id,a,slot){const p=find(s,id);if(!p||p.hp<=0||slot==='big'&&
  if(a.type==='disguise'){const t=find(s,a.target);if(p.team!=='mafia')return '마피아 편만 변장할 수 있습니다.';if(p.disguiseDay===s.day)return '변장은 하루에 한 번만 할 수 있습니다.';if(!t||t.hp<=0||t.id===id||t.team==='mafia')return '변장할 시민을 고르세요.';if(sameSpace(s,p,t))return `진짜 ${t.name}이 이 자리에 있어 변장할 수 없습니다.`;return null;}
  if(a.type==='revive'){const t=find(s,a.target);if(a.morphine&&!(p.items.morphine>0))return '군용 모르핀이 없습니다.';return t&&t.downed&&t.id!==id&&sameSpace(s,p,t)?null:'같은 장소에 쓰러진 사람이 있어야 합니다.';}
  if(a.type==='track'&&s.turn===2)return '밤에는 추적할 수 없습니다.';
- if(a.type==='guardPlayer'){const g=find(s,a.target);if(s.turn===2)return '밤에는 곁에서 지킬 수 없습니다.';return g&&g.hp>0&&g.id!==id&&visible(s,p,g)&&sameSpace(s,p,g)?null:'같은 장소에 있는 살아 있는 다른 사람만 지킬 수 있습니다.';}
+ if(a.type==='guardPlayer'){const g=find(s,a.target);if(s.turn===2)return '밤에는 곁에서 지킬 수 없습니다.';if(g&&g.hp>0&&g.id!==id&&!sameSpace(s,p,g))return pp(nameFor(s,p,g),'이','가')+' 자리를 옮겨 곁을 지킬 수 없었습니다.';/* 2026-11-21 */return g&&g.hp>0&&g.id!==id&&visible(s,p,g)&&sameSpace(s,p,g)?null:'같은 장소에 있는 살아 있는 다른 사람만 지킬 수 있습니다.';}
  const t=find(s,a.target),need=['attack','track','heal','jail','recruit','investigate','bandage','give'].includes(a.type);
  const raid=a.type==='attack'&&s.turn===2&&p.team==='mafia'&&t?.location==='home'&&a.nightRaid,letter=a.type==='recruit'&&p.team==='mafia'&&a.anonymous;
  if(need&&(!t||t.hp<=0||(!raid&&!letter&&(!visible(s,p,t)||!sameSpace(s,p,t)))))return '같은 장소에서 확인할 수 있는 살아 있는 대상이 필요합니다.';
