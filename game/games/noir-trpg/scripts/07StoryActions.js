@@ -74,6 +74,7 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town'||slot==='
 }
 function validAction(s,p,a,slot){return acts(s,p,slot).some(b=>b.verb===a.verb&&b.item===a.item&&b.target===a.target&&b.npc===a.npc&&b.artifact===a.artifact&&b.house===a.house&&b.weapon===a.weapon&&b.raid===a.raid)?null:whyNot(s,p,a);}
 /* 고를 때는 됐지만 같은 때에 먼저 일어난 일로 할 수 없게 된 경우, 보이는 까닭을 말한다(2026-11-16) */function whyNot(s,p,a){const pp=C().pp;
+ /* 2026-11-21 */if(a.verb==='persuadeDoyle'&&D.npc(s,'doyle')?.magazineShown?.[p.id])return '도일이 이미 화약고 안을 보여 주었습니다.';
  if(a.npc){const n=D.npc(s,a.npc);if(n&&n.hp<=0)return pp(n.name,'은','는')+' 이미 쓰러져 있습니다.';if(n&&n.location!==p.location)return pp(n.name,'이','가')+' 이 자리에 없습니다.';}
  if(a.verb==='takeArtifact'){const art=z(s).artifacts.find(x=>x.id===a.artifact);if(!art||art.taken||art.destroyed||art.owner)return '그 물건은 이미 누군가 가져갔습니다.';}
  if(a.verb==='buyItem'){const m=mer(s),g=GOODS[a.item];if(m&&g&&!(m.stock[a.item]>0))return '상인에게 '+pp(g.name,'이','가')+' 남아 있지 않습니다.';if(g&&p.money<g.price)return '돈이 모자랍니다.';}

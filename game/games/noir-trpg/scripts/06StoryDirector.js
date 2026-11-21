@@ -40,11 +40,12 @@ function guard(s,def){const x=q(s),z=d(s),f=z.flags;switch(def.guard){
  case 'minerEntered':return !!f.minerEntered&&npc(s,'miner').hp>0;
  case 'minerInClinic':return npc(s,'miner').location==='clinic'&&npc(s,'miner').hp>0&&npc(s,'miner').bleeding;
  /* 아이가 교회 종탑 밑을 봤다고 말하는 판에만(아이가 본 곳은 판마다 하나. 폭약이 교회에 있어도 아이는 다른 곳을 봤을 수 있다. 2026-11-16) */case 'chapelSpot':return (x.rumor?.child||(x.spots||['chapel'])[0])==='chapel'&&!f.childSilenced;
-  case 'doyleAlive':return aliveNpc(x.doyle)&&x.doyle.location===def.place;
+  /* 2026-11-21: 갱도가 닫혀 있을 때만 "갱도를 계속 닫을지" 회의 */case 'doyleAliveMineClosed':return aliveNpc(x.doyle)&&x.doyle.location===def.place&&!!x.mineClosed;
+ case 'doyleAlive':return aliveNpc(x.doyle)&&x.doyle.location===def.place;
  case 'mayorAlive':return aliveNpc(x.mayor)&&x.mayor.location===def.place;
  case 'burnHome':return z.actions.some(a=>a.type==='burn'&&a.place==='home'&&s.epoch-a.epoch<=2);
  case 'burnChapel':return z.actions.some(a=>a.type==='burn'&&a.place==='chapel'&&s.epoch-a.epoch<=2);
- case 'doyleAtMine':return aliveNpc(x.doyle)&&x.doyle.location==='warehouse';
+ case 'doyleAtMine':return aliveNpc(x.doyle)&&x.doyle.location==='warehouse'&&!!x.everClosed;/* 2026-11-21: 화약고가 열려 폭약이 없어진 것이 알려진 뒤에만 */
  case 'publicThreat':return x.doyle.disclosed||z.artifacts.some(a=>a.kind==='threat'&&a.public);
  case 'caseExists':return s.cases.length>0;
  case 'stockLow':return z.stock<=3;
@@ -78,7 +79,7 @@ function text(s,p,raw){const x=q(s),z=d(s),lastExec=z.executions.at(-1),fake=z.p
   childReply:z.flags.childSilenced?'아이가 땅을 보며 말합니다. "꿈이었어. 아무것도 못 봤어."':'아이가 고개를 끄덕입니다. "긴 외투였어. 얼굴은 여전히 모르겠어."',
   watchReply:'지금 이곳에서 당번을 서는 사람: '+(C().alive(s).filter(o=>o.watchEpoch===s.epoch&&o.location==='warehouse').map(o=>o.name).join(', ')||'아직 없음')+'.',
   cartResult:bombCount(s,'cart')?'광차 덮개 아래에서 폭약 '+bombCount(s,'cart')+'개를 확인했습니다.':'광차 덮개 아래에는 현재 폭약이 없습니다.',
-  moneyIntro:!aliveNpc(x.doyle)?'도일이 앉던 자리에 모자가 놓였습니다. 주인이 말없이 잔을 하나 채웁니다.':z.flags.unionFunded?'후원금이 들어온 뒤 광부들이 외상을 갚습니다. 돈을 받지 않겠다는 광부는 구석에 홀로 앉아 있습니다.':x.doyle.cowed?'갱도가 다시 열려 광부들이 외상을 갚기 시작합니다. 도일이 왜 노조를 넘겼는지 묻는 광부는 구석에 홀로 앉아 있습니다.':'주인이 "외상 사절" 팻말을 세웁니다. 빈 잔을 든 광부들이 문가에서 항의합니다.',
+  moneyIntro:!aliveNpc(x.doyle)?'도일이 앉던 자리에 모자가 놓였습니다. 주인이 말없이 잔을 하나 채웁니다.':z.flags.unionFunded?'후원금이 들어온 뒤 광부들이 외상을 갚습니다. 돈을 받지 않겠다는 광부는 구석에 홀로 앉아 있습니다.':x.doyle.cowed?(x.everClosed?'갱도가 다시 열려 광부들이 외상을 갚기 시작합니다. 도일이 왜 노조를 넘겼는지 묻는 광부는 구석에 홀로 앉아 있습니다.':'갱도는 닫히지 않았습니다. 도일이 왜 노조를 넘겼는지 묻는 광부는 구석에 홀로 앉아 있습니다.'):'주인이 "외상 사절" 팻말을 세웁니다. 빈 잔을 든 광부들이 문가에서 항의합니다.',
   moneyReply:x.doyle.cowed||z.flags.unionFunded?'광부가 말합니다. "노조 쪽에서 새 돈이 왔소. 누가 댔는지는 직접 묻지 않았소."':'광부가 빈 주머니를 내보입니다. "내게 들어온 후원금은 없소."',
   moneyClue:x.doyle.cowed||z.flags.unionFunded?'카운터에 놓인 일부 새 지폐의 번호가 이어집니다. 한 묶음에서 나왔다는 단서이며, 플레이어 진영을 가리는 표시는 아닙니다.':'비교할 새 지폐 묶음이 이곳에 없습니다. 없는 자금 흐름을 확인한 것으로 적을 수는 없습니다.',
   houseResult:'집 안에서 '+(homeBombs?'폭약 '+homeBombs+'개':homeArts.length?'남겨진 물건 '+homeArts.length+'건':'새 물증 없이 생활 흔적')+'를 확인했습니다.',
