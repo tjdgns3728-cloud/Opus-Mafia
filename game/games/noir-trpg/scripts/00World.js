@@ -113,7 +113,7 @@ function environment(s,id){const p=find(s,id),others=alive(s).filter(o=>o.id!==i
 function combatContext(s,p,t,weapon){const place=places[p.location],ambush=p.hidden&&!visible(s,t,p),crowd=alive(s).filter(o=>o.id!==p.id&&o.id!==t.id&&sameSpace(s,o,p)&&!o.hidden&&!(p.team==='mafia'&&o.team==='mafia')).length,terms=[];
  if(s.turn===2)terms.push({label:'밤의 어둠',value:-2});if(s.turn===2&&s.plans[t.id]?.type==='sleep')terms.push({label:'잠든 상대',value:3});if(place.light<0)terms.push({label:place.name+'의 어둠',value:place.light});if(ambush)terms.push(weapon==='pistol'?{label:'숨은 자리에서 쏨 · 겨누기 어려움',value:-1}:{label:'상대에게 들키지 않은 기습',value:2});else if(crowd)terms.push({label:`주변에 보이는 ${crowd}명 앞의 공개 공격 · 상대가 대비하기 쉬움`,value:-Math.min(3,crowd)});
  return {env:terms.reduce((n,x)=>n+x.value,0),terms,ambush,publicAttack:!ambush&&crowd>0,dark:s.turn===2||place.light<0};}
-function threats(s,id){return Object.entries(s.plans).filter(([from,a])=>s.stage==='react'&&a.type==='attack'&&a.target===id&&find(s,from)?.hp>0).map(([from,a])=>{const p=find(s,from),t=find(s,id),seen=visible(s,t,p);return {from:seen?p.name:'모습이 보이지 않는 상대',weapon:seen?weapons[a.weapon]?.name:'알 수 없는 무기'};});}
+function threats(s,id){return Object.entries(s.plans).filter(([from,a])=>s.stage==='react'&&a.type==='attack'&&a.target===id&&find(s,from)?.hp>0).map(([from,a])=>{const p=find(s,from),t=find(s,id),seen=visible(s,t,p);return {from:seen?nameFor(s,t,p)/* 2026-11-21: 변장한 공격자는 보이는 모습으로 */:'모습이 보이지 않는 상대',weapon:seen?weapons[a.weapon]?.name:'알 수 없는 무기'};});}
 function narrate(s,id,text,extra={}){return emit(s,[id],'story',text,extra);}
 // 최대 체력: 피곤하면 5
 function maxHp(p){return p.tired?5:10;}
