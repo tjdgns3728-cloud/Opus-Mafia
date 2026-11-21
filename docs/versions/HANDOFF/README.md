@@ -64,3 +64,4 @@
 | [v60](v60.md) | 2026-11-18 18:09 | `b2a8119` | Plain-language summary of the autonomous studies and its bundle pointer (workbench e3beaa3) |
 | [v61](v61.md) | 2026-11-18 20:20 | `d277806` | Record: summary and report corrected to set aside same-game replay studies |
 | [v62](v62.md) | 2026-11-21 20:18 | `e8ecee0` | 기록: 인계 문서에 2026-11-18~21의 일과 진행 중인 일을 적음 |
+| [v63](v63.md) | 2026-11-21 21:42 | `d6d95f0` | 막힌 큰 행동을 이야기 말로, 옆에서 들은 NPC 대답도 한 번으로 |
