@@ -23,8 +23,8 @@ const feedOf=(s,p)=>s.feed.filter(e=>e.to.includes(p.id)).map(e=>String(e.text))
 // 2. 대놓고 변장하면 본 사람은 누군지 앎, 숨어서 변장하면 아무도 모름
 {const s=fresh(),[a,b,c]=town(s);a.location='hall';b.location='hall';
  small(s,a,{type:'cover'});ok(C.nameFor(s,b,a)===a.name&&b.aliasKnown?.[1]?.id===a.id,'곁에서 변장하는 것을 본 사람은 누군지 앎');
- ok(feedOf(s,b).some(t=>t.includes('천과 모자로 얼굴을 가립니다')&&t.includes(a.name)),'본 사람에게 "○○이 천과 모자로 얼굴을 가립니다"');
- ok(feedOf(s,a).some(t=>t.includes('변장한 사람 1입니다')&&t.includes(b.name)),'변장한 사람은 자기 번호와 누가 보았는지 앎');
+ ok(feedOf(s,b).some(t=>t.includes('얼굴을 가림')&&t.includes(a.name)),'본 사람에게 "○○이 천과 모자로 얼굴을 가립니다"');
+ ok(feedOf(s,a).some(t=>t.includes('변장한 사람 1.')&&t.includes(b.name)),'변장한 사람은 자기 번호와 누가 보았는지 앎');
  c.location='hall';ok(C.nameFor(s,c,a)==='변장한 사람 1','그 뒤에 온 사람은 모름');
  const s2=fresh(),[d,e]=town(s2);d.location='hall';e.location='hall';d.hidden=true;d.spotted=[];
  small(s2,d,{type:'cover'});ok(C.nameFor(s2,e,d)==='변장한 사람 1'&&!e.aliasKnown,'숨어서 변장하면 같은 자리 사람도 모름');}

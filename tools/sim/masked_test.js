@@ -55,8 +55,8 @@ ok(tA.known.some(k=>/얼굴을 천으로 가려 누군지는 보지 못했다/.t
 const fought=last(m,/복면 덕에 얼굴은 안 들킴/);ok(!!fought,'새 조직원에게: '+fought.slice(0,70));
 // 10. 아침: 소식, 말발굽 소리, 낮에는 본거지에 숨어 있음
 C.nextTurn(s);S.nextChapter(s);
-const news=last(gf,/끌어들인 사람들이 전한 말입니다/);ok(news.includes('술집 주인: 어제 술집에 온 사람은 '+tC.name)&&/간호사: 어제 진료소에 온 사람은 .*\(다침\)\(피를 흘림\)/.test(news),'아침에 끌어들인 사람들의 소식: '+news);
-ok(got(m,/끌어들인 사람들이 전한 말입니다/),'새 조직원도 소식을 받음');
+const news=last(gf,/끌어들인 사람들의 보고/);ok(news.includes('술집 주인: 어제 술집에 온 사람은 '+tC.name)&&/간호사: 어제 진료소에 온 사람은 .*\(다침\)\(피를 흘림\)/.test(news),'아침에 끌어들인 사람들의 소식: '+news);
+ok(got(m,/끌어들인 사람들의 보고/),'새 조직원도 소식을 받음');
 ok(got(tB,/낯선 말발굽 소리/),'시민은 낯선 말발굽 소리 이야기를 들음');
 if(m.hp>0){ok(m.location==='hideout'&&C.choices(s,m.id,'big').length===0&&!!C.validate(s,m.id,{type:'move',place:'hall'},'small')&&!C.canAct(s,m),'낮에는 본거지에 숨어 행동하지 않음');
  ok(C.watchable(s,m)&&C.canWatch(s,m,gf)&&!C.canWatch(s,m,tB),'낮에는 같은 편의 장면만 볼 수 있음');s.turn=2;ok(!C.watchable(s,m),'밤에는 관전하지 않고 움직임');s.turn=0;}

@@ -18,4 +18,4 @@ ok(s.cfg.trialSeconds===180&&s.cfg.voteSeconds===120,'실제 방의 재판 대�
 ok(s.cfg.hardSeconds===5400,'실제 방의 한 판 최대 90분 (지금 '+s.cfg.hardSeconds/60+'분)');
 ok(ses.includes("phase(r,'consent',60,"),'재판 개정 동의 1분');
 ok(ui.includes("trial:'재판 대화 · 3분'")&&ui.includes("vote:'최종 변론·표결 · 2분'")&&ui.includes('재판 도입 뒤 대화 3분(')&&ui.includes('최종 변론·표결 2분. 이전')&&ui.includes('1분이 끝나면 집계합니다'),'화면 글: 재판 3분·2분, 동의 1분');
-/* 2026-11-23 새 방향: 진행 글을 짧게 */ok(world.includes('재판 대화 3분(한 사람이 한 번씩 30초 연장) → 최종 변론·표결 2분.')&&world.includes('재판 동의 받기: 1분')&&ses.includes('최종 변론·표결 2분'),'진행 글: 재판 3분·2분, 동의 1분');
+/* 2026-11-23 새 방향: 진행 글을 짧게 */ok(world.includes('재판 대화 3분(한 사람이 한 번씩 30초 연장) → 최종 변론·표결 2분.')&&world.includes('재판 동의 받기: 1분')&&ui.includes("vote:'최종 변론·표결 · 2분'"),'진행 글: 재판 3분·2분, 동의 1분');

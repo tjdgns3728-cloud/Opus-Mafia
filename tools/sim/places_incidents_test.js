@@ -46,7 +46,7 @@ const open=(s,id)=>{const def=globalThis.BlackRidgeIncidents.find(e=>e.id===id);
  ok(opts(s,t,'small').some(o=>o.incident==='duesBox'&&o.branch==='open'),'4일째 낮 1에 노조 사무실에서 회비 상자를 살필 수 있음');}
 // 10. 다리 밑 가방: 실패하면 미끄러져 체력 -2(최소 1), 가방은 그대로. 성공하면 꺼낸다
 {const s=find(s=>open(s,'satchel')),[t]=town(s);t.location='bridge';t.hp=10;at(s,3,0);const climb=()=>opts(s,t,'big').find(o=>o.incident==='satchel'&&o.branch==='climb');
- D.resolveIncident(s,t,climb(),lo);ok(t.hp===8&&/발이 미끄러져/.test(fed(s,t))&&!!climb(),'못 내려가면 미끄러져 체력 -2, 가방은 아직 걸려 있음');
+ D.resolveIncident(s,t,climb(),lo);ok(t.hp===8&&/미끄러져 떨어짐/.test(fed(s,t))&&!!climb(),'못 내려가면 미끄러져 체력 -2, 가방은 아직 걸려 있음');
  t.hp=2;D.resolveIncident(s,t,climb(),lo);ok(t.hp===1,'떨어져도 체력은 1 아래로 내려가지 않음');
  D.resolveIncident(s,t,climb(),hi);ok(t.known.some(k=>/협곡 다리 밑 가방/.test(k.text))&&!climb(),'내려가 가방을 꺼내면 안의 것이 수첩에 남고 사건이 끝남');}
 // 11. 남은 해석 문장을 뺐다

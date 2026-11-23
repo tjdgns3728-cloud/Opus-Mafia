@@ -18,6 +18,6 @@ const town=s=>s.players.filter(q=>q.team==='town'&&q.role!=='sheriff');
 {const s=game(),[p,a]=town(s);C.smallAct(s,a.id,{type:'move',place:'home'},rng);p.location='home';const said=[];for(let i=0;i<12;i++){p.used.small=false;C.smallAct(s,p.id,{type:'evidence'},hi);said.push(last(s,p));if(!p.used.small)break;}
  ok(!said.some(t=>/오늘 이곳 바닥에 새 발자국/.test(t))&&!p.used.small&&/더 살필 것이 없습니다/.test(said.at(-1)),'집에서는 오늘의 발자국을 말하지 않고, 단서가 다 나오면 작은 행동을 돌려줌');}
 // 4. 주변 보기: 숨은 사람이 없으면 조금 전 이곳을 떠난 사람을 본다
-{const s=game(),[p,a]=town(s);C.smallAct(s,a.id,{type:'move',place:'clinic'},rng);C.smallAct(s,p.id,{type:'observe'},rng);const t=last(s,p);ok(/숨어 있는 사람은 보지 못했습니다/.test(t)&&new RegExp('조금 전 '+a.name+'[이가] 마을 진료소 쪽으로 나갔습니다').test(t),'조금 전 회관을 떠난 사람과 간 곳이 보임 ('+t.slice(0,80)+')');}
-{const s=game(),[p]=town(s);C.smallAct(s,p.id,{type:'observe'},rng);ok(/조금 전 이곳을 떠난 사람은 보지 못했습니다/.test(last(s,p)),'아무도 떠나지 않았으면 그렇다고 함');}
-{const s=game(),[p,a]=town(s);C.smallAct(s,a.id,{type:'move',place:'clinic'},rng);s.turn=1;s.epoch++;for(const q of s.players)q.used={big:false,small:false};C.smallAct(s,p.id,{type:'observe'},rng);ok(!/진료소 쪽으로 나갔습니다/.test(last(s,p)),'지난 시간대에 떠난 사람은 "조금 전"으로 나오지 않음');}
+{const s=game(),[p,a]=town(s);C.smallAct(s,a.id,{type:'move',place:'clinic'},rng);C.smallAct(s,p.id,{type:'observe'},rng);const t=last(s,p);ok(/숨은 사람 없음/.test(t)&&new RegExp('조금 전 '+a.name+'[이가] 마을 진료소 쪽으로 나감').test(t),'조금 전 회관을 떠난 사람과 간 곳이 보임 ('+t.slice(0,80)+')');}
+{const s=game(),[p]=town(s);C.smallAct(s,p.id,{type:'observe'},rng);ok(/떠난 사람 못 봄/.test(last(s,p)),'아무도 떠나지 않았으면 그렇다고 함');}
+{const s=game(),[p,a]=town(s);C.smallAct(s,a.id,{type:'move',place:'clinic'},rng);s.turn=1;s.epoch++;for(const q of s.players)q.used={big:false,small:false};C.smallAct(s,p.id,{type:'observe'},rng);ok(!/진료소 쪽으로 나감/.test(last(s,p)),'지난 시간대에 떠난 사람은 "조금 전"으로 나오지 않음');}

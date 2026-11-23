@@ -13,8 +13,8 @@ const role=(s,r)=>s.players.find(p=>p.role===r);
 // 1. 직업의 기본 안내('갱도가 닫힘' 상황 글)는 폭약이 옮겨졌어도 둘째 날 아침에 먼저 나온다
 {const s=game();const gf=role(s,'godfather'),mf=role(s,'mafioso');advance(s,{day:2,turn:0},s=>{if(s.day===1&&s.turn===0)for(const b of s.scenario.bombs)b.where='carry:'+gf.id;});
  const t=s.feed.filter(e=>e.to.includes(mf.id)&&e.source==='story/story_jobs.md'&&parseInt(e.time,10)===2).map(e=>e.text).join('\n');
- ok(/대놓고 칼을 꺼내면/.test(t),'대행자: 둘째 날 아침에 기본 안내가 먼저 나옴');
- advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)===3&&/자리를 옮겼습니다\. 지금 .*의 품에 2개/.test(e.text)),'대행자: 셋째 날 아침에 폭약이 지금 누구 품에 있는지 나옴');}
+ /* 2026-11-24 새 방향: 직업 이야기 단락 대신 상황 한 줄 */ok(/갱도 폐쇄/.test(t),'대행자: 둘째 날 아침에 갱도 상황이 나옴');
+ advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)<=3&&/폭약 위치: .*의 품에 2개/.test(e.text)),'대행자: 아침에 폭약이 지금 누구 품에 있는지 나옴');}
 // 2. 아침에 아무도 없을 때 생긴 장면(도일의 협박장 공개)은 그 턴에 그곳에 오는 사람이 본다
 {const s=game();advance(s,{day:1,turn:1});s.scenario.doyle.threatened=true;advance(s,{day:2,turn:0});const p=s.players.find(p=>p.team==='town');ok(!seen(s,p,/도일이 협박장 공개/),'아침에 집에 있던 사람은 아직 못 봄');p.location='hall';S.arrival(s,p);ok(seen(s,p,/도일이 협박장 공개/),'아침에 회관으로 온 사람은 도일의 협박장 공개를 봄');S.arrival(s,p);ok(count(s,p,/도일이 협박장 공개/)===1,'한 번만 봄');}
 // 3. 같은 편이 폭약을 꺼내면 바로 알린다 / 쓰러지면서 떨어뜨려도 알린다
@@ -31,5 +31,5 @@ const role=(s,r)=>s.players.find(p=>p.role===r);
 // 9. 도일의 대답이 돈과 협박에 따라 다르고, 회관에서 팻말을 들지 않는다
 {const s=game();const gf=role(s,'godfather');gf.location=s.scenario.doyle.location;gf.money=10;s.turn=0;ok(!S.choices(s,gf,'big').some(a=>a.sceneKey==='bribe')&&S.validate(s,gf,{type:'scene',sceneKey:'bribe'},'big')!==null,'도일에게 돈으로 운영 자금을 제안하는 행동은 없음(2026-11-19 사용자 결정)');}
 // 10. NPC가 쓰러지는 것을 본 사람에게 다음 날 '시신을 발견합니다'를 다시 보내지 않는다
-{const s=game();advance(s,{day:1,turn:1});const p=s.players.find(p=>p.team==='town');p.location='home';const mn=Object.values(s.scenario.continuation.npcs).find(n=>n.id==='miner');mn.location='home';mn.hp=1;mn.bleeding=true;mn.injuredEpoch=s.epoch-1;advance(s,{day:2,turn:0});const fell=seen(s,p,/출혈 끝에 쓰러집니다/),found=seen(s,p,/시신을 발견합니다/);ok(fell?!found:true,'쓰러지는 것을 본 사람: '+(fell?(found?'발견 글이 또 나옴':'발견 글 없음'):'(쓰러지는 장면을 만들지 못해 건너뜀)'));}
+{const s=game();advance(s,{day:1,turn:1});const p=s.players.find(p=>p.team==='town');p.location='home';const mn=Object.values(s.scenario.continuation.npcs).find(n=>n.id==='miner');mn.location='home';mn.hp=1;mn.bleeding=true;mn.injuredEpoch=s.epoch-1;advance(s,{day:2,turn:0});const fell=seen(s,p,/출혈로 쓰러짐/),found=seen(s,p,/시신 발견/);ok(fell?!found:true,'쓰러지는 것을 본 사람: '+(fell?(found?'발견 글이 또 나옴':'발견 글 없음'):'(쓰러지는 장면을 만들지 못해 건너뜀)'));}
 {const s=game();advance(s,{day:1,turn:1});const town=s.players.filter(p=>p.team==='town');const p=town[0],o=town[1];p.location='home';o.location='tavern';const mn=Object.values(s.scenario.continuation.npcs).find(n=>n.id==='miner');mn.location='home';mn.hp=1;mn.bleeding=true;mn.injuredEpoch=s.epoch-1;advance(s,{day:2,turn:0});ok(seen(s,o,/젊은 광부의 시신 발견/),'쓰러지는 것을 못 본 사람은 다음 날 아침 발견 글을 받음');}

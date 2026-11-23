@@ -13,5 +13,5 @@ ok(where.some(w=>/2일 낮1: .*광부 술집/.test(w)),'갱도가 닫히면 젊�
 const p=s.players.find(p=>p.team==='town');s.turn=0;s.day=3;s.epoch++;S.nextChapter(s);p.location=st.npcs.miner.location;const before=s.feed.length;S.arrival(s,p);const txt=s.feed.slice(before).map(e=>e.text).join(' ');
 ok(!/지금 여기에는/.test(txt),'NPC가 있는 곳에 도착해도 "지금 여기에는 …" 글을 보내지 않음(누가 있는지는 NPC 목록의 밝기로 보여 줌)');
 // 아침 상황 문장 반복 생략
-const role=s.players.find(p=>p.team==='mafia');const lines=s.feed.filter(e=>e.to.includes(role.id)&&/아침입니다/.test(e.text)).map(e=>e.text.split('\n')[0]);
-console.log('   '+lines.join('\n   '));ok(new Set(lines.map(l=>l.replace(/^\S+ 날 아침입니다\.( 열차는[^.]*\.| 오늘 밤만[^.]*\.)?/,'').trim()).filter(Boolean)).size===lines.map(l=>l.replace(/^\S+ 날 아침입니다\.( 열차는[^.]*\.| 오늘 밤만[^.]*\.)?/,'').trim()).filter(Boolean).length,'같은 상황 문장이 다시 나오지 않음');
+const role=s.players.find(p=>p.team==='mafia');const lines=s.feed.filter(e=>e.to.includes(role.id)&&e.tag==='아침').map(e=>e.text.split('\n')[0]);
+console.log('   '+lines.join('\n   '));ok(new Set(lines.map(l=>l.replace(/ ?(열차는 모레 새벽에 옴\.|오늘 밤이 지나면 열차가 옴\.)$/,'').trim()).filter(Boolean)).size===lines.map(l=>l.replace(/ ?(열차는 모레 새벽에 옴\.|오늘 밤이 지나면 열차가 옴\.)$/,'').trim()).filter(Boolean).length,'같은 상황 문장이 다시 나오지 않음');

@@ -62,7 +62,7 @@ const town=s=>s.players.filter(p=>p.team==='town'),mafia=s=>s.players.filter(p=>
 // 12. 자물쇠 따개: 낮에 주인이 없는 남의 집. 못 하면 집에 있던 이웃이 보고 자물쇠에 자국이 남는다
 {const s=game(71),[p,t,w,h]=town(s);p.location='home';t.location='hall';w.location='home';h.location='home';p.items.lockpick=1;
  const opts=acts(s,p).filter(a=>a.verb==='pickHouse').map(a=>a.house);ok(opts.includes(t.id)&&!opts.includes(w.id),'주인이 집에 없는 집만 딸 수 있음');
- S.resolve(s,p,acts(s,p).find(a=>a.verb==='pickHouse'&&a.house===t.id),hi);ok(/집 안을 살피자/.test(fed(s,p))&&!/범행을 뜻하지는/.test(fed(s,p)),'자물쇠를 따면 그 집을 살피고, 해석 문장은 없음');
+ S.resolve(s,p,acts(s,p).find(a=>a.verb==='pickHouse'&&a.house===t.id),hi);ok(/집 살피기 →/.test(fed(s,p))&&!/범행을 뜻하지는/.test(fed(s,p)),'자물쇠를 따면 그 집을 살피고, 해석 문장은 없음');
  ok(!acts(s,p).some(a=>a.verb==='pickHouse'&&a.house===t.id),'같은 때에 같은 집은 다시 따지 않음');
  const u=s.players.find(x=>x.team==='town'&&![p,t,w,h].includes(x))||s.players.find(x=>![p,t,w,h].includes(x));u.location='tavern';
  S.resolve(s,p,acts(s,p).find(a=>a.verb==='pickHouse'&&a.house===u.id),lo);ok(w.known.some(k=>k.about===p.id&&/자물쇠를 만지는/.test(k.text))&&u.known.some(k=>/긁힌 자국/.test(k.text)),'못 하면 집에 있던 이웃이 보고, 집주인은 긁힌 자국을 앎');
