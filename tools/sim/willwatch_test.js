@@ -11,11 +11,11 @@ const got=(p,re)=>s.feed.some(e=>e.to.includes(p.id)&&re.test(String(e.text)));
 // 1. 숨을 거두면 사망 알림은 본인에게만, 같은 곳 사람은 시체를 보는 이야기를 받는다
 v.will='술집 주인이 다 봤습니다.';v.hp=0;v.downed=null;v.downedOnce=true;C.death(s,v,'공격');
 ok(s.feed.some(e=>e.kind==='death'&&e.who===v.id&&e.to.length===1&&e.to[0]===v.id),'사망 알림은 본인에게만');
-ok(got(w,/쓰러진 채 숨져 있습니다\. 품에 접힌 종이 한 장이 보입니다/),'같은 곳 사람은 시체와 품의 종이를 봄');
-ok(!got(far,/숨져 있습니다/),'다른 곳 사람은 보지 못함');
+ok(got(w,/의 시신 · 품에 유언으로 보이는 종이/),'같은 곳 사람은 시체와 품의 종이를 봄');
+ok(!got(far,/의 시신/),'다른 곳 사람은 보지 못함');
 ok(!s.feed.some(e=>e.kind==='death'&&e.will),'사망 알림에 유언이 실리지 않음');
 // 2. 나중에 그곳에 온 사람도 시체를 한 번 본다
-o.location='tavern';S.arrival(s,o);S.arrival(s,o);ok(s.feed.filter(e=>e.to.includes(o.id)&&/쓰러진 채 숨져 있습니다/.test(e.text)).length===1,'나중에 온 사람도 시체를 한 번 봄');
+o.location='tavern';S.arrival(s,o);S.arrival(s,o);ok(s.feed.filter(e=>e.to.includes(o.id)&&/^[^ ]+의 시신/.test(e.text)).length===1,'나중에 온 사람도 시체를 한 번 봄');
 // 3. 유언 집어들기: 같은 곳에서 작은 행동으로, 집어 든 사람만 읽는다
 const opt=S.choices(s,w,'small').find(a=>a.sceneKey==='takeWill');ok(!!opt&&/가람|나래|다온|라희|마루|바다|사랑|아라/.test(opt.label),'같은 곳에서 "유언 집어들기"가 보임: '+(opt?.label||'없음'));
 ok(!S.choices(s,far,'small').some(a=>a.sceneKey==='takeWill'),'다른 곳에서는 보이지 않음');

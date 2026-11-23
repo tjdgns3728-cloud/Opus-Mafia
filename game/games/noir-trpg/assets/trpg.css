@@ -219,3 +219,16 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 .place-opt.on{border-color:#bca574;background:#221f19}
 .place-opt span{color:#a69c8c;font-size:13px}
 .place-detail{border-top:1px solid #4a4235;padding-top:8px;margin-top:4px}
+/* 2026-11-23 새 방향: 기록 칸과 채팅 칸을 나란히, 시간·장소는 바뀔 때만 제목으로, 줄 앞 꼬리표 */
+.story-split{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:6px;min-height:0;min-width:0}
+.story-split>#story-scroll,.story-split>#chat-scroll{height:auto;min-height:0;max-height:none;flex:none;overflow-y:auto;overscroll-behavior:contain}
+#chat-scroll{background:#101012;border:1px solid #373436;padding:6px 10px;scrollbar-color:#5d5347 #151517}
+#chat-scroll .speech{padding:3px 0;font-size:12px;line-height:1.55}
+#chat-scroll .speech small{display:none}
+#story-scroll .line>small{display:none}
+#story-scroll .line{border-bottom:0;padding:2px 0}
+#story-scroll .line>p{margin:0}
+.feed-head{margin:8px 0 2px;font-size:11px;font-weight:700;color:#a99f8f;border-bottom:1px solid #302e30;padding-bottom:2px}
+.feed-head:first-child{margin-top:0}
+.tag{font-weight:700;color:#d8bb84;margin-right:5px;white-space:nowrap}
+@media(max-width:800px){.story-split{grid-template-columns:1fr;grid-template-rows:minmax(0,3fr) minmax(0,2fr)}}

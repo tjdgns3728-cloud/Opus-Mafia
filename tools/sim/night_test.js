@@ -25,7 +25,7 @@ for(let i=0;i<300;i++){s=fresh();toNight(s);const m=s.players.find(p=>p.team==='
  s.plans={[m.id]:{type:'attack',target:v.id,weapon:'knife',nightRaid:true,flee:'stay'},[v.id]:{type:stance},[w.id]:{type:'watch'},[z.id]:{type:'sleep'}};z.hp=7;
  C.announceClashes(s);s.stage='plan';C.resolveBig(s,rng);const txt=s.feed.map(e=>e.text).join('\n');
  if(stance==='shelter'){if(/숨은 사람을 찾지 못하고/.test(txt))tally.shelterMiss++;if(/숨어 있던 .*찾아냈습니다/.test(txt))tally.shelterFound++;}
- if(stance==='watch'){if(/쫓아냈고/.test(txt))tally.watchRepel++;if(/맞붙었지만 밀렸습니다/.test(txt))tally.watchLose++;}
+ if(stance==='watch'){if(/쫓아내고/.test(txt))tally.watchRepel++;if(/맞붙었지만 밀림/.test(txt))tally.watchLose++;}
  if(stance==='sleep'&&s.feed.some(e=>e.kind==='combat'))tally.sleepHit++;
  if(z.hp===8)tally.sleepHeal++;if(w.known.some(k=>/집에 들어가는 것을 봤다/.test(k.text)))tally.watchSaw++;}
 console.log('   판정 횟수',JSON.stringify(tally));

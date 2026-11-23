@@ -11,8 +11,8 @@ const opt=(s,p,k,slot='big')=>S.choices(s,p,slot).find(a=>a.sceneKey==='search:'
 const pct=a=>+(a?.label.match(/찾을 확률 (\d+)%/)||[])[1];
 
 // 1. 아이는 방향만 말하고, 출처마다 다른 조각으로 남는다
-{const s=game();s.scenario.spots=['chapel','cart'];s.scenario.rumor={...s.scenario.rumor,chapel:true,child:'chapel'};const p=s.players.find(p=>p.team==='town');s.day=1;s.turn=1;/* 아이는 첫날에 나온다 */p.location='home';S.arrival(s,p);
- ok(/교회 쪽으로 가는 걸 봤어/.test(mine(s,p))&&!/종탑 밑에서|뭔가를 묻는/.test(mine(s,p)),'아이는 "교회 쪽으로 가는 걸 봤어"까지만 말함(종탑 밑이라고 집지 않음)');
+{const s=game();s.scenario.spots=['chapel','cart'];s.scenario.rumor={...s.scenario.rumor,chapel:true,child:'chapel'};const p=s.players.find(p=>p.team==='town');s.day=1;s.turn=1;/* 아이는 첫날에 나온다 */p.location='home';S.arrival(s,p);/* 2026-11-23: NPC 말은 묻는 작은 행동 때만 */S.askNpc(s,p,'child');
+ ok(/교회 쪽으로 갔다/.test(mine(s,p))&&!/종탑 밑에서|뭔가를 묻는/.test(mine(s,p)),'아이는 "교회 쪽으로 갔다"까지만 말함(종탑 밑이라고 집지 않음)');
  ok(p.npcHeard.includes('lead:chapel:child'),'아이의 말은 "lead:chapel:child" 조각');}
 
 // 2. 찾기는 큰 행동, 조각 하나 20%·둘 40%, 삽 +25%, 다시 해도 같은 확률
