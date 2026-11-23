@@ -56,7 +56,7 @@ function acts(s,p,slot){if(!z(s)||p.hp<=0||s.turn===2&&p.team==='town'||slot==='
   // 종 세 번, 촛대, 분필 표시는 아무것도 바꾸지 않는 행동이라 선택지에서 뺐다.
   if(p.location==='tavern'&&s.scenario?.announced)for(const t of C().alive(s).filter(t=>t.id!==p.id))add('forgeExtra',C().pp(t.name,'을','를')+' 지목하는 호외 쓰기',{target:t.id});
   if(p.location==='hall')for(const a of ownArtifacts(s,p).filter(a=>a.kind==='extra'))add('postExtra','작성한 호외를 회관 벽에 붙이기',{artifact:a.id});
-  if(s.turn===2){if(p.items.pistol&&p.reesePistol)for(const t of C().alive(s).filter(t=>t.team!=='mafia'))add('plantGun',t.name+'의 장작더미에 권총 놓기',{target:t.id});
+  if(s.turn===2){/* 2026-11-24 사용자: 남의 집에 권총 놓기는 없앰 */
    
   }
   /* 플레이어 영입은 보류(2026-11-14) */
