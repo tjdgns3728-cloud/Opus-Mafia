@@ -102,7 +102,7 @@ function effect(s,p,key){const z=d(s),x=q(s),f=z.flags;if(!key)return;
  if(key==='voteStalled'){f.voteStalled=true;return;}
  if(key==='satchelTaken'){f.satchelTaken=true;return;}
  if(key==='fallBridge'){if(p)p.hp=Math.max(1,p.hp-2);return;}
- if(key==='minerEntered'){f.minerEntered=true;Object.assign(npc(s,'miner'),{hp:2,bleeding:true,location:'warehouse',injuredEpoch:s.epoch});unlock(s,'trapped');return;}
+ if(key==='minerEntered'){/* 2026-11-24: 구조됐거나 무너진 갱도에 갇힌 광부는 다시 다치지 않는다 */if(f.minerRescued||npc(s,'miner')?.inside)return;f.minerEntered=true;Object.assign(npc(s,'miner'),{hp:2,bleeding:true,location:'warehouse',injuredEpoch:s.epoch});unlock(s,'trapped');return;}
  if(key==='rescueMiner'){npc(s,'miner').location='clinic';f.minerRescued=true;unlock(s,'minerClinic');return;}
  if(key==='bandageMiner'){npc(s,'miner').bleeding=false;if(p.items.bandage)p.items.bandage--;return;}
  if(key==='wageFight'){f.wageFight=true;artifact(s,{kind:'trace',where:'tavern',text:'광부들끼리 품삯 다툼을 벌인 자리다.'});return;}

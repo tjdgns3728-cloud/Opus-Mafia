@@ -232,3 +232,8 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 .feed-head:first-child{margin-top:0}
 .tag{font-weight:700;color:#d8bb84;margin-right:5px;white-space:nowrap}
 @media(max-width:800px){.story-split{grid-template-columns:1fr;grid-template-rows:minmax(0,3fr) minmax(0,2fr)}}
+/* 2026-11-24 사용자: 갱도가 무너지면 지금 그림을 어둡게 하고 입구 막힘 표시 */
+.scene-image.mine-blocked{position:relative}
+.scene-image.mine-blocked::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#000b,#000d);z-index:1}
+.scene-image.mine-blocked::after{content:"입구 막힘";position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);padding:6px 16px;border:2px solid #b98a4e;color:#f0d6a6;background:#1b120ccc;font-weight:700;letter-spacing:.25em;font-size:20px;z-index:2}
+.scene-image.mine-blocked .scene-caption{z-index:3}
