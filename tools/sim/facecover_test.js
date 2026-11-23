@@ -32,7 +32,7 @@ const feedOf=(s,p)=>s.feed.filter(e=>e.to.includes(p.id)).map(e=>String(e.text))
 // 3. 화면·AI 정보: 따로 된 사람으로, 체력은 늘 가득, 진짜 그 사람은 "여기 없음"과 구별되지 않음
 {const s=fresh(),[a,b]=town(s);a.location='hall';small(s,a,{type:'cover'});a.hp=3;b.location='hall';
  const v=C.view(s,b.id),st=v.strangers.find(p=>p.id==='v1');
- ok(st&&st.name==='변장한 사람 1'&&st.hp===10&&st.maxHp===10,'변장한 사람은 따로(체력바는 늘 가득)');
+ ok(st&&st.name==='변장한 사람 1'&&st.alive===true&&st.condition==='활동 가능'&&st.hp===undefined,'변장한 사람은 따로(체력 숫자 없이 늘 활동 가능)');
  const real=v.people.find(p=>p.id===a.id);ok(real&&!real.here&&real.location===null,'진짜 그 사람의 칸은 "여기 없음"');
  ok(!Object.keys(v.aliases||{}).includes(a.id)&&!JSON.stringify(v.strangers).includes(a.id),'정보 어디에도 번호와 진짜 사람을 잇는 것이 없음');
  ok(v.environment.some(t=>t.includes('변장한 사람 1')&&!t.includes(a.name)),'"지금 보이는 사람"에도 번호로');}

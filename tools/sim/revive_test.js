@@ -11,7 +11,7 @@ for(const p of s.players)p.location='hall';
 T.hp=0;C.death(s,T,'공격');
 ok(T.downed&&T.hp===0,'처음 쓰러지면 쓰러짐 상태(체력 0, downed)');
 ok(!s.feed.some(e=>e.kind==='death'&&e.who===T.id),'사망 기록이 아직 나오지 않음');
-ok(C.view(s,H.id).people.find(p=>p.id===T.id).condition==='쓰러짐','다른 사람 화면에 쓰러짐으로 보임');
+ok(C.view(s,H.id).people.find(p=>p.id===T.id).condition==='죽어가는 중','다른 사람 화면에 죽어가는 중으로 보임');
 ok(C.view(s,H.id).people.find(p=>p.id===T.id).will===null,'쓰러진 동안 유언은 보이지 않음');
 ok(!C.alive(s).includes(T),'쓰러진 사람은 산 사람 수에 들지 않음');
 // 2) 같은 곳의 사람에게 살리기 선택지(큰 행동), 확률 표시

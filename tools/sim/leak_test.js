@@ -3,6 +3,7 @@ const path=require('path');const dir=path.join(path.resolve(process.argv[2]||'.'
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow'])require(path.join(dir,f+'.js'));
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios;let seed=57;const rng=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};const hi=()=>0.99;
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
+/* 2026-11-23 사용자: 남의 체력은 숫자 대신 상태로만 보인다. 아는 체력은 상태 이름으로 확인한다 */const cond=p=>p.downed?'죽어가는 중':p.hp===0?'사망':p.hp<=2?'깊은 상처':p.hp<=5?'가벼운 상처':'활동 가능';
 const fresh=()=>{const seats=Array.from({length:8},(_,i)=>({id:'p'+i,name:['가람','나래','다온','라희','마루','바다','사랑','아라'][i],bot:true}));const s=C.create(seats,rng);S.start(s);S.afterGathering?.(s);s.day=2;s.turn=0;s.stage='plan';for(const p of s.players){p.location='hall';p.houseId=null;p.used={big:false,small:false};p.hidden=false;}return s;};
 const look=(s,viewer,target)=>C.view(s,viewer.id).people.find(p=>p.id===target.id);
 const opposedFor=(s,who)=>C.view(s,who.id).feed.filter(e=>e.roll?.kind==='contest').map(e=>e.roll);const noNumbers=r=>!/"(stat|total|roll|rolls|terms|env|actor|opponent)":/.test(JSON.stringify(r));
@@ -26,20 +27,20 @@ const bare=r=>r.secret&&!('stat' in r)&&!('total' in r)&&!('roll' in r)&&!('roll
 
 // 3. 남의 체력: 보기만 해서는 안 바뀌고, 조사에 성공하거나 맞는 것을 보면 바뀐다. 마피아끼리는 늘 안다
 {const s=fresh();const [a,b]=s.players.filter(p=>p.team==='town');b.hp=4;
- ok(look(s,a,b).hp===10,'같은 곳에서 보이기만 해서는 체력이 그대로 (보이는 값 '+look(s,a,b).hp+')');
+ ok(look(s,a,b).condition==='활동 가능'&&look(s,a,b).hp===undefined,'같은 곳에서 보이기만 해서는 상태가 그대로, 체력 숫자는 없음 (보이는 값 '+look(s,a,b).condition+')');
  C.smallAct(s,a.id,{type:'investigate',target:b.id},hi);/* 조사는 작은 행동 */
- ok(look(s,a,b).hp===4,'조사에 성공하면 그때의 체력으로 갱신 (보이는 값 '+look(s,a,b).hp+')');
- b.hp=2;ok(look(s,a,b).hp===4,'조사 뒤에 바뀐 체력은 다시 조사하기 전까지 모름');}
+ ok(look(s,a,b).condition==='가벼운 상처','조사에 성공하면 그때의 상태로 갱신 (보이는 값 '+look(s,a,b).condition+')');
+ b.hp=2;ok(look(s,a,b).condition==='가벼운 상처','조사 뒤에 바뀐 상태는 다시 조사하기 전까지 모름');}
 {/* 확인하려는 것은 "맞는 것을 본 사람이 체력을 아는가"라서, 공격이 실제로 들어간 판을 찾는다(직업·능력치 배정에 따라 막힐 수 있음) */let s,t,w,m,far;for(let i=0;i<30;i++){s=fresh();const town=s.players.filter(p=>p.team==='town');[t,w]=town;m=s.players.find(p=>p.role==='mafioso');
  far=town.find(p=>p.id!==t.id&&p.id!==w.id);far.location='warehouse';/* 공격 전에 다른 곳에 가 있던 사람 */
  s.plans={[m.id]:{type:'attack',target:t.id,weapon:'fist'}};C.resolveBig(s,hi);if(t.hp<10)break;}
  ok(t.hp<10,'공격이 들어감 (체력 '+t.hp+')');
- ok(look(s,m,t).hp===t.hp,'공격한 사람은 맞은 사람의 체력을 앎');
+ ok(look(s,m,t).condition===cond(t),'공격한 사람은 맞은 사람의 상태를 앎');
  const seen=C.view(s,w.id).feed.some(e=>/공격/.test(String(e.text)));
- ok(!seen||look(s,w,t).hp===t.hp,'공격을 본 사람은 맞은 사람의 체력을 앎'+(seen?'':' (이번에는 목격 못 함)'));
- ok(look(s,far,t).hp===10,'공격 때 다른 곳에 있던 사람은 모름 (보이는 값 '+look(s,far,t).hp+')');}
+ ok(!seen||look(s,w,t).condition===cond(t),'공격을 본 사람은 맞은 사람의 상태를 앎'+(seen?'':' (이번에는 목격 못 함)'));
+ ok(look(s,far,t).condition==='활동 가능','공격 때 다른 곳에 있던 사람은 모름 (보이는 값 '+look(s,far,t).condition+')');}
 {const s=fresh();const gf=s.players.find(p=>p.role==='godfather'),mf=s.players.find(p=>p.role==='mafioso');mf.location='warehouse';mf.hp=5;
- ok(look(s,gf,mf).hp===5,'마피아끼리는 떨어져 있어도 체력을 앎');}
+ ok(look(s,gf,mf).condition==='가벼운 상처','마피아끼리는 떨어져 있어도 상태를 앎');}
 
 // 3-2. "해먼드·도일이 넘어가면 마피아 한 명으로 센다"는 시민에게 알리지 않는다(2026-11-16 사용자 결정 "시민에게는 숨김")
 {const fs=require('fs');const flow=fs.readFileSync(path.join(dir,'08StoryFlow.js'),'utf8').split('\n');const groups={};let cur=null;
@@ -49,5 +50,5 @@ const bare=r=>r.secret&&!('stat' in r)&&!('total' in r)&&!('roll' in r)&&!('roll
  ok(townGroups.length>=5&&!leaks.length,'시민 쪽 이야기 글(시민 공통·직업별 '+townGroups.length+'묶음)에 "넘어가면 마피아 한 명으로 센다"가 없음'+(leaks.length?' · 남은 곳: '+leaks.join(','):''));
  const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(/v\.me\?\.team==='mafia'\?' 도일이 노조를 넘겼거나/.test(ui),'규칙 글의 "그 수만큼 마피아 편을 더 셉니다"는 마피아에게만 보임');}
 
-// 4. 행동 선택 시간은 2분
-{const s=fresh();ok(s.cfg.planSeconds===120,'행동 선택 시간 120초 (지금 '+s.cfg.planSeconds+')');}
+// 4. 행동 선택 시간은 1분(2026-11-23 사용자)
+{const s=fresh();ok(s.cfg.planSeconds===60,'행동 선택 시간 60초 (지금 '+s.cfg.planSeconds+')');}

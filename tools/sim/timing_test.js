@@ -7,10 +7,11 @@ const settings=JSON.parse(fs.readFileSync(path.join(root,'assets','settings.json
 let x=5;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};
 const s=C.create(Array.from({length:8},(_,i)=>({id:'p'+i,name:'주민'+i,bot:i>0})),rng,settings);
 ok(s.cfg.gatheringSeconds===60,'실제 방의 처음 회관 대화 1분 (지금 '+s.cfg.gatheringSeconds+'초)');
-ok(s.cfg.planSeconds===120,'실제 방의 행동 선택 2분 (지금 '+s.cfg.planSeconds+'초)');
+ok(s.cfg.planSeconds===60,'실제 방의 행동 선택 1분 (지금 '+s.cfg.planSeconds+'초)');
+/* 2026-11-23 사용자: 이야기 글은 시간을 멈추지 않고 채팅 시간으로 40, 행동 1분 */ok(s.cfg.readSeconds===40,'실제 방의 이야기·채팅 시간 40 (지금 '+s.cfg.readSeconds+')');
 const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8'),world=fs.readFileSync(path.join(dir,'00World.js'),'utf8'),ses=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');
 ok(ui.includes("gathering:'회관 대화 · 처음 1분'")&&ui.includes('처음 1분은 모두 회관에서 이야기합니다')&&ui.includes('첫 도입 뒤 회관 대화 1분'),'화면 글: 처음 회관 대화 1분');
-ok(ui.includes("plan:'행동 선택 · 공통 2분'")&&ui.includes('공통 2분 안에'),'화면 글: 행동 선택 2분');
+ok(ui.includes("plan:'행동 선택 · 공통 1분'")&&ui.includes('공통 1분 안에'),'화면 글: 행동 선택 1분');
 ok(!/40초/.test(ui+world+ses),'화면·진행 글에 예전의 "40초"가 남지 않음');
 // 재판과 한 판 최대 시간(2026-11-18 사용자 선택: 대화 3분, 최종 변론·표결 2분, 개정 동의 1분, 최대 90분)
 ok(s.cfg.trialSeconds===180&&s.cfg.voteSeconds===120,'실제 방의 재판 대화 3분·최종 변론과 표결 2분 (지금 '+s.cfg.trialSeconds+'·'+s.cfg.voteSeconds+'초)');

@@ -563,6 +563,7 @@ AI가 비슷한 일을 시작할 때와 관련 파일을 고치기 직전에, `t
 - 고친 것: settings.json과 코드 기본값을 함께 고치고, settings.json을 넣어 만든 판의 시간과 화면 글을 함께 보는 tools/sim/timing_test.js를 더함(2026-11-18).
 - 대화: CM 대화 원문 2026-11-18 밤. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
 - 결과물: 저장소 `game/games/noir-trpg/assets/settings.json`, `game/games/noir-trpg/scripts/00World.js`, 커밋 213b3ba.
+- 이어서(2026-11-23): 행동 시간을 1분으로 바꿀 때 또 코드 기본값(00World.js)만 먼저 고쳤다. 이 항목 뒤에 만든 timing_test.js가 "실제 방의 행동 선택"을 settings.json으로 확인하고 있어, 커밋 전에 시험의 다른 줄(화면 글 2분)이 실패한 것을 보고 시험을 읽다가 알아챘다. settings.json도 고치고 이야기 시간(readSeconds)도 settings.json에 넣었다(제작 기록 「새 방향 1묶음」). 같은 실수를 두 번 했고, 두 번째는 시험이 잡았다.
 
 ### 2026-11-19 · CM · 시험 전체를 "실패" 줄만 세어 확인해, 중간에 멈춘 시험 둘을 통과로 보고함
 - 일어난 일: AI 자리 패배기록을 넣은 뒤 시험 38개를 돌리고 사용자에게 "시험 38개가 모두 통과했고"라고 보고했다. 확인 명령은 시험마다 출력에서 "실패"로 시작하는 줄만 셌다(확인: 대화 원문의 명령). playfix4_test.js와 playtest_fix_test.js는 표결에 새로 넣은 `r.ai.mode`에서 TypeError로 멈춰 "실패" 줄 없이 끝났고, 그래서 통과로 셌다(확인: 11-19 다시 돌려 같은 줄의 오류를 봄. 그 사이 바꾼 것은 판결 뒤 기록 쓰기 자리뿐).
