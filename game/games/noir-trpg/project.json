@@ -7,8 +7,7 @@
     "fit": "scale",
     "background": "#141414",
     "ai_limits": {
-      "한판": 1000,
-      "한판_호출": 400
+      "한판": null
     }
   }
 }

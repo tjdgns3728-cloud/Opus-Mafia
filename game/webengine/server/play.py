@@ -302,20 +302,23 @@ def make_handler(game: Path, host: Host):
 
 def ai_limits(game: Path) -> dict:
     """One board's AI caps, the game's own values: project.json › settings › ai_limits › "한판" (won — the engine's
-    existing cap, default from ai.json 상한원) and "한판_호출" (how many asks one board may send; none = no count cap)."""
+    existing cap, default from ai.json 상한원; an explicit null = no cap in won) and "한판_호출" (how many asks one board
+    may send; none = no count cap)."""
     try:
         own = (json.loads((game / "project.json").read_text(encoding="utf-8-sig")).get("settings") or {}).get("ai_limits") or {}
     except (OSError, ValueError):
         own = {}
     won = own.get("한판")
-    if not isinstance(won, (int, float)) or isinstance(won, bool) or won < 0:
+    if "한판" in own and won is None:
+        won = None                               # the game wrote null: no cap in won (2026-11-23, the user: "한도 없애기")
+    elif not isinstance(won, (int, float)) or isinstance(won, bool) or won < 0:
         try:
             cfg = json.loads((ROOT / "ai.json").read_text(encoding="utf-8-sig"))
         except (OSError, ValueError):
             cfg = {}
         won = (cfg.get("상한원") or {}).get("한판", 10)
     calls = own.get("한판_호출")
-    return {"won": float(won), "calls": int(calls) if isinstance(calls, (int, float)) and not isinstance(calls, bool) and calls >= 0 else None}
+    return {"won": None if won is None else float(won), "calls": int(calls) if isinstance(calls, (int, float)) and not isinstance(calls, bool) and calls >= 0 else None}
 
 
 def find_game(arg: str) -> Path:
@@ -371,9 +374,9 @@ def main(argv: list[str] | None = None):
     srv.daemon_threads = True
     print(f"놀이용 서버: http://{a.host}:{port} — 게임 '{host.info.get('game')}' ({host.info.get('min')}~{host.info.get('max')}명), 편집기 없음", flush=True)
     how = {"off": "꺼짐 (방의 규칙이 물으면 늘 '답 없음')", "on": "켜짐 (이 컴퓨터의 구독 명령줄)", "fake": "가짜 답 (AI를 부르지 않음)", "fail": "장애 흉내 (AI를 부르지 않음)"}[a.ai]
-    cap = f"한 판 한도 {limits['won']:g}원" + (f" · {limits['calls']}번" if limits["calls"] is not None else " · 번수 한도 없음")
+    cap = ("한 판 금액 한도 없음" if limits["won"] is None else f"한 판 한도 {limits['won']:g}원") + (f" · {limits['calls']}번" if limits["calls"] is not None else " · 번수 한도 없음")
     print(f"AI: {how} — {cap} (게임의 project.json › settings › ai_limits)", flush=True)
-    if a.ai == "on":
+    if a.ai == "on" and limits["won"] is not None:
         # The cap in won is checked against the EXPECTED cost of a call before it is made (server/ai.py): a cap below one
         # call's estimate refuses every ask. Say so at the start instead of letting a whole board fall back silently.
         from . import ai
