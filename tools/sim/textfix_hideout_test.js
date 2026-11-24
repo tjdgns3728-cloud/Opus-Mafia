@@ -11,5 +11,5 @@ const fresh=()=>{const s=C.create(['민재','도현','서아','시온','하준',
  ok(/민재였습니다/.test(seen)&&!/민재이었습니다/.test(seen),'추적을 알아챔: '+seen.slice(0,40));}
 // 2. 본거지의 마피아에게는 주변 보기가 없고, 다른 곳에서는 있음
 {const s=fresh(),m=s.players.find(p=>p.team==='mafia');s.turn=2;m.location='hideout';ok(!C.choices(s,m.id,'small').some(a=>a.type==='observe'),'밤 본거지의 마피아: 주변 보기 없음');m.location='tavern';s.turn=0;ok(C.choices(s,m.id,'small').some(a=>a.type==='observe'),'낮 술집의 마피아: 주변 보기 있음');}
-// 3. 2026-11-25(run28): 낮에 자기 집에서는 주변 보기가 없음(늘 혼자라 빈손), 다른 곳·밤에는 그대로
-{const s=fresh(),c=s.players.find(p=>p.team==='town');c.location='home';c.houseId=null;ok(!C.choices(s,c.id,'small').some(a=>a.type==='observe'),'낮 자기 집의 시민: 주변 보기 없음');c.location='hall';ok(C.choices(s,c.id,'small').some(a=>a.type==='observe'),'낮 회관의 시민: 주변 보기 있음');const m=s.players.find(p=>p.team==='mafia');m.location='home';m.houseId=null;ok(!C.choices(s,m.id,'small').some(a=>a.type==='observe'),'낮 자기 집의 마피아: 주변 보기 없음');}
+// 3. 2026-11-25(run28): 낮 자기 집 주변 보기를 뺐다가, 같은 날 남의 집 찾아가기가 생겨 다시 둠
+{const s=fresh(),c=s.players.find(p=>p.team==='town');c.location='home';c.houseId=null;ok(C.choices(s,c.id,'small').some(a=>a.type==='observe'),'낮 자기 집의 시민: 주변 보기 있음(2026-11-25 남의 집 찾아가기로 손님이 올 수 있어 다시 둠)');c.location='hall';ok(C.choices(s,c.id,'small').some(a=>a.type==='observe'),'낮 회관의 시민: 주변 보기 있음');const m=s.players.find(p=>p.team==='mafia');m.location='home';m.houseId=null;ok(C.choices(s,m.id,'small').some(a=>a.type==='observe'),'낮 자기 집의 마피아: 주변 보기 있음');}
