@@ -35,7 +35,7 @@ const room=(s,answer)=>{const prompts=[],records=[];return {state:s,random:rng,p
  // 5. 마피아의 공격하기 창에서 같은 편을 빼지 않음, 무기마다 사람 화면과 같은 설명
  {const s=fresh(),gf=s.players.find(q=>q.role==='godfather'&&q.bot)||s.players.find(q=>q.team==='mafia'&&q.bot);gf.items.knife=1;const r=room(s,()=>null);await A.aiTurn(r,gf.id);
   const w=section(r.prompts[0].p,'창 · [공격하기]'),mates=s.players.filter(q=>q.team==='mafia'&&q.id!==gf.id);
-  ok(mates.length&&mates.every(q=>w.includes('\n- '+q.name)),'같은 편도 공격하기 창의 대상 목록에 있음');ok(/- 맨손 · 피해 1~2 · 소리 안 남/.test(w)&&/- 단검 · 피해 2~5/.test(w),'아이템 목록에 사람 화면과 같은 무기 설명');}
+  ok(mates.length&&mates.every(q=>w.includes('\n- '+q.name)),'같은 편도 공격하기 창의 대상 목록에 있음');ok(/- 맨손 · 피해 1~2 · 소리 안 남/.test(w)&&/- 단검 · 피해 7~8/.test(w),'아이템 목록에 사람 화면과 같은 무기 설명');}
  // 5-2. 공격하기 창에서 아이템과 대상을 고르면 그대로 큰 행동이 잡힘
  {const s=fresh(),m=s.players.find(q=>q.team==='mafia'&&q.bot),v=s.players.find(q=>q.team==='town'&&q.bot);m.items.knife=1;const r=room(s,()=>({누름:[{버튼:'공격하기','고른 것':['맨손',v.name,'달아나지 않고 남는다']}]}));
   await A.aiTurn(r,m.id);const pl=s.plans[m.id];ok(pl?.type==='attack'&&pl.weapon==='fist'&&pl.target===v.id&&!pl.flee,'공격하기 → 맨손 → '+v.name+'(남음)으로 큰 행동이 잡힘');}
