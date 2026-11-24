@@ -1,6 +1,6 @@
 # AI 공통 작업 규칙
-사용자 승인: 2026-11-18(고침). 고칠 때는 사용자 승인을 받는다.
-판: v27. 지난 판(v01~v26)은 `docs/versions/AI_RULES/`에 그대로 있다.
+사용자 승인: 2026-11-24(고침). 고칠 때는 사용자 승인을 받는다.
+판: v28. 지난 판(v01~v27)은 `docs/versions/AI_RULES/`에 그대로 있다.
 
 사용자가 적용 대상으로 지정한 저장소에 같은 내용으로 둔다. 프로젝트 고유의 목표·확정 기준·실행 명령은 `PROJECT.md`에 둔다.
 우선순위: 사용자의 최신 명시 지시 → 이 문서 → `PROJECT.md` → 그 밖의 문서. [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L5)
@@ -49,7 +49,7 @@
 ## 4. 증거와 보고
 - 기계적으로 확인 가능한 규칙은 자동 테스트로 고정한다. 테스트 결과는 판정이 아니라 증거다. [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L31) · [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L29)
 - 증거는 다시 실행할 수 있는 명령과 실제 출력으로 남긴다. 수치는 잰 것만 말한다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L368)
-- 파일 테스트와 실제 앱·화면, 읽고 안 것과 실행해 본 것, 직접 본 것·짐작·남이 전한 것을 구분해 말한다. 확인하지 않은 쪽은 "확인 못 함"으로 쓴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L363)
+- 파일 시험과 실제 앱·화면에서 확인한 결과를 구분한다. 사용자 경험을 보고할 때는 해당 동작에서 사용자와 시험자가 본 정보나 조작 방법이 달랐다면 그 차이를 적는다. 읽고 안 것과 실행해서 본 것, 직접 본 것·짐작·남이 전한 것을 구분해 말한다. 확인하지 않은 쪽은 "확인 못 함"으로 쓴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L363) · [설치본 시험과 플레이 기록](https://github.com/tjdgns3728-cloud/workbench/blob/e7f8d77/archive/cx_black_ridge_conversation_2026-11-23.tar.gz.age)
 - 실험·측정은 예상과 "이렇게 나오면 틀린 것"을 먼저 보인 뒤 한다. 기준·시험은 미리 정한 그대로 쓰고, 답이 안 나오면 "답 못 함"으로 쓴다. [개정 계기](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L48)
 - 보고는 네 칸으로, 짧게 쓴다: `한 일 / 실행한 명령과 실제 결과 / 확인하지 못한 것 / 결정이 필요한 것` [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L35) · [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L388)
 
