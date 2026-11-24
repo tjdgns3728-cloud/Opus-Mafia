@@ -31,3 +31,6 @@ const fresh=()=>{const s=C.create(['가람','나래','다온','라희','마루',
  ok(!C.callHelp(s,d.id),'도움을 청함');ok(s.feed.some(e=>e.to.includes(nb.id)&&e.text===('주택가 '+d.name+'의 집에서 도움을 청하는 신음 소리가 들립니다.')),'주택가 사람: 누구 집인지 들음');
  ok(s.feed.some(e=>e.to.includes(far.id)&&e.text==='주택가 쪽에서 누군가 도움을 청하는 소리가 들립니다.'),'다른 곳 사람: 어느 쪽인지만 들음');ok(!!C.callHelp(s,d.id),'두 번째는 안 됨');
  ok(!/\[도움 청하기/.test(NS.read(C.view(s,d.id)).text),'청한 뒤에는 버튼 없음');}
+// 6. 주택가 안에서 집을 옮기면 "주택가에서 주택가로"를 쓰지 않음(2026-11-25 브라우저 확인에서 찾음)
+{const s=fresh(),me=s.players[1],host=s.players[2];me.location='home';me.houseId=null;host.location='home';host.houseId=host.id;C.chooseMove(s,me.id,{type:'move',place:'home',house:host.id});const n0=s.feed.length;C.applyMoves(s,rng);const mine=s.feed.slice(n0).filter(e=>e.to.includes(me.id)).map(e=>e.text).join(' / ');ok(!/주택가에서 주택가로/.test(mine)&&/다온의 집에 들어갔습니다/.test(mine),'집에서 집으로: '+mine.slice(0,80));
+ s.epoch++;/* 다음 때 */s.stage='move';s.moveDone=null;C.chooseMove(s,me.id,{type:'move',place:'home',house:me.id});const n1=s.feed.length;C.applyMoves(s,rng);const back=s.feed.slice(n1).filter(e=>e.to.includes(me.id)).map(e=>e.text).join(' / ');ok(/내 집으로 돌아왔습니다/.test(back)&&!/주택가에서 주택가로/.test(back),'남의 집에서 내 집으로: '+back.slice(0,60));}
