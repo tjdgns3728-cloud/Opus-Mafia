@@ -52,7 +52,7 @@ const room=(s,answer)=>{const prompts=[],records=[];return {state:s,random:rng,p
   const voter=s.players.find(q=>q.bot&&q.id!==f.id&&q.id!==gf.id);const before=JSON.stringify(c.responses||{});await A.aiConsent(r,c,voter,true);
   ok(!(c.responses&&voter.id in c.responses&&!JSON.parse(before)[voter.id]),'동의: 답이 없으면 응답하지 않음(전에는 규칙의 판단으로 채움)');
   C.beginTrial(s,c);A.vote(r);await new Promise(z=>setTimeout(z,20));
-  ok(Object.keys(s.trial.votes).length===0,'표: 답이 없으면 아무 표도 없음(전에는 규칙으로 먼저 채움)');}
+  ok(Object.keys(s.trial.votes).length===0,'표: 답이 없으면 아무 표도 없음(전에는 규칙으로 먼저 채움)');/* 2026-11-25 자율 순환: 재판 동의·표 물음 대기 시간 */{const tc=r.prompts.find(x=>x.purpose==='재판 동의')?.timeout,tv=r.prompts.find(x=>x.purpose==='재판 표')?.timeout;ok(tc>=55&&tv>18,'재판 동의·표 물음은 단계에 남은 시간까지 기다림(동의 '+tc+'초, 표 '+tv+'초, 예전 18초)');}}
  // 7. 지시문에 전략을 일러 주는 문장이 없음
  {const s=fresh(),p=s.players.find(q=>q.bot);const r=room(s,()=>null);await A.aiTurn(r,p.id);
   const all=r.prompts.map(x=>x.p).join('\n');
