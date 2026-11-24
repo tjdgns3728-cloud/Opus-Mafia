@@ -6,7 +6,7 @@ const tmp=path.join(os.tmpdir(),'noir_all_ai_test_'+process.pid+'.jsonl');proces
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow','09Minds'])require(path.join(dir,f+'.js'));
 globalThis.WebEngine={room(){},Component:class{},define(){}};
 for(const f of ['03Visuals','20Interface'])new Function('WebEngine',fs.readFileSync(path.join(dir,f+'.js'),'utf8'))(globalThis.WebEngine);
-const src=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');eval(src.replace(/\}\)\(\);\s*$/,'globalThis.__a={aiTurn,aiReact,aiMove,aiConsent,aiVotes,vote,botTalk,fileOptions,readAnswer};})();'));
+const src=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');eval(src.replace(/\}\)\(\);\s*$/,'globalThis.__a={aiTurn,aiReact,aiMove,aiConsent,aiVotes,vote,botTalk,fileOptions,readAnswer,writeReviews};})();'));
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,A=globalThis.__a;
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 let x=11;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};
@@ -62,5 +62,10 @@ const room=(s,answer)=>{const prompts=[],records=[];return {state:s,random:rng,p
   ok(R(F+'json\n{"small":2,"big":11,"speech":""}\n'+F+'\n\n**선택 이유**\n- 지난 판에서 {얼굴}을 드러냈다').big===11,'JSON 블록 뒤에 설명이 붙은 답');
   ok(R('{"small":0,"big":4,"speech":"그가 } 라고 했다"} 이렇게 정했습니다.').big===4,'JSON 뒤에 설명이 붙은 답(글 속 괄호는 무시)');
   ok(th('얼굴을 가리고 종지기를 끌어들이기로 정했습니다.'),'JSON이 없는 글만의 답은 읽지 않음(답 없음)');}
+ // 9. 판이 끝나면 AI 자리마다(이긴 편·진 편) 끝난 화면을 보고 플레이 소감을 남김(2026-11-24 사용자 "ai의 게임 평가를 기록해주세요 인간의 평가처럼 기록해야 합니다.")
+ {const s=fresh();s.result={team:'town',text:'시험'};const r=room(s,(purpose)=>purpose==='플레이 평가'?{'재미있던 것':'재판','답답했던 것':'밤','헷갈린 것':'버튼','하고 싶었지만 못 한 것':'없음','바꾸면 좋겠는 것':'없음','다시 하고 싶은 정도':4}:null);
+  A.writeReviews(r);await new Promise(z=>setTimeout(z,20));const rv=r.records.filter(x=>x.event==='review').map(x=>x.review);const bots=s.players.filter(p=>p.bot);
+  ok(rv.length===bots.length&&rv.every(x=>x.fun==='재판'&&x.again===4&&typeof x.won==='boolean'),'판이 끝나면 AI 자리마다 소감을 남김(이긴 편·진 편 모두, '+rv.length+'자리)');
+  ok(r.prompts.filter(x=>x.purpose==='플레이 평가').every(x=>x.p.includes('\n화면:\n')&&x.p.includes('이야기의 끝')),'소감 물음에는 끝난 화면 글이 있음');}
  try{fs.unlinkSync(tmp);}catch{}
 })();
