@@ -36,7 +36,7 @@ function publish(s,p,a){if(p.hp<=0)return;const c=C(),err=validate(s,p,a);if(err
 }
 function choices(s,p){if(p.role!=='reporter'||!p.items.camera)return [];
  const list=s.players.filter(t=>t.id!==p.id&&t.location===p.location&&C().visible(s,p,t)).map(t=>({type:'photograph',target:t.id,label:t.name+'의 모습 촬영'}));
- for(const photo of (p.photos||[]).filter(x=>!x.published))list.push({type:'publish',photo:photo.id,headline:'현장 사진 · '+photo.time,article:'촬영 당시의 모습을 공개합니다.',label:'사진으로 신문 만들기'});
+ for(const photo of (p.photos||[]).filter(x=>!x.published))list.push({type:'publish',photo:photo.id,headline:'현장 사진 · '+photo.time,article:'촬영 당시의 모습을 공개합니다.',label:'사진('+photo.time+' · '+(C().places[photo.place]?.short||C().places[photo.place]?.name||'')+')으로 신문 만들기'});/* 2026-11-25 자율 순환: 사진마다 버튼 이름이 같아 어느 사진인지 몰랐음 */
  return list;
 }
 root.NoirPress={validate,capture,publish,choices};if(typeof module!=='undefined')module.exports=root.NoirPress;
