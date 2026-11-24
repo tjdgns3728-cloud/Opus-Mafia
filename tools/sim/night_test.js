@@ -48,7 +48,7 @@ s.turn=2;s.epoch++;ok(!!C.validate(s,another.id,{type:'move',place:'tavern'},'sm
 s=fresh();s.stage='plan';const doc=s.players.find(p=>p.role==='doctor'),nd=s.players.find(p=>p.role!=='doctor'&&p.team==='town'),hurt=s.players.find(p=>p!==nd&&p!==doc);hurt.hp=5;hurt.bleeding=true;nd.items.medicine=1;nd.items.bandage=0;nd.location=hurt.location='hall';
 ok(!!C.validate(s,nd.id,{type:'heal',target:hurt.id},'big'),'의사가 아니면 진료소 밖에서 치료 불가');
 ok(!!C.validate(s,nd.id,{type:'bandage',target:hurt.id},'small'),'진료소 밖에서는 붕대 없이 지혈 불가');
-nd.location=hurt.location='clinic';ok(!C.validate(s,nd.id,{type:'heal',target:hurt.id},'big'),'진료소에서는 치료 가능');
+nd.location=hurt.location='clinic';ok(!!C.validate(s,nd.id,{type:'heal',target:hurt.id},'big'),'의사가 아니면 진료소에서도 치료 불가(2026-11-24 의사만 치료)');
 ok(!C.validate(s,nd.id,{type:'bandage',target:hurt.id},'small'),'진료소에서는 붕대 없이 지혈 가능');
 if(doc){doc.location='hall';hurt.location='hall';ok(!C.validate(s,doc.id,{type:'heal',target:hurt.id},'big'),'의사는 진료소 밖에서도 치료 가능');}
 // 피곤함 확인

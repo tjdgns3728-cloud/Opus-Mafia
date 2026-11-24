@@ -11,9 +11,12 @@ const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,A=globalThis.__a;
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 let x=11;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};
 const fresh=()=>{const s=C.create(['사람','도현','서아','시온','하준','나린','이안','수현'].map((n,i)=>({id:'p'+i,name:n,bot:i>0})),rng);S.start(s);s.day=2;s.turn=0;s.stage='plan';s.scenario.discovered=true;for(const p of s.players){p.location='tavern';p.hidden=false;p.used={big:false,small:false};}return s;};
-const room=(s,answer)=>{const prompts=[],records=[];return {state:s,random:rng,prompts,records,engine:{time:100},ai:{mode:'on',async ask(p,info){prompts.push({p,purpose:info?.purpose});const a=answer(info?.purpose,p,prompts.length);return a==null?{ok:false}:{ok:true,text:JSON.stringify(a)};}},record(x){records.push(x);return true;},refresh(){},closePhase(){this.closed=true;},phase(){},after(){},seat(){return {on:true};}};};
+const room=(s,answer)=>{const prompts=[],records=[];return {state:s,random:rng,prompts,records,engine:{time:100},ai:{mode:'on',async ask(p,info){prompts.push({p,purpose:info?.purpose,timeout:info?.timeout});const a=answer(info?.purpose,p,prompts.length);return a==null?{ok:false}:{ok:true,text:JSON.stringify(a)};}},record(x){records.push(x);return true;},refresh(){},closePhase(){this.closed=true;},phase(){},after(){},seat(){return {on:true};}};};
+/* 2026-11-24 행동 물음 답 시간: 계획 단계에 남은 시간까지 */const planTimeTest=async()=>{const s=fresh(),p=s.players.find(q=>q.bot);const r=room(s,()=>null);s.opened=100;await A.aiTurn(r,p.id);const t1=r.prompts.find(x=>x.purpose==='참가자 행동')?.timeout;
+ const s2=fresh(),p2=s2.players.find(q=>q.bot);const r2=room(s2,()=>null);r2.engine.time=120;r2.engine.timeScale=2;s2.opened=100;await A.aiTurn(r2,p2.id);const t2=r2.prompts.find(x=>x.purpose==='참가자 행동')?.timeout;
+ ok(t1===59&&t2===19,'행동 물음 답 시간은 계획 단계에 남은 시간 - 1초(보통 빠르기 막 열림 '+t1+'초, 2배속 20초 지남 '+t2+'초)');};
 /* 물음 속 화면 글에서 한 칸(■ 제목)을 꺼낸다 */const section=(p,title)=>{const i=p.indexOf('■ '+title);if(i<0)return '';const j=p.indexOf('\n\n■ ',i+1);return p.slice(i,j<0?undefined:j);};
-(async()=>{
+(async()=>{await planTimeTest();
  // 1. 한 번의 답으로 작은 행동(얼굴 가리기)과 큰 행동을 함께: 화면의 두 버튼을 차례로 누름
  {const s=fresh(),p=s.players.find(q=>q.bot&&q.team==='town');const r=room(s,()=>({누름:[{버튼:'감추기','고른 것':['얼굴 가리기']}],말:''}));
   await A.aiTurn(r,p.id);ok(p.faceCover===true,'작은 행동(감추기 → 얼굴 가리기)을 AI가 누름');ok(s.plans[p.id]?.type==='wait'&&r.prompts.length===1,'큰 행동을 누르지 않으면 기다리기, 물음 한 번');

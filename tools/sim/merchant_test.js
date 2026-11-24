@@ -54,10 +54,10 @@ const town=s=>s.players.filter(p=>p.team==='town'),mafia=s=>s.players.filter(p=>
  const s=game(),[t]=town(s),m=M.state(s);m.credit[t.id]=3;t.money=9;for(const k of Object.keys(m.stock))m.stock[k]=1;ok(acts(s,t).filter(a=>a.verb==='buyItem').length===10,'신용 3이면 열 가지 모두 살 수 있음');s.turn=2;ok(!acts(s,t).some(a=>a.verb==='buyItem'),'밤에는 팔지 않음');}
 
 // 11. 군용 모르핀: 쓰러진 사람을 살릴 때 쓰면 성공 확률 +30%, 쓰면 없어진다
-{const s=game(67),[r,d]=town(s);r.location=d.location='hall';d.hp=0;d.downed={left:2,epoch:s.epoch,cause:'test'};r.role='lawyer';r.stats.medical=3;
+{const s=game(67),[r,d]=town(s);r.location=d.location='hall';d.hp=0;d.downed={left:2,epoch:s.epoch,cause:'test'};r.role='doctor';/* 2026-11-24 살리기는 의사만 */
  const base=C.choices(s,r.id,'big').find(a=>a.type==='revive'&&!a.morphine);ok(!!base&&!C.choices(s,r.id,'big').some(a=>a.morphine),'모르핀이 없으면 보통 살리기만');
- r.items.morphine=1;const mo=C.choices(s,r.id,'big').find(a=>a.type==='revive'&&a.morphine);ok(!!mo&&/군용 모르핀 · 성공 50%/.test(mo.label),'모르핀이 있으면 "살리기 · 군용 모르핀" (치료 3: 20% → 50%) ('+(mo&&mo.label)+')');
- s.stage='plan';s.plans={[r.id]:{type:'revive',target:d.id,morphine:true}};C.resolveBig(s,()=>0.45);ok(!d.downed&&d.hp===1&&r.items.morphine===0,'주사위 46으로 50% 안에 들어 살아나고, 모르핀은 없어짐');
+ r.items.morphine=1;const mo=C.choices(s,r.id,'big').find(a=>a.type==='revive'&&a.morphine);ok(!!mo&&/군용 모르핀 · 성공 100%/.test(mo.label),'모르핀이 있으면 "살리기 · 군용 모르핀" (의사 90% → 100%) ('+(mo&&mo.label)+')');
+ s.stage='plan';s.plans={[r.id]:{type:'revive',target:d.id,morphine:true}};C.resolveBig(s,()=>0.45);ok(!d.downed&&d.hp===1&&r.items.morphine===0,'주사위 46으로 100% 안에 들어 살아나고, 모르핀은 없어짐');
  const r2=s.players.find(p=>p!==r&&p!==d&&p.team==='town');ok(C.validate(s,r2.id,{type:'revive',target:d.id,morphine:true},'big')!==null,'모르핀 없이 모르핀 살리기는 받지 않음');}
 // 12. 자물쇠 따개: 낮에 주인이 없는 남의 집. 못 하면 집에 있던 이웃이 보고 자물쇠에 자국이 남는다
 {const s=game(71),[p,t,w,h]=town(s);p.location='home';t.location='hall';w.location='home';h.location='home';p.items.lockpick=1;

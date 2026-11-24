@@ -5,7 +5,7 @@ const C=globalThis.NoirTRPG;let seed=7;const rng=()=>{seed=(seed*16807)%21474836
 const seats=Array.from({length:6},(_,i)=>({id:'p'+i,name:['가람','나래','다온','라희','마루','바다'][i],bot:true}));
 const s=C.create(seats,rng);globalThis.NoirScenarios?.start?.(s);
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
-const town=s.players.filter(p=>p.team==='town'),T=town[0],H=town[1],doc=s.players.find(p=>p.role==='doctor');
+/* 2026-11-24 사용자 "의사만 치료할 수 있게 하고 사람을 살릴 수 있게 해주세요": 살리는 사람 H를 의사로 둔다 */const town=s.players.filter(p=>p.team==='town'),T=town[0],H=town[1];for(const p of s.players)if(p.role==='doctor'&&p!==H)p.role=T===p?'detective':'reporter';H.role='doctor';const doc=H;
 for(const p of s.players)p.location='hall';
 // 1) 공격으로 처음 쓰러짐 → 바로 죽지 않음
 T.hp=0;C.death(s,T,'공격');
@@ -20,9 +20,9 @@ ok(opts.length===1&&opts[0].target===T.id,'같은 곳의 사람에게 살리기 
 ok(C.choices(s,H.id,'small').every(a=>a.type!=='revive'),'살리기는 작은 행동 목록에 없음');
 const chanceOf=p=>{const o=C.choices(s,p.id,'big').find(a=>a.type==='revive');return o?Number(o.label.match(/(\d+)%/)[1]):null;};
 if(doc&&doc.id!==T.id)ok(chanceOf(doc)===90,'의사 확률 90% → '+chanceOf(doc)+'%');
-for(const p of s.players.filter(p=>p.id!==T.id&&p.role!=='doctor'))console.log('   '+C.roles[p.role].name+' 치료 '+p.stats.medical+' → '+chanceOf(p)+'%');
+ok(s.players.filter(p=>p.id!==T.id&&p.role!=='doctor').every(p=>chanceOf(p)===null),'의사가 아니면 살리기 선택지가 없음');ok(!!C.validate(s,s.players.find(p=>p.id!==T.id&&p.role!=='doctor').id,{type:'revive',target:T.id},'big'),'의사가 아니면 살리기를 받지 않음');
 // 다른 곳에 있으면 선택지가 없음
-const far=s.players.find(p=>p.id!==T.id&&p.id!==H.id);far.location='tavern';ok(!C.choices(s,far.id,'big').some(a=>a.type==='revive'),'다른 장소에서는 살리기 불가');far.location='hall';
+H.location='tavern';ok(!C.choices(s,H.id,'big').some(a=>a.type==='revive'),'의사도 다른 장소에서는 살리기 불가');H.location='hall';
 // 3) 살리기 성공(확률 100%로 맞춰 시험): 의사 역할로 바꿔 90%… 대신 주사위를 고정
 const realRng=rng;let fixed=()=>0.0;s.plans={[H.id]:{type:'revive',target:T.id}};C.resolveBig(s,()=>0.0);
 ok(T.hp===1&&!T.downed,'살리기 성공 → 체력 1로 일어남');
