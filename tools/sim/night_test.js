@@ -49,7 +49,7 @@ s=fresh();s.stage='plan';const doc=s.players.find(p=>p.role==='doctor'),nd=s.pla
 ok(!!C.validate(s,nd.id,{type:'heal',target:hurt.id},'big'),'의사가 아니면 진료소 밖에서 치료 불가');
 ok(!!C.validate(s,nd.id,{type:'bandage',target:hurt.id},'small'),'진료소 밖에서는 붕대 없이 지혈 불가');
 nd.location=hurt.location='clinic';ok(!!C.validate(s,nd.id,{type:'heal',target:hurt.id},'big'),'의사가 아니면 진료소에서도 치료 불가(2026-11-24 의사만 치료)');
-ok(!C.validate(s,nd.id,{type:'bandage',target:hurt.id},'small'),'진료소에서는 붕대 없이 지혈 가능');
+ok(!!C.validate(s,nd.id,{type:'bandage',target:hurt.id},'small'),'진료소에서도 붕대 없이는 지혈 불가(2026-11-24 붕대를 씀)');
 if(doc){doc.location='hall';hurt.location='hall';ok(!C.validate(s,doc.id,{type:'heal',target:hurt.id},'big'),'의사는 진료소 밖에서도 치료 가능');}
 // 피곤함 확인
 s=fresh();toNight(s);{const w=s.players.find(p=>p.team==='town'),z=s.players.filter(p=>p.team==='town')[1];w.hp=10;z.hp=7;s.plans={[w.id]:{type:'watch'},[z.id]:{type:'shelter'}};C.resolveBig(s,rng);

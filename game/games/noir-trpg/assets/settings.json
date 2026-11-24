@@ -11,8 +11,8 @@
   "heal": 3,
   "criticalHP": 2,
   "bleedLoss": 1,
-  "townMoney": 1,
-  "mafiaMoney": 3,
+  "townMoney": 3,
+  "mafiaMoney": 5,
   "bandagePrice": 1,
   "gatheringSeconds": 60,
   "repickSeconds": 20
