@@ -10,3 +10,7 @@ const run=(s,plans)=>{s.plans=plans;for(const p of s.players)if(!s.plans[p.id])s
  ok(/이번 때 나래를 노린 공격은 없었습니다\./.test(out),'공격이 없으면 "이번 때 ○○를 노린 공격은 없었습니다" · '+out.slice(0,90));}
 {const s=fresh(),G=s.players[0],T=s.players[1],A=s.players.find(p=>p.role==='mafioso')||s.players[2];if(A.id===G.id||A.id===T.id)throw new Error('자리');const out=run(s,{[G.id]:{type:'guardPlayer',target:T.id},[A.id]:{type:'attack',target:T.id,weapon:'fist'}}).filter(e=>e.to.includes(G.id)).map(e=>e.text).join(' / ');
  ok(!/노린 공격은 없었습니다/.test(out),'공격이 있었으면 "없었습니다"를 쓰지 않음 · '+(out.match(/[^/]*없었습니다[^/]*/)||['(없음)'])[0]);}
+// 밤 남의 집 지키기: 습격이 없었으면 "밤새 ○○의 집 앞을 지켰지만 아무도 오지 않았습니다"(2026-11-25 기록 분석: 49번 중 습격과 마주친 것 1)
+{const s=fresh();s.turn=2;const town=s.players.filter(p=>p.team==='town'),[G,T]=town;for(const p of s.players){p.location=p.team==='mafia'?'hideout':'home';p.houseId=p.team==='mafia'?null:p.id;}
+ const plans={[G.id]:{type:'guardHouse',target:T.id}};for(const p of s.players)if(!plans[p.id])plans[p.id]=p.team==='mafia'?{type:'wait'}:{type:'sleep'};const out=run(s,plans).filter(e=>e.to.includes(G.id)).map(e=>e.text).join(' / ');
+ ok(new RegExp('밤새 '+T.name+'의 집 앞을 지켰지만 아무도 오지 않았습니다').test(out),'밤 남의 집 지키기: 습격이 없으면 알림 · '+(out.match(/[^/]*아무도 오지[^/]*/)||[out.slice(0,80)])[0]);}
