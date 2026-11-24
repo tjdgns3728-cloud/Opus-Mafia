@@ -106,7 +106,7 @@ const aiOn=r=>r.ai?.mode==='on';
 /* 2026-11-24 사용자: "ai도 당연히 인간이 보는 화면으로 똑같이 보면서 게임해야죠 안그럼 게임을 제대로 하는지도 알 수도 없잖아요." → 고른 방식 "화면 글".
    AI 자리도 사람 화면을 같은 코드(20Interface.js NoirScreen)로 그린 글을 보고, 화면의 버튼을 눌러 답한다. 누름은 사람 화면이 보내는 요청과 같은 act로 처리한다.
    예전의 view(JSON)와 선택지 목록(small_options·big_options 등)은 주지 않는다 */
-const PRESS_FORM='화면은 사람 참가자가 보는 화면을 글로 옮긴 것이다. 사람이 눌러서 열어 보는 탭과 창도 모두 펼쳐 두었다. [ ]는 누를 수 있는 버튼이다. "누름"에는 누를 버튼을 누를 차례대로 적는다. "버튼"에는 [ ] 안의 이름을 그대로 쓰고, 그 버튼이 여는 창이 있으면 "고른 것"에 창의 목록마다 고를 항목 이름을(근거는 "근거 1"처럼), 입력 칸이 있으면 "적은 글"에 쓸 글을 적는다. 고르지 않은 목록은 사람 화면처럼 맨 위 항목으로 낸다. 누르지 않을 버튼은 적지 않는다.';
+const PRESS_FORM='화면은 사람 참가자가 보는 화면을 글로 옮긴 것이다. 사람이 눌러서 열어 보는 탭과 창도 모두 펼쳐 두었다. [ ]는 누를 수 있는 버튼이다. "누름"에는 누를 버튼을 누를 차례대로 적는다. "버튼"에는 [ ] 안의 이름을 그대로 쓰고, 그 버튼이 여는 창이 있으면 "고른 것"에 창의 목록마다 고를 항목 이름을(근거는 수첩과 같은 번호로 "기록 1"처럼), 입력 칸이 있으면 "적은 글"에 쓸 글을 적는다. 고르지 않은 목록은 사람 화면처럼 맨 위 항목으로 낸다. 누르지 않을 버튼은 적지 않는다.';
 function screenFor(s,id){const v=C.view(s,id);return {v,scr:globalThis.NoirScreen?globalThis.NoirScreen.read(v):{text:'',buttons:[]}};}
 /* 화면에 없는 버튼·누를 수 없는 버튼·맞지 않는 고름은 사람 화면에서처럼 아무 일도 일어나지 않는다. 판 기록(ai-press)에 남긴다 */
 function aiPressFail(r,p,purpose,x,why){const s=r.state;s.ai.pressFail=(s.ai.pressFail||0)+1;if(typeof r.record==='function')r.record({event:'ai-press',day:s.day,turn:s.turn,stage:s.stage,id:p.id,name:p.name,purpose,press:x,error:String(why||'').slice(0,200)});}
