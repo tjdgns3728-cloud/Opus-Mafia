@@ -24,7 +24,7 @@ function capture(s,p,a){const c=C(),t=c.find(s,a.target);
  c.learn(s,p.id,facts,t.id,'본인이 촬영한 사진','evidence',photo.id);
  c.narrate(s,p.id,`당신은 ${t.name} 쪽으로 사진기를 들어 셔터를 누른다. 그 자리에 보이던 인물과 주변 풍경이 필름에 남는다. 누구에게 보여줄지는 아직 정하지 않았다.`,{photo:photo.id});
  const witnesses=s.players.filter(o=>o.hp>0&&o.id!==p.id&&o.location===p.location&&c.visible(s,o,p));
- for(const o of witnesses)c.emit(s,[o.id],'story',`${p.name}이 사진기를 들어 ${c.visible(s,o,t)?t.name+' 쪽으로':'눈앞의 풍경을 향해'} 셔터를 누른다.`,{localEvent:true});
+ for(const o of witnesses)c.emit(s,[o.id],'story',`${C().pp(p.name,'이','가')} 사진기를 들어 ${c.visible(s,o,t)?t.name+' 쪽으로':'눈앞의 풍경을 향해'} 셔터를 누른다.`,{localEvent:true});
 }
 function publish(s,p,a){if(p.hp<=0)return;const c=C(),err=validate(s,p,a);if(err){c.narrate(s,p.id,err);return;}
  const photo=p.photos.find(x=>x.id===a.photo),paper={id:'paper'+(++s.serial),number:(s.newspapers||[]).length+1,by:p.id,byName:'이름 없는 발행인',time:c.label(s),headline:String(a.headline).trim(),article:String(a.article).trim(),photo:{...copy(photo),byName:'이름 없는 사진사'}};
