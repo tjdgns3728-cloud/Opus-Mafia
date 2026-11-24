@@ -44,11 +44,11 @@ const town=s=>s.players.filter(p=>p.team==='town'),mafia=s=>s.players.filter(p=>
 // 8. 광산을 다시 열게 한 사람(여기서는 마지막 폭약을 회관에 맡긴 시민)
 {const s=game(59),[t]=town(s),q=s.scenario;q.mineClosed=true;q.secured=false;q.bombs.forEach((b,i)=>b.where=i?'carry:'+t.id:'secured');t.items.dynamite=1;t.location='hall';
  const sec=S.choices(s,t,'big').find(a=>a.sceneKey==='secure');S.resolve(s,t,sec,hi);ok(q.secured&&M.credit(s,t)===1,'마지막 폭약을 회관에 맡겨 광산을 다시 열게 하면 상인 신용이 오름');}
-// 9. 방탄복: 맞을 때 피해 −2, 권총 최소 피해 5는 3
+// 9. 방탄복: 맞을 때 피해 −2(2026-11-25: 권총 9~10은 7~8)
 {const s=game(61),[a,t]=s.players;a.location=t.location='hall';const seq=v=>{let i=0;return ()=>v[i++%v.length];};
  const plain=C.attackRoll(s,a,t,{weapon:'knife'},seq([0.99,0.01,0.9])),vt={...t,items:{...t.items,vest:1}},armored=C.attackRoll(s,a,vt,{weapon:'knife'},seq([0.99,0.01,0.9]));
  ok(plain.damage>2&&armored.damage===plain.damage-2&&armored.armor===2,'방탄복은 단검 피해를 2 줄임 ('+plain.damage+' → '+armored.damage+')');
- a.stats.fight=vt.stats.agility+1;let min=null;for(let k=0;k<10&&min===null;k++){const r=C.attackRoll(s,a,vt,{weapon:'pistol'},()=>0.05+k/10);if(r.damage>0&&r.raw+r.bonus-r.reduction<=5)min=r.damage;}ok(min===3,'약하게 맞아 권총 최소 피해 5가 적용될 때 방탄복을 입었으면 3');}
+ /* 2026-11-25 사용자: 권총 피해 9~10 → 방탄복이면 7~8 */const got=new Set();for(let k=0;k<40;k++){const r=C.attackRoll(s,a,vt,{weapon:'pistol'},()=>((k*37)%100)/100+0.001);if(r.damage>0)got.add(r.damage);}ok(got.size>0&&[...got].every(d=>d===7||d===8),'방탄복을 입었으면 권총 피해 9~10이 7~8 ('+[...got].join(',')+')');}
 // 10. 재고와 부탁은 판마다 다르고, 밤에는 팔지 않는다
 {const jobs=new Set(),stocks=new Set();for(let i=1;i<=40;i++){const s=game(i*97),m=M.state(s);jobs.add(m.job);stocks.add(JSON.stringify(m.stock));}ok(jobs.size>=2&&stocks.size>=5,'판마다 부탁('+[...jobs].join(',')+')과 재고('+stocks.size+'가지)가 다름');
  const s=game(),[t]=town(s),m=M.state(s);m.credit[t.id]=3;t.money=9;for(const k of Object.keys(m.stock))m.stock[k]=1;ok(acts(s,t).filter(a=>a.verb==='buyItem').length===10,'신용 3이면 열 가지 모두 살 수 있음');s.turn=2;ok(!acts(s,t).some(a=>a.verb==='buyItem'),'밤에는 팔지 않음');}
