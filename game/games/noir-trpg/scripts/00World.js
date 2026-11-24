@@ -302,6 +302,7 @@ function resolveBig(s,rng){/* 2026-11-24 다시 설계 1단계(사용자 "1단�
  trackAll(s,acts,rng);checkDisguises(s);if(s.turn===2)nightAfter(s,acts,raidsTried,rng);
  for(const id of active){const p=find(s,id);if(p.hp===0)death(s,p,'공격');}
  root.NoirStory?.afterActions(s,acts,attacks);
+ /* 2026-11-25 기록 분석(run25~29): 곁에서 지키기 54번 중 막은 것 0 — 공격이 없으면 지킨 사람에게 결과가 없었다. 공격 처리가 끝난 뒤 알린다 */for(const [gid,ga] of acts){if(ga?.type!=='guardPlayer')continue;const gp=find(s,gid),g=find(s,ga.target);if(!gp||gp.hp<=0||!g||!sameSpace(s,gp,g))continue;if(acts.some(([,xa])=>xa?.type==='attack'&&xa.target===g.id)/* 막아서 대신 맞선 공격도 노린 공격 */||attacks.some(x=>x.t?.id===g.id)||s.events.some(e=>e.type==='attack'&&e.target===g.id&&e.day===s.day&&e.turn===s.turn))continue;narrate(s,gid,'이번 때 '+pp(g.name,'을','를')+' 노린 공격은 없었습니다.');}
  for(const p of s.players)delete p.alley;
  s.plans={};return finish(s);
 }
