@@ -7,7 +7,7 @@ const seats=Array.from({length:6},(_,i)=>({id:'p'+i,name:['가람','나래','다
 const s=C.create(seats,rng);S.start(s);S.afterGathering?.(s);const st=s.scenario.continuation,where=[];
 const step=()=>{s.plans={};C.nextTurn(s);S.nextChapter(s);where.push(`${s.day}일 ${['낮1','낮2','밤'][s.turn]}: 도일 ${C.places[st.npcs.doyle.location].short} · 광부 ${C.places[st.npcs.miner.location].short} · 해먼드 ${C.places[st.npcs.mayor.location].short}`);};
 for(let i=0;i<8;i++)step();console.log('   '+where.join('\n   '));
-ok(where.some(w=>w.startsWith('2일 낮2: 도일 갱도')),'둘째 날 낮2 도일은 갱도(주택가 아님)');
+/* 2026-11-25 낮이 한 번: 낮 2가 없어 도일은 날마다 낮의 자리에 있음 */ok(where.filter(w=>/ 낮1: /.test(w)).every(w=>!/도일 주거지/.test(w))&&where.some(w=>/ 낮1: 도일 (회관|갱도|술집)/.test(w)),'낮에는 도일이 집(주거지)에 있지 않음');
 ok(where.some(w=>/2일 낮1: .*광부 술집/.test(w)),'갱도가 닫히면 젊은 광부는 술집');
 // 장소 글에 지금 있는 NPC 표시
 const p=s.players.find(p=>p.team==='town');s.turn=0;s.day=3;s.epoch++;S.nextChapter(s);p.location=st.npcs.miner.location;const before=s.feed.length;S.arrival(s,p);const txt=s.feed.slice(before).map(e=>e.text).join(' ');

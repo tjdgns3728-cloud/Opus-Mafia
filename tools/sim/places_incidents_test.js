@@ -25,8 +25,8 @@ const open=(s,id)=>{const def=globalThis.BlackRidgeIncidents.find(e=>e.id===id);
 // 4. 사무소 발자국은 실제로 마피아 한 명의 장화 크기와 같다(시작 때 정해 둔 사람)
 {let fine=true;for(let i=1;i<=20;i++){const s=game(i*17),p=s.players[0],f=D.text(s,p,'{breakInFact}'),m=s.players.filter(o=>o.team==='mafia');const word={big:'크고 깊다',mid:'보통 크기다',small:'작고 얕다'};if(!m.some(o=>f.includes(word[o.boots])))fine=false;}ok(fine,'사무소 창틀 발자국은 마피아 가운데 한 명의 장화 크기');}
 // 5. 떠돌이: 2일째 낮 2에 선로 옆에서 열리고, 아무도 손대지 않으면 다음 때에 떠난다
-{const s=find(s=>open(s,'vagrant')),[t,u]=town(s);t.location=u.location='rail';at(s,2,0);ok(!opts(s,t,'small').some(o=>o.incident==='vagrant'),'2일째 낮 1에는 아직 없음');
- at(s,2,1);const ask=opts(s,t,'small').find(o=>o.incident==='vagrant'&&o.branch==='ask');ok(!!ask,'2일째 낮 2에 선로 옆에서 떠돌이에게 물을 수 있음');
+{const s=find(s=>open(s,'vagrant')),[t,u]=town(s);t.location=u.location='rail';at(s,1,0);ok(!opts(s,t,'small').some(o=>o.incident==='vagrant'),'1일째 낮에는 아직 없음(2026-11-25 낮이 한 번: 예전 "2일째 낮 1에는 아직 없음")');
+ at(s,2,0);const ask=opts(s,t,'small').find(o=>o.incident==='vagrant'&&o.branch==='ask');ok(!!ask,'2일째 낮에 선로 옆에서 떠돌이에게 물을 수 있음');
  D.resolveIncident(s,t,ask,hi);ok(/떠돌이가 말합니다/.test(fed(s,u))&&u.known.some(k=>/떠돌이의 말/.test(k.text)),'물어본 말은 곁의 사람도 듣고 수첩에 남음');
  at(s,3,0);D.aftermath(s);ok(/떠돌이가 담요를 말아 쥐고/.test(fed(s,t))&&!opts(s,t,'small').some(o=>o.incident==='vagrant'),'아무도 내보내지 않아도 다음 때에 떠돌이는 떠남');}
 // 6. 금 광석 자루: 챙기면 가진 물건이 되고 상인과의 거래가 끊긴다

@@ -67,7 +67,7 @@ function guard(s,def){const x=q(s),z=d(s),f=z.flags;switch(def.guard){
  case 'satchelHere':return proll(s,'satchel')<0.7;
  default:return true;
 }}
-function refreshIncidents(s){const z=d(s);for(const def of defs()){const st=z.incidents[def.id];if(st?.done||st?.open)continue;if(s.turn===2||(def.final?s.day<(s.cfg?.days||7):s.day<def.day)||s.day===def.day&&s.turn<def.turn||!guard(s,def))continue;z.incidents[def.id]={...st,open:true,opened:s.epoch,seen:st?.seen||[],unlocked:st?.unlocked||false};}}
+function refreshIncidents(s){const z=d(s);for(const def of defs()){const st=z.incidents[def.id];if(st?.done||st?.open)continue;if(s.turn===2||(def.final?s.day<(s.cfg?.days||7):s.day<def.day)||/* 2026-11-25 사용자 "낮을 한 번으로": 낮 2에 열리던 곁사건도 그날 낮에 열림 */!guard(s,def))continue;z.incidents[def.id]={...st,open:true,opened:s.epoch,seen:st?.seen||[],unlocked:st?.unlocked||false};}}
 function active(s,p){if(s.turn===2)return [];return defs().filter(a=>{const st=d(s).incidents[a.id];if(a.id==='keyAtMine'&&(!aliveNpc(q(s).mayor)||q(s).mayor.location!=='warehouse'))return false;if(a.id==='doyleConfides'&&(!aliveNpc(q(s).doyle)||q(s).doyle.location!=='warehouse'))return false;return st?.open&&!st.done&&a.place===p.location&&guard(s,a);});}
 function unlock(s,id){if(!id)return;const st=d(s).incidents[id]??={seen:[]};st.unlocked=true;refreshIncidents(s);}
 function named(s,id){return C().find(s,id)?.name||npc(s,id)?.name||'그 사람';}

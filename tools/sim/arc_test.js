@@ -29,7 +29,7 @@ for(const role of ['detective','godfather']){const pa=A.players.find(p=>p.role==
 // 4. 고개: 발단 → 전개 → 고비(도일 굴복)
 {const s=advance(game(13),{day:1,turn:0});ok(ST.arcPhase(s)==='start','첫날 낮 1은 발단');advance(s,{day:2,turn:0});ok(ST.arcPhase(s)==='develop','폭약이 사라진 것이 알려지면 전개');s.scenario.doyle.cowed=true;advance(s,{day:3,turn:0});ok(ST.arcPhase(s)==='crisis','도일이 넘어가면 고비');}
 // 5. 도일은 협박받은 다음 날 아침에 털어놓는다(날짜 대신)
-{const s=advance(game(17),{day:2,turn:1});s.scenario.doyle.threatened=true;advance(s,{day:3,turn:0});ok(s.scenario.doyle.disclosed===true,'협박받은 다음 날 아침에 도일이 협박장을 공개');}
+{const s=advance(game(17),{day:2,turn:0})/* 2026-11-25 낮이 한 번: 예전 낮 2 → 낮 */;s.scenario.doyle.threatened=true;advance(s,{day:3,turn:0});ok(s.scenario.doyle.disclosed===true,'협박받은 다음 날 아침에 도일이 협박장을 공개');}
 // 6. 7일이 지나면 열차가 오고, 결말은 네 줄
 {const s=advance(game(19),{day:99,turn:0});ok(s.result&&s.day===8,'일곱째 날 밤이 지나면 끝남 (끝난 때: '+s.day+'일째)');const lines=String(s.result?.text||'').split('\n');/* 2026-11-24 새 방향: 결말은 승패 한 줄 */ok(lines.length===1,'결말은 한 줄: '+lines.map(l=>l.slice(0,24)+'…').join(' / '));}
 // 7. 한 판 시간 상한 40분

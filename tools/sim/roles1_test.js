@@ -26,4 +26,4 @@ const fresh=()=>{const s=C.create(['가람','나래','다온','라희','마루',
  ok(d.downed&&C.choices(s,doc.id,'big').some(a=>a.type==='revive'&&a.target===d.id),'의사: 쓰러진 '+d.name+' 살리기가 보임');
  ok(!C.choices(s,other.id,'big').some(a=>a.type==='revive')&&!!C.validate(s,other.id,{type:'revive',target:d.id},'big'),'의사가 아니면 살리기가 없고 받지 않음');
  const t=NS.read(C.view(s,other.id)).text;ok(/치료는 의사만 할 수 있습니다/.test(t)&&/같은 곳의 의사가 큰 행동으로 살려 볼 수 있습니다/.test(t),'게임 정보에 의사만 치료·살리기');
- C.nextTurn(s);ok(s.feed.some(e=>/의사가 (다음 )?큰 행동으로 살려 볼 수 있습니다/.test(e.text||'')),'다음 때에 쓰러진 사람 알림이 "의사가 … 살려 볼 수 있습니다"');}
+ C.nextTurn(s);C.nextTurn(s);/* 2026-11-25 낮이 한 번: 낮 → 밤 → 다음 날 낮에 알림 */ok(s.feed.some(e=>/의사가 (다음 )?큰 행동으로 살려 볼 수 있습니다/.test(e.text||'')),'다음 날 낮에 쓰러진 사람 알림이 "의사가 … 살려 볼 수 있습니다"');}

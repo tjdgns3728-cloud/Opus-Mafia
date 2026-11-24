@@ -35,7 +35,7 @@ const notes=(s,p)=>p.known.map(k=>k.text).join('\n');
  ok(r&&!r.terms.some(t=>t.label==='피곤함'),'피곤해도 인물 조사에는 -2가 붙지 않음');}
 // 6. 화면: 지금 상태 한 줄, 행동 목록 탭 없음, 재판 근거는 수첩과 같은 번호
 {const s=fresh(),p=s.players[1];p.location='hall';s.day=6;s.turn=0;p.known.push({id:'kx',text:'시험 기록',source:'직접 목격',kind:'observed',time:'1일째 낮 1'});const scr=NS.read(C.view(s,p.id));
- ok(/살아 있는 사람 8명 · 마피아 편이 4명 이상이면 장악/.test(scr.text)&&/남은 때 6번/.test(scr.text),'화면 맨 위에 살아 있는 사람·장악 기준·남은 때');
+ ok(/살아 있는 사람 8명 · 마피아 편이 4명 이상이면 장악/.test(scr.text)&&/남은 때 4번/.test(scr.text)/* 2026-11-25 낮이 한 번: 6일째 낮이면 6일 낮·밤, 7일 낮·밤 = 4번(예전 6번) */,'화면 맨 위에 살아 있는 사람·장악 기준·남은 때');
  ok(!/■ 행동 목록/.test(scr.text),'기록 탭은 하나(행동 목록 없음)');
  const n=p.known.indexOf(p.known.find(k=>k.id==='kx'))+1;ok(new RegExp('기록 '+n+' · ').test(scr.text),'수첩과 재판 근거에 같은 번호(기록 '+n+')');
  const m=NS.press(C.view(s,p.id),scr,{'버튼':'재판 신청하기','고른 것':[s.players[2].name,'기록 '+n],'적은 글':'시험'});ok(m.req?.action?.facts?.includes('kx'),'재판 신청 때 "기록 '+n+'"으로 근거를 고름');}

@@ -32,10 +32,10 @@ ok(H.used.big,'살리기는 큰 행동을 씀');
 T.hp=0;C.death(s,T,'공격');ok(!T.downed&&s.feed.some(e=>e.kind==='death'&&e.who===T.id),'두 번째로 쓰러지면 바로 사망');
 // 5) 시간이 다 되면 숨을 거둠: 낮1에 쓰러짐 → 낮2 끝에 사망
 const U=town[2];for(const p of s.players)p.used={big:false,small:false};s.day=1;s.turn=0;U.hp=0;C.death(s,U,'출혈');ok(U.downed?.left===2,'출혈로 처음 쓰러져도 쓰러짐');
-C.nextTurn(s);ok(U.downed&&s.turn===1,'낮1→낮2: 아직 살릴 수 있음(남은 '+U.downed?.left+')');
-ok(s.feed.some(e=>e.to.includes(H.id)&&e.text.includes(U.name)&&e.text.includes('이번 낮이 지나면')),'같은 곳 사람에게 "이번 낮이 지나면 숨을 거둡니다" 알림');
-C.nextTurn(s);ok(!U.downed&&s.feed.some(e=>e.kind==='death'&&e.who===U.id),'낮2가 끝나면 숨을 거둠: '+s.feed.filter(e=>e.kind==='death'&&e.who===U.id).at(-1)?.text);
+/* 2026-11-25 낮이 한 번: 낮에 쓰러지면 다음 날 낮이 끝날 때까지 */C.nextTurn(s);ok(U.downed&&s.turn===2&&U.downed.left===1,'낮→밤: 아직 살릴 수 있음(남은 '+U.downed?.left+')');C.nextTurn(s);
+ok(s.feed.some(e=>e.to.includes(H.id)&&e.text.includes(U.name)&&e.text.includes('이번 낮이 지나면')),'다음 날 낮: 같은 곳 사람에게 "이번 낮이 지나면 숨을 거둡니다" 알림');
+C.nextTurn(s);ok(!U.downed&&s.feed.some(e=>e.kind==='death'&&e.who===U.id),'다음 날 낮이 끝나면 숨을 거둠: '+s.feed.filter(e=>e.kind==='death'&&e.who===U.id).at(-1)?.text);
 // 6) 밤에 쓰러지면 내일 낮 두 번
-const V=s.players.find(p=>p.hp>0&&p.team==='town'&&p.id!==H.id);if(V){s.turn=2;V.hp=0;C.death(s,V,'공격');C.nextTurn(s);ok(V.downed&&V.downed.left===2,'밤에 쓰러짐 → 아침에도 남은 낮 2');C.nextTurn(s);ok(V.downed&&V.downed.left===1,'낮1이 지나도 살릴 수 있음');C.nextTurn(s);ok(!V.downed,'낮2가 지나면 숨을 거둠');}
+const V=s.players.find(p=>p.hp>0&&p.team==='town'&&p.id!==H.id);if(V){s.turn=2;V.hp=0;C.death(s,V,'공격');C.nextTurn(s);ok(V.downed&&V.downed.left===1&&s.turn===0,'밤에 쓰러짐 → 다음 날 낮에 살릴 수 있음(남은 1)');C.nextTurn(s);ok(!V.downed,'다음 날 낮이 지나면 숨을 거둠');}
 // 7) 재판 처형과 폭발은 그대로 사망
 const W=s.players.find(p=>p.hp>0&&!p.downedOnce);if(W){W.hp=0;C.death(s,W,'재판 처형');ok(!W.downed&&s.feed.some(e=>e.kind==='death'&&e.who===W.id),'재판 처형은 바로 사망');}
