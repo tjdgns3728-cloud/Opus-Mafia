@@ -15,11 +15,11 @@ const room=(s,answer)=>{const prompts=[],records=[];return {state:s,random:rng,p
 /* 물음 속 화면 글에서 한 칸(■ 제목)을 꺼낸다 */const section=(p,title)=>{const i=p.indexOf('■ '+title);if(i<0)return '';const j=p.indexOf('\n\n■ ',i+1);return p.slice(i,j<0?undefined:j);};
 (async()=>{
  // 1. 한 번의 답으로 작은 행동(얼굴 가리기)과 큰 행동을 함께: 화면의 두 버튼을 차례로 누름
- {const s=fresh(),p=s.players.find(q=>q.bot&&q.team==='town');const r=room(s,()=>({누름:[{버튼:'얼굴 가리기'},{버튼:'기다리기'}],말:''}));
-  await A.aiTurn(r,p.id);ok(p.faceCover===true,'작은 행동(얼굴 가리기)을 AI가 누름');ok(s.plans[p.id]?.type==='wait'&&r.prompts.length===1,'큰 행동도 같은 답으로, 물음 한 번');
+ {const s=fresh(),p=s.players.find(q=>q.bot&&q.team==='town');const r=room(s,()=>({누름:[{버튼:'감추기','고른 것':['얼굴 가리기']}],말:''}));
+  await A.aiTurn(r,p.id);ok(p.faceCover===true,'작은 행동(감추기 → 얼굴 가리기)을 AI가 누름');ok(s.plans[p.id]?.type==='wait'&&r.prompts.length===1,'큰 행동을 누르지 않으면 기다리기, 물음 한 번');
   ok(/■ 행동\n/.test(r.prompts[0].p)&&!/\nview=|small_options|big_options/.test(r.prompts[0].p),'물음에는 화면 글이 있고 예전 view·선택지 목록은 없음');}
  // 2. 이동하기로 옮기면 그 뒤의 누름은 쓰지 않고, 옮긴 곳의 화면으로 다시 묻는다
- {const s=fresh(),p=s.players.find(q=>q.bot&&q.team==='town');const r=room(s,(purpose,pr,n)=>n===1?{누름:[{버튼:'이동하기 (행동 소모 없음)','고른 것':['마을 회관']},{버튼:'얼굴 가리기'}]}:{누름:[{버튼:'기다리기'}]});
+ {const s=fresh(),p=s.players.find(q=>q.bot&&q.team==='town');const r=room(s,(purpose,pr,n)=>n===1?{누름:[{버튼:'이동하기 (행동 소모 없음)','고른 것':['마을 회관']},{버튼:'감추기','고른 것':['얼굴 가리기']}]}:{누름:[]});
   await A.aiTurn(r,p.id);ok(p.location==='hall'&&!p.faceCover,'이동을 AI가 누름(회관), 이동 뒤의 누름은 쓰지 않음');ok(r.prompts.length===2&&s.plans[p.id]?.type==='wait'&&/마을 회관/.test(section(r.prompts[1].p,'지금')),'옮긴 곳의 화면으로 다시 물어 큰 행동을 정함');}
  // 3. 답이 없으면 아무것도 하지 않음(규칙 봇이 대신하지 않음)
  {const s=fresh(),p=s.players.find(q=>q.bot);const r=room(s,()=>null);await A.aiTurn(r,p.id);

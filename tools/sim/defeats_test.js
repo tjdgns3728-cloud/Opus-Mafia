@@ -34,13 +34,15 @@ const wait=()=>new Promise(r=>setTimeout(r,20));
   ok(added.every(d=>d.team==='town')&&added.length===s.players.filter(p=>p.bot&&p.team==='town').length,'진 편(시민) AI 자리 모두, 이긴 편은 쓰지 않음');}
  // 3. AI를 끄면 쓰지 않는다
  {const s=fresh(),p=s.players.find(q=>q.bot);const r=room(s,()=>({situation:'x',tags:['기타']}));r.ai.mode='off';const n=D.loadDefeats().length;await D.writeDefeat(r,p,'공격');ok(D.loadDefeats().length===n,'AI를 끈 판에서는 쓰지 않음');}
- // 4. 판을 시작할 때 자리마다 꼬리표별로 무작위로 넷까지
- {for(let i=0;i<8;i++){const tag=['습격','변장','고발','표','추적','회관 대화','영입','지키기'][i];D.saveDefeat({record(){return true;}},{id:'t'+i,situation:'상황'+i,did:'',result:'',cause:'',shows:'보여 줌'+i,tags:[tag]});}
+ // 4. 판을 시작할 때 자리마다 자기가 쓴 기록 가운데 꼬리표별로 무작위로 넷까지(2026-11-24 사용자: "ai들은 같은 패배기록을 공유하면 안됩니다. 다른 시각을 가져야 합니다", "각각 ai 모델마다 독자성을 부여하고 자신이 가진 패배기록으로 플레이를 할 수 있게 해주세요")
+ {for(const nm of ['도현','서아','시온','하준','나린','이안','수현'])for(let i=0;i<8;i++){const tag=['습격','변장','고발','표','추적','회관 대화','영입','지키기'][i];D.saveDefeat({record(){return true;}},{id:'t'+nm+i,name:nm,situation:'상황'+i,did:'',result:'',cause:'',shows:'보여 줌'+nm+i,tags:[tag]});}
   const s=fresh(),r=room(s,()=>null);D.assignDefeats(r);const sets=Object.values(s.defeatSets);
   ok(sets.length===7&&sets.every(l=>l.length===4&&new Set(l.map(d=>d.id)).size===4),'컴퓨터 자리 일곱마다 서로 다른 기록 넷');
+  ok(s.players.filter(q=>q.bot).every(q=>s.defeatSets[q.id].every(d=>d.name===q.name)),'자리마다 자기 이름으로 쓴 기록만 받음');
+  {const all=sets.flat().map(d=>d.id);ok(new Set(all).size===all.length,'한 판 안에서 같은 기록을 두 자리가 받지 않음');}
   ok(new Set(sets.map(l=>l.map(d=>d.id).sort().join())).size>1,'자리마다 받은 기록이 다름(성향이 갈림)');
   ok(!s.players.find(p=>!p.bot)||!s.defeatSets[s.players.find(p=>!p.bot).id],'사람 자리에는 주지 않음');
-  const p=s.players.find(q=>q.bot),txt=D.defeatsFor(s,p);ok(/지난 판에서 진 AI가 남긴 패배기록/.test(txt)&&/같은 점과 다른 점을 가려 읽는다/.test(txt)&&s.defeatSets[p.id].every(d=>txt.includes(d.shows)),'지시문에 그 자리가 받은 기록을 그때의 일로 넣음');
+  const p=s.players.find(q=>q.bot),txt=D.defeatsFor(s,p);ok(/네가 지난 판들에서 지고 직접 남긴 패배기록/.test(txt)&&/같은 점과 다른 점을 가려 읽는다/.test(txt)&&s.defeatSets[p.id].every(d=>txt.includes(d.shows)),'지시문에 그 자리가 받은 기록을 그때의 일로 넣음');
   ok(r.rec.some(b=>b.event==='defeat-sets'),'누가 어떤 기록을 받았는지 게임 기록에 남김');
   const v=JSON.stringify(C.view(s,s.players[0].id));ok(!v.includes('보여 줌'),'다른 사람의 화면에는 기록이 가지 않음');}
  // 5. 재판 동의와 표도 AI로, 답이 없으면 규칙으로
@@ -57,7 +59,7 @@ const wait=()=>new Promise(r=>setTimeout(r,20));
   r.engine={time:0};const before=D.loadDefeats().length;D.verdictScene(r,()=>{});await wait();await wait();process.off('unhandledRejection',h);
   ok(t.hp<=0&&s.stage==='verdict'&&errs.length===0,'판결 장면에서 처리 안 된 오류 없음');ok(D.loadDefeats().slice(before).some(d=>d.name===t.name&&d.situation==='재판에서 처형됐다'),'처형된 AI 자리가 판결 장면이 시작된 뒤 기록을 씀');}
  // 8. 기록을 줄 때만 그 판의 사람 이름을 사람A·사람B로(2026-11-19 사용자 "네, 지워 주세요"). 저장된 기록은 그대로
- {const s=fresh(),p=s.players.find(q=>q.bot);
+ {const s=fresh(),p=s.players.find(q=>q.bot&&q.name==='하준');
   const oldRec={id:'n1',situation:'도현과 서아가 회관에 있었다. 종지기가 교회에 있었다.',did:'서아를 지켰다',result:'도현이 단검으로 나를 찔렀다',cause:'확인: 도현이 공격했다. 추정: 해먼드는 몰랐을 것이다',shows:'같은 자리의 사람들은 서아만 봤다',tags:['습격']};
   const newRec={id:'n2',situation:'민수와 이안은 광부 막사에 있었다',did:'민수를 의심했다',result:'민수, 이안과 함께 처형됐다',cause:'추정: 민수가 거짓말을 했다',shows:'도현은 이 판에 없었다',tags:['재판'],names:['민수','이안','사람']};
   s.defeatSets={[p.id]:[oldRec,newRec]};const txt=D.defeatsFor(s,p);
@@ -65,7 +67,8 @@ const wait=()=>new Promise(r=>setTimeout(r,20));
   ok(txt.includes('사람A와 사람B가 회관에')&&txt.includes('사람B를 지켰다')&&txt.includes('사람A가 단검으로'),'처음 나온 차례로 사람A·사람B, 조사는 가·를·와로 맞춤');
   ok(txt.includes('종지기가 교회에')&&txt.includes('해먼드는 몰랐을')&&txt.includes('같은 자리의 사람들은'),'NPC 이름과 "사람" 같은 낱말은 그대로');
   ok(txt.includes('사람C와 사람D는 광부')&&txt.includes('사람C, 사람D와 함께')&&txt.includes('도현은 이 판에 없었다'),'기록에 그 판의 이름이 있으면 그것만 바꿈(다른 기록과 겹치지 않게 사람C부터)');
-  ok(/사람 이름은 사람A·사람B처럼 바꿔 두었고, 지금 판의 사람과 상관없다/.test(txt),'바꿨다는 것을 지시문에 알림');
+  ok(/다른 사람 이름은 사람A·사람B처럼 바꿔 두었고, 지금 판의 사람과 상관없다/.test(txt),'바꿨다는 것을 지시문에 알림');
+  {const me=s.players.find(q=>q.bot&&q.name==='도현');s.defeatSets={[me.id]:[oldRec]};ok(D.defeatsFor(s,me).includes('도현과 사람A가 회관에'),'자기 기록 속 자기 이름은 가리지 않음');}
   ok(oldRec.situation.startsWith('도현과 서아가')&&newRec.result.startsWith('민수, 이안과'),'저장된 기록은 바꾸지 않음');
   const w=s.players.find(q=>q.bot&&q.team==='mafia');w.hp=0;w.deathCause='공격';const before=D.loadDefeats().length;
   await D.writeDefeat(room(s,()=>({situation:'밤에 쓰러졌다',did:'숨었다',result:'숨을 거뒀다',cause:'추정: 들켰다',shows:'혼자였다',tags:['습격']})),w,'공격');

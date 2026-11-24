@@ -241,3 +241,6 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 /* 2026-11-24 다시 설계 1단계: 지금 상태 한 줄(장소 이름 아래 한 줄을 다 씀) */
 .location-bar{flex-wrap:wrap}
 .location-bar .standing{flex:1 0 100%;order:3;margin:4px 0 0;font-size:12px;line-height:1.5;color:#d8cdb8;position:static}
+/* 2026-11-24 다시 설계 2단계: 소지품마다 쓰임 한 줄 */
+.item{flex-wrap:wrap}
+.item .item-desc{flex:1 0 100%;color:#a99f8f;font-size:11px;line-height:1.4;margin-top:2px}
