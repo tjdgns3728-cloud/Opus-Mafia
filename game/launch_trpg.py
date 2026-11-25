@@ -13,6 +13,8 @@ import webbrowser
 ROOT = pathlib.Path(__file__).resolve().parent
 PORT = 8868
 URL = f'http://127.0.0.1:{PORT}/'
+# 게임 폴더 → (이름, AI와 하는 문, 사람끼리 하는 문). 2026-11-26: 8인 채팅 마피아를 더함(사용자 "네, 새로 만들기")
+GAMES = {'noir-trpg': ('밤의 증언 · 블랙 리지', 8868, 8869), 'chat-mafia': ('8인 채팅 마피아', 8870, 8871)}
 
 def probe():
     try:
@@ -27,12 +29,15 @@ def main():
     ap.add_argument('--local', action='store_true')
     ap.add_argument('--lan', action='store_true')
     ap.add_argument('--no-browser', action='store_true')
+    ap.add_argument('--game', choices=sorted(GAMES), default='noir-trpg')
     args = ap.parse_args()
+    TITLE, PORT, LAN_PORT = GAMES[args.game]
+    URL = f'http://127.0.0.1:{PORT}/'
     if not (args.local or args.lan):
-        print('밤의 증언 · 블랙 리지\n1. 이 컴퓨터에서 AI와 테스트\n2. 같은 네트워크에서 여러 사람과 플레이 (AI 없음)')
+        print(f'{TITLE}\n1. 이 컴퓨터에서 AI와 테스트\n2. 같은 네트워크에서 여러 사람과 플레이 (AI 없음)')
         args.lan = input('선택 [1]: ').strip() == '2'
     if args.lan:
-        PORT = 8869
+        PORT = LAN_PORT
         URL = f'http://127.0.0.1:{PORT}/'
     if not shutil.which('node'):
         raise SystemExit('Node.js를 찾을 수 없습니다. Node.js 설치 후 다시 실행하세요.')
@@ -53,13 +58,13 @@ def main():
         print('AI 연결: ChatGPT 구독 · GPT-6 Luna', flush=True)
     existing = probe()
     if existing:
-        if existing != 'noir-trpg':
+        if existing != args.game:
             raise SystemExit(f'{PORT}번에서 다른 게임이 실행 중입니다. 다른 프로그램을 종료하지 않고 멈춥니다.')
-        print('이미 실행 중인 밤의 증언 · 블랙 리지을 엽니다. AI 모드와 사람끼리 모드는 서로 다른 주소를 사용합니다.')
+        print(f'이미 실행 중인 {TITLE}을(를) 엽니다. AI 모드와 사람끼리 모드는 서로 다른 주소를 사용합니다.')
         if not args.no_browser:
             webbrowser.open(URL)
         return
-    cmd = [sys.executable, '-B', '-X', 'utf8', '-m', 'server.play', '--game', '../games/noir-trpg', '--port', str(PORT), '--ai', 'off' if args.lan else 'on']
+    cmd = [sys.executable, '-B', '-X', 'utf8', '-m', 'server.play', '--game', '../games/' + args.game, '--port', str(PORT), '--ai', 'off' if args.lan else 'on']
     if args.lan:
         cmd += ['--host', '0.0.0.0']
     child = subprocess.Popen(cmd, cwd=ROOT / 'webengine')
@@ -67,7 +72,7 @@ def main():
         for _ in range(50):
             if child.poll() is not None:
                 raise SystemExit('서버 실행이 멈췄습니다. 위 오류를 확인하세요.')
-            if probe() == 'noir-trpg':
+            if probe() == args.game:
                 break
             time.sleep(.2)
         else:

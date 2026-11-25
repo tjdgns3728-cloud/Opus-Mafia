@@ -1,0 +1,76 @@
+:root{color-scheme:dark;--bg:#121316;--panel:#1b1d22;--panel2:#22252b;--line:#33363e;--ink:#e6e3da;--muted:#9a9ca3;--gold:#c9a96a;--red:#d9786c;--blue:#7fa7d9;--green:#8cc28c}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:15px}
+body>canvas,.we-root{display:none!important}
+#cm{position:absolute;inset:0;overflow:auto;background:radial-gradient(ellipse at 50% 0,#1e2026 0,#111215 70%);z-index:100}
+button,input,select,textarea{font:inherit;color:var(--ink)}
+button{background:var(--panel2);border:1px solid #474a53;border-radius:4px;padding:6px 10px;cursor:pointer}
+button:hover{border-color:var(--gold)}
+button:disabled{opacity:.4;cursor:default}
+button.gold{background:var(--gold);color:#151515;border-color:var(--gold);font-weight:bold}
+input,select,textarea{background:#15161a;border:1px solid #474a53;border-radius:4px;padding:8px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+label{display:block;margin:14px 0 6px;color:var(--muted);font-size:13px}
+label input{display:block;width:100%;margin-top:6px}
+.muted{color:var(--muted)}
+.notice,.flash{color:var(--red)}
+.home,.lobby{max-width:460px;margin:8vh auto;padding:0 16px}
+.home h1{font-size:30px;margin:0 0 6px}
+.home button{width:100%;margin-top:10px;padding:10px}
+.lobby .code{font-size:56px;font-weight:bold;letter-spacing:6px;color:var(--gold)}
+.lobby .seats{padding-left:22px;line-height:2}
+.lobby .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tag{display:inline-block;font-size:12px;padding:1px 6px;border-radius:10px;background:#2b2e36;color:var(--muted);margin-left:4px}
+.tag.ally{background:#4a2624;color:#f0b7ae}
+.tag.hot{background:#5a4320;color:#f3d58f}
+.game{display:flex;flex-direction:column;height:100%}
+.game header{display:flex;align-items:center;gap:16px;padding:10px 16px;border-bottom:1px solid var(--line);background:#16171b}
+.game header #cm-stage{color:var(--blue);font-weight:bold}
+.game header .time{font-size:22px;font-weight:bold;min-width:56px;text-align:right;margin-left:auto}
+.game header .time.low{color:var(--red)}
+.game header .role{padding:4px 10px;border-radius:12px;background:#22344a}
+.game header .role.mafia{background:#4a2624}
+.cols{flex:1;display:grid;grid-template-columns:260px minmax(0,1fr) 280px;min-height:0}
+.players,.side{padding:10px 12px;overflow:auto;border-right:1px solid var(--line)}
+.side{border-right:0;border-left:1px solid var(--line)}
+h3{font-size:13px;color:var(--muted);margin:6px 0 8px;font-weight:normal}
+.p{padding:7px 8px;border:1px solid var(--line);border-radius:6px;margin-bottom:6px;background:var(--panel)}
+.p.me{border-color:#4d6a8c}
+.p.dead{opacity:.55}
+.pl{display:flex;align-items:center;gap:8px}
+.pl .no{display:inline-flex;width:22px;height:22px;border-radius:50%;background:#2b2e36;align-items:center;justify-content:center;font-size:12px}
+.pl .nm{font-weight:bold}
+.votes{margin-left:auto;font-size:12px;color:var(--muted)}
+.votes.on{color:var(--gold);font-weight:bold}
+.ps{font-size:12px;margin-top:3px;min-height:4px}
+.typing{color:var(--green);margin-left:6px}
+.pb{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.pb button{font-size:12px;padding:3px 8px}
+.center{display:flex;flex-direction:column;min-height:0;min-width:0;padding:10px 14px}
+.banner{min-height:38px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);line-height:1.9}
+.banner .result{padding:4px 0}
+.banner .result b{font-size:20px}
+.banner .result.town b{color:var(--blue)}
+.banner .result.mafia b{color:var(--red)}
+.log{flex:1;overflow:auto;margin:10px 0;padding:6px 4px;font-size:16px;line-height:1.7}
+.log .sep{margin:12px 0 6px;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line)}
+.log .l{padding:1px 2px}
+.log .l b{color:#cfd6e4;margin-right:4px}
+.log .l.mine b{color:var(--gold)}
+.log .l.sys,.log .l.vote{color:var(--muted);font-size:14px}
+.log .l.vote{color:#b9a77c}
+.log .l i{font-style:normal;font-size:12px;padding:0 5px;border-radius:8px;background:#2b2e36;color:var(--muted);margin-right:4px}
+.log .l.mafia i{background:#4a2624;color:#f0b7ae}
+.log .l.whisper{color:#c8b6e8}
+.log .l.me{color:var(--green)}
+.log .l.dead{color:#8f939c}
+.say{display:flex;gap:6px}
+.say select{max-width:40%;min-width:0}
+.say input{flex:1;min-width:0}
+.card{padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font-size:14px}
+.card p{margin:6px 0 0;line-height:1.6;color:#c9c7c0}
+.side textarea{width:100%;resize:vertical}
+.side button{margin-top:6px}
+details{margin-top:14px}
+details pre{white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.7;color:#c9c7c0}
+@media (max-width:900px){.cols{grid-template-columns:1fr}.players,.side{border:0;max-height:none}.center{min-height:70vh}}

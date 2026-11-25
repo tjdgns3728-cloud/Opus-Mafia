@@ -1,0 +1,13 @@
+{
+  "name": "8인 채팅 마피아",
+  "start": "main",
+  "settings": {
+    "width": 1440,
+    "height": 900,
+    "fit": "scale",
+    "background": "#121316",
+    "ai_limits": {
+      "한판": null
+    }
+  }
+}
