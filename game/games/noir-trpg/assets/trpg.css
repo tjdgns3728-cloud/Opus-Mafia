@@ -224,7 +224,7 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 .story-split{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:6px;min-height:0;min-width:0}
 .story-split>#story-scroll,.story-split>#chat-scroll{height:auto;min-height:0;max-height:none;flex:none;overflow-y:auto;overscroll-behavior:contain}
 #chat-scroll{background:#101012;border:1px solid #373436;padding:6px 10px;scrollbar-color:#5d5347 #151517}
-#chat-scroll .speech{padding:3px 0;font-size:12px;line-height:1.55}
+#chat-scroll .speech{padding:4px 0;font-size:15px;line-height:1.6}/* 2026-11-25 사용자: "채팅 크기가 너무 작습니다" — 12px → 15px(이야기 칸 글과 같은 크기) */
 #chat-scroll .speech small{display:none}
 #story-scroll .line>small{display:none}
 #story-scroll .line{border-bottom:0;padding:2px 0}
