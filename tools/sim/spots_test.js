@@ -23,10 +23,10 @@ for(const [k,place] of Object.entries(SP)){
   ok(!opt(s,t,k),k+': 그 자리 이야기를 듣기 전에는 "살핀다"가 없음');
   t.npcHeard=['lead:'+k];m.npcHeard=['lead:'+k];ok(!!opt(s,t,k)&&!opt(s,u,k)&&!opt(s,m,k),k+': 들은 시민에게만 생김(듣지 않은 시민·마피아에게는 없음)');
   for(let i=0;i<8;i++)S.investigate(s,u,hi);ok(!u.storyKnown.some(x=>/^(cache:|spot:)/.test(x)),k+': 현장 수색만으로는 드러나지 않음');
-  S.resolve(s,t,opt(s,t,k),()=>0.01);ok(/폭약 \d개입니다/.test(mine(s,t))&&S.choices(s,t,'big').some(a=>a.sceneKey==='take'),k+': 성공하면 폭약을 찾고 "발견한 폭약 가져가기"가 생김');
+  t.stats.observe=10;S.resolve(s,t,opt(s,t,k),()=>0.99);/* 2026-11-25 관찰 판정: 주사위 10 + 관찰 10 + 단서 2 ≥ 16 */ok(/폭약 \d개입니다/.test(mine(s,t))&&S.choices(s,t,'big').some(a=>a.sceneKey==='take'),k+': 성공하면 폭약을 찾고 "발견한 폭약 가져가기"가 생김');
   ok(!opt(s,t,k),k+': 찾은 뒤에는 다시 나오지 않음');}
  {const s=find(k,false),t=s.players.find(p=>p.team==='town');t.location=place;t.npcHeard=['lead:'+k];S.resolve(s,t,opt(s,t,k),()=>0.01);
   s.epoch++;ok(!t.known.some(x=>/비어 있었다|약병만 있었다|파낸 자국/.test(String(x.text)))&&!!opt(s,t,k),k+': 비었어도 비었는지 모르고 다음 때 다시 할 수 있음(2026-11-19)');}
- {const s=find(k,true),[t,u]=s.players.filter(p=>p.team==='town');t.location=u.location=place;t.npcHeard=['lead:'+k];t.stats.observe=0;/* 실패 장면을 만들려고 관찰을 낮춘다(관찰이 높으면 주사위 1에도 성공) */
+ {const s=find(k,true),[t,u]=s.players.filter(p=>p.team==='town');t.location=u.location=place;t.npcHeard=['lead:'+k];t.stats.observe=0;t.stats.agility=3;/* 실패 장면을 만들려고 관찰을 낮춘다. 둘째 주사위는 흔적을 남기지 않기(은신 12, 2026-11-25) */
   S.resolve(s,t,opt(s,t,k),seq([0.99,0.5]));ok(u.known.some(x=>/모습이 보입니다/.test(String(x.text))),k+': 같은 자리 사람이 뒤지는 모습을 봄');
   s.epoch++;S.resolve(s,t,opt(s,t,k),seq([0.99,0.1]));ok((s.scenario.traces||[]).some(x=>x.where===place&&x.who===t.id),k+': 실패해서 손자국이 남음');}}

@@ -34,7 +34,7 @@ const atBomb=s=>{const b=s.scenario.bombs.find(b=>PLACE[b.where]);const maf=s.pl
  q.doyle.location=place;q.doyle.cowed=false;ok(S.botAction(s,maf,'big')===null,'NPC(도일)가 보는 낮에는 꺼내지 않음');}
 for(const said of [true,false]){const s=fresh(),{maf,place,q}=atBomb(s);q.doyle.location=place;q.doyle.cowed=false;q.doyle.hp=10;
  if(said)C.emit(s,[maf.id],'speech','수색하다 숨겨 둔 폭약을 찾았습니다.',{who:maf.id,name:maf.name});
- const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);const c=s.cases.find(c=>c.target===maf.id&&c.caughtKind==='npc');
+ const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);if(s.scenario.confronts?.some(c=>!c.done)){s.stage='hazard';S.resolveHazard(s,rng);}/* 2026-11-25: 들킨 사람은 때가 끝날 때 고른다. 고르지 않으면 그대로 가져감 */const c=s.cases.find(c=>c.target===maf.id&&c.caughtKind==='npc');
  ok(c&&c.explained===said&&(said?/꺼내기 전에 폭약을 찾았다고 말했다/:/찾았다는 말은 없었다/).test(c.reason),`NPC 고발에 찾았다고 말했는지(${said?'말함':'말 안 함'})가 남음`);
  const voter=s.players.find(p=>p.team==='town');for(const o of C.alive(s)){o.knownCases??=[];if(!o.knownCases.includes(c.id))o.knownCases.push(c.id);}
  const sc=M.suspicion(s,voter,maf.id).score;ok(said?sc<1:sc>=4,`판단: ${said?'찾았다고 말하고 꺼냄 → 약하게':'말없이 꺼냄 → 강하게(처음엔 마피아만 안다)'} (${sc})`);}

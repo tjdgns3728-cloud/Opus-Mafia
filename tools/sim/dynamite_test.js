@@ -12,8 +12,8 @@ const where=s=>s.scenario.bombs.map(b=>b.where);
 // 2. 단서 없이는 현장 수색에 성공해도 찾지 못하고, 단서를 들으면 찾는다
 {const s=game(3);s.scenario.spots=['chapel','barrel'];s.scenario.bombs=[{id:'d0',where:'chapel'},{id:'d1',where:'spot:barrel'}];/* 폭약은 두 개 */s.scenario.discovered=true;
  const p=s.players.find(p=>p.team==='town');const sure=()=>0.99;p.location='chapel';p.storyKnown=[];for(let i=0;i<4;i++)S.investigate(s,p,sure);ok(!p.storyKnown.some(k=>k.startsWith('cache:')),'단서 없이 교회를 뒤져도 폭약이 나오지 않음');
- /* 2026-11-16부터 숨긴 곳은 현장 수색이 아니라 들은 사람의 '살핀다'로 찾는다 */p.npcHeard=['lead:chapel'];S.resolve(s,p,{type:'scene',sceneKey:'search:chapel'},()=>0.01);/* 2026-11-19: 찾기는 운(주사위가 확률보다 낮으면 찾음) */ok(p.storyKnown.some(k=>k.startsWith('cache:')),'아이의 말을 들은 뒤 종탑 아래를 살피면 찾음');ok(S.choices(s,p,'big').some(a=>a.sceneKey==='take'),'찾은 뒤 "발견한 폭약 가져가기"가 보임');
- const q=s.players.find(o=>o.team==='town'&&o.id!==p.id);q.location='tavern';q.storyKnown=[];for(let i=0;i<4;i++)S.investigate(s,q,sure);ok(!q.storyKnown.some(k=>k.startsWith('spot:barrel')),'술집 주인의 말 없이 뒷마당을 뒤져도 나오지 않음');q.npcHeard=['lead:barrel'];S.resolve(s,q,{type:'scene',sceneKey:'search:barrel'},()=>0.01);ok(q.storyKnown.some(k=>k.startsWith('spot:barrel')),'술집 주인의 말을 들은 뒤 술통을 살피면 찾음');
+ /* 2026-11-16부터 숨긴 곳은 현장 수색이 아니라 들은 사람의 '살핀다'로 찾는다 */p.npcHeard=['lead:chapel'];p.stats.observe=10;S.resolve(s,p,{type:'scene',sceneKey:'search:chapel'},()=>0.99);/* 2026-11-25: 찾기는 관찰 판정(주사위 10 + 관찰 10 + 단서 2 ≥ 16) */ok(p.storyKnown.some(k=>k.startsWith('cache:')),'아이의 말을 들은 뒤 종탑 아래를 살피면 찾음');ok(S.choices(s,p,'big').some(a=>a.sceneKey==='take'),'찾은 뒤 "발견한 폭약 가져가기"가 보임');
+ const q=s.players.find(o=>o.team==='town'&&o.id!==p.id);q.location='tavern';q.storyKnown=[];for(let i=0;i<4;i++)S.investigate(s,q,sure);ok(!q.storyKnown.some(k=>k.startsWith('spot:barrel')),'술집 주인의 말 없이 뒷마당을 뒤져도 나오지 않음');q.npcHeard=['lead:barrel'];q.stats.observe=10;S.resolve(s,q,{type:'scene',sceneKey:'search:barrel'},()=>0.99);ok(q.storyKnown.some(k=>k.startsWith('spot:barrel')),'술집 주인의 말을 들은 뒤 술통을 살피면 찾음');
  const m=s.players.find(o=>o.team==='mafia');m.location='tavern';ok(S.choices(s,m,'big').some(a=>a.sceneKey==='take'),'마피아는 자기들이 숨긴 곳에서 바로 꺼낼 수 있음');m.location='hideout';s.turn=2;ok(!S.choices(s,m,'big').some(a=>a.sceneKey==='take'),'본거지에는 폭약이 없어 꺼낼 것이 없음(2026-11-16 사용자 결정)');s.turn=0;}
 // 3. 폭약이 사라진 것이 알려지기 전(첫날 낮 1)에는 단서가 있어도 찾지 못한다
 {const s=game(5);s.scenario.spots=['chapel','cart'];s.scenario.bombs.forEach((b,i)=>b.where=['chapel','chapel','cart','cart','hideout','hideout'][i]);s.scenario.discovered=false;const p=s.players.find(p=>p.team==='town');p.location='chapel';p.npcHeard=['lead:chapel'];S.investigate(s,p,()=>0.99);ok(!p.storyKnown.some(k=>k.startsWith('cache:')),'첫날 낮 1에는 찾지 못함');}
@@ -30,18 +30,19 @@ const where=s=>s.scenario.bombs.map(b=>b.where);
 // 6. 숨긴 폭약을 꺼낼 때(2026-11-16 사용자 결정, 2026-11-24 바뀜): 본 사람이 하나면 예전처럼 마피아 편이 아닌 NPC가 보고 고발하고 꺼낸 사람은 달아나기 판정. 볼 수 있는 시민 편이 둘 이상이면 몰래 꺼내기 판정(12, 한 명마다 +3)
 {const setup=(withW=false)=>{const s=game(11);s.day=2;s.turn=0;s.stage='plan';s.scenario.spots=['cart','barrel'];s.scenario.bombs=[{id:'d0',where:'cart'},{id:'d1',where:'spot:barrel'}];s.scenario.discovered=true;const bk=ST.npc(s,'barkeep');bk.location='tavern';bk.hp=10;bk.recruited=false;const m=s.players.find(o=>o.team==='mafia'),w=s.players.find(o=>o.team==='town');for(const o of s.players){o.location='hall';o.used={big:false,small:false};o.hidden=false;}m.location='tavern';if(withW)w.location='tavern';return {s,m,w};};
  const seq=list=>{let i=0;return ()=>list[Math.min(i++,list.length-1)];};
- let {s,m,w}=setup();S.resolve(s,m,{type:'scene',sceneKey:'take'},seq([0.99,0.3]));
+ const take=(s,m,list)=>{const r=seq(list);S.resolve(s,m,{type:'scene',sceneKey:'take'},r);/* 2026-11-25: 들킨 사람은 이번 때가 끝날 때 고른다. 고르지 않으면 그대로 가져감(예전과 같은 고발·달아나기) */if(s.scenario.confronts?.some(c=>!c.done)){s.stage='hazard';S.resolveHazard(s,r);}};
+ let {s,m,w}=setup();take(s,m,([0.99,0.3]));
  const c=s.cases.find(c=>c.target===m.id&&c.caught&&!c.closed);ok(!!c&&c.byName==='술집 주인','본 사람이 술집 주인 하나면 보고 고발함 (재판은 동의 없이 열림)');
  ok(m.location!=='tavern'&&s.scenario.bombs.some(b=>b.where==='carry:'+m.id),'달아나기에 성공하면 폭약을 품고 다른 곳으로 감 ('+C.places[m.location].name+')');
- ({s,m}=setup());S.resolve(s,m,{type:'scene',sceneKey:'take'},seq([0.01]));
+ ({s,m}=setup());take(s,m,([0.01]));
  ok(m.location==='tavern'&&s.scenario.bombs.find(b=>b.id==='d1').where==='secured'&&m.jailEpoch===s.epoch+1,'달아나기에 실패하면 붙잡혀 폭약을 빼앗기고 다음 때 큰 행동을 못 함');
- ({s,m,w}=setup(true));S.resolve(s,m,{type:'scene',sceneKey:'take'},seq([0.01]));
+ ({s,m,w}=setup(true));take(s,m,([0.01]));
  ok(!s.scenario.bombs.some(b=>b.where==='carry:'+m.id)&&w.known.some(k=>/꺼내려다 들키는 것을 봤다/.test(String(k.text)))&&s.cases.some(c=>c.target===m.id&&c.caught),'본 사람이 둘(시민 + 술집 주인)이면 몰래 꺼내기: 실패하면 못 꺼내고 시민 수첩에 목격, 술집 주인이 고발');
- ({s,m,w}=setup(true));S.resolve(s,m,{type:'scene',sceneKey:'take'},seq([0.99]));
+ ({s,m,w}=setup(true));take(s,m,([0.99]));
  ok(s.scenario.bombs.some(b=>b.where==='carry:'+m.id)&&!w.known.some(k=>/폭약/.test(String(k.text)))&&!s.cases.some(c=>c.target===m.id),'몰래 꺼내기에 성공하면 아무도 보지 못함');
- {const r2=setup();S.resolve(r2.s,r2.m,{type:'scene',sceneKey:'take'},seq([0.01]));ok(r2.s.cases.some(c=>c.target===r2.m.id&&c.caught),'붙잡혀도 고발은 남음');}
- ({s,m}=setup());ST.npc(s,'barkeep').recruited=true;S.resolve(s,m,{type:'scene',sceneKey:'take'},seq([0.99,0.3]));ok(!s.cases.some(c=>c.target===m.id),'끌어들인 NPC는 보고도 고발하지 않음');
- ({s,m}=setup());ST.npc(s,'barkeep').location='hall';S.resolve(s,m,{type:'scene',sceneKey:'take'},seq([0.99]));ok(!s.cases.some(c=>c.target===m.id)&&m.location==='tavern','본 NPC가 없으면 고발도 달아나기도 없음');}
+ {const r2=setup();take(r2.s,r2.m,([0.01]));ok(r2.s.cases.some(c=>c.target===r2.m.id&&c.caught),'붙잡혀도 고발은 남음');}
+ ({s,m}=setup());ST.npc(s,'barkeep').recruited=true;take(s,m,([0.99,0.3]));ok(!s.cases.some(c=>c.target===m.id),'끌어들인 NPC는 보고도 고발하지 않음');
+ ({s,m}=setup());ST.npc(s,'barkeep').location='hall';take(s,m,([0.99]));ok(!s.cases.some(c=>c.target===m.id)&&m.location==='tavern','본 NPC가 없으면 고발도 달아나기도 없음');}
 // 7. 터지면 그 자리 사람은 모두 죽고, 살릴 수 없다(2026-11-16 사용자 결정)
 {const s=game(13);s.day=3;s.turn=1;s.scenario.fuse={status:'lit'};const at=s.players.slice(0,3),away=s.players.slice(3);for(const o of at)o.location='warehouse';for(const o of away)o.location='hall';S.resolveHazard(s);
  ok(at.every(o=>o.hp===0&&!o.downed),'갱도에 있던 사람은 모두 죽고, 살릴 수 있는 쓰러짐 상태가 아님');ok(away.every(o=>o.hp>0),'다른 곳 사람은 다치지 않음');

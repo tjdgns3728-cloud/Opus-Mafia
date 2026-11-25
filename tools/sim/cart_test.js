@@ -24,7 +24,7 @@ ok(withCart[0]/(withCart[0]+withCart[1])>noCart[0]/(noCart[0]+noCart[1]),'그래
  ok(!/알 수 있을지 모릅니다/.test(require('fs').readFileSync(path.join(dir,'08StoryFlow.js'),'utf8').match(/lead=\{cart:'[^']*'/)[0]),'광부의 말에 조언("살펴보면 알 수 있을지 모릅니다")이 없음');
  // 3. 성공: 폭약이 있으면 찾고, 가져가는 행동이 열린다
  ok(!S.choices(s,t,'big').some(a=>a.sceneKey==='take'),'찾기 전에는 "발견한 폭약 가져가기"가 없음');
- S.resolve(s,t,opt(s,t),()=>0.01);/* 2026-11-19: 주사위가 찾을 확률보다 낮으면 찾음 */ok(t.storyKnown.includes('cart')&&/폭약 \d개입니다/.test(mine(s,t)),'성공하면 광차의 폭약을 찾음');
+ t.stats.observe=10;S.resolve(s,t,opt(s,t),()=>0.99);/* 2026-11-25 관찰 판정: 주사위 10 + 관찰 10 + 단서 1개 2 − 갱도의 어둠 2 = 20 ≥ 16 */ok(t.storyKnown.includes('cart')&&/폭약 \d개입니다/.test(mine(s,t)),'관찰 판정에 성공하면 광차의 폭약을 찾음');
  ok(S.choices(s,t,'big').some(a=>a.sceneKey==='take'),'찾은 뒤에는 "발견한 폭약 가져가기"가 생김');
  ok(!opt(s,t),'찾은 뒤에는 "광차를 살핀다"가 사라짐');
  // 현장 수색만으로는 광차 폭약이 드러나지 않는다
@@ -32,13 +32,13 @@ ok(withCart[0]/(withCart[0]+withCart[1])>noCart[0]/(noCart[0]+noCart[1]),'그래
 
 // 4. 비어 있어도 못 찾은 것과 같은 글이라 비었는지는 알 수 없고, 다음 때 다시 할 수 있다(2026-11-19)
 {const s=find(false),t=s.players.find(p=>p.team==='town');t.location='warehouse';t.npcHeard=['lead:cart'];
- S.resolve(s,t,opt(s,t),()=>0.01);ok(/이번에는 찾지 못했습니다/.test(mine(s,t))&&!t.known.some(k=>/비어 있었다/.test(String(k.text))),'광차가 비었어도 "이번에는 찾지 못했습니다"(비었는지 모름)');
+ S.resolve(s,t,opt(s,t),()=>0.01);ok(/이번에는 찾지 못했습니다/.test(mine(s,t))&&!t.known.some(k=>/비어 있었다/.test(String(k.text))),'관찰 판정에 실패하면 광차가 비었어도 "이번에는 찾지 못했습니다"(비었는지 모름)');
  s.epoch++;ok(!!opt(s,t),'비었어도 다음 때 다시 할 수 있음');}
 
 // 5. 실패: 같은 자리 사람이 보거나, 손자국이 남거나, 아무 일도 없다
-{const s=find(true),[t,u]=s.players.filter(p=>p.team==='town');t.location=u.location='warehouse';t.npcHeard=['lead:cart'];
- S.resolve(s,t,opt(s,t),seq([0.99,0.5]));ok(/이번에는 찾지 못했습니다/.test(mine(s,t))&&!t.storyKnown.includes('cart'),'운이 없으면 찾지 못함');
+{const s=find(true),[t,u]=s.players.filter(p=>p.team==='town');t.location=u.location='warehouse';t.npcHeard=['lead:cart'];t.stats.observe=6;t.stats.agility=3;/* 2026-11-25: 첫 주사위 = 관찰 판정, 둘째 = 흔적을 남기지 않기(은신 12) */
+ S.resolve(s,t,opt(s,t),seq([0.01,0.5]));ok(/이번에는 찾지 못했습니다/.test(mine(s,t))&&!t.storyKnown.includes('cart'),'관찰 판정에 실패하면 찾지 못함');
  ok(u.known.some(k=>/모습이 보입니다/.test(String(k.text))),'같은 자리 사람이 뒤지는 모습을 봄');
  ok(!opt(s,t),'같은 때에는 다시 할 수 없음');s.epoch++;ok(!!opt(s,t),'다음 때에는 다시 할 수 있음');
- S.resolve(s,t,opt(s,t),seq([0.99,0.1]));ok((s.scenario.traces||[]).some(x=>x.where==='warehouse'&&x.who===t.id),'실패해서 덮개에 손자국이 남음');
- const tb=(s.scenario.traces||[]).length;s.epoch++;S.resolve(s,t,opt(s,t),seq([0.99,0.9]));ok((s.scenario.traces||[]).length===tb&&/이번에는 찾지 못했습니다/.test(mine(s,t)),'운이 없었지만 손자국은 남지 않을 때도 있음(뒤지는 모습은 2026-11-19부터 늘 보임)');}
+ S.resolve(s,t,opt(s,t),seq([0.01,0.1]));ok((s.scenario.traces||[]).some(x=>x.where==='warehouse'&&x.who===t.id),'실패하고 은신 판정(12)에도 지면 덮개에 손자국이 남음');
+ const tb=(s.scenario.traces||[]).length;s.epoch++;S.resolve(s,t,opt(s,t),seq([0.01,0.9]));ok((s.scenario.traces||[]).length===tb&&/이번에는 찾지 못했습니다/.test(mine(s,t)),'실패해도 은신 판정(12)에 이기면 손자국은 남지 않음(뒤지는 모습은 2026-11-19부터 늘 보임)');}

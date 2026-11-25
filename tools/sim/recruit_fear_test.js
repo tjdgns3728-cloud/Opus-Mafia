@@ -94,13 +94,14 @@ const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.fe
  n.fear=20;ok(S.fearOf(s,n)===10&&S.accuseChance(s,n)===0,'공포는 10까지, 그때 고발 확률 0');}
 
 // 7-1. 폭약 목격: 공포가 크면 눈을 돌리고, 얼굴을 가렸으면 이름 없이 소리치며, 붙잡히면 얼굴이 드러난다
+function settle(s,r){/* 2026-11-25: 폭약을 꺼내다 들킨 사람은 이번 때가 끝날 때 고른다. 고르지 않으면 그대로 가져감 */if(s.scenario.confronts?.some(c=>!c.done)){s.stage='hazard';S.resolveHazard(s,r);}}
 const PLACE={chapel:'chapel',cart:'warehouse','spot:barrel':'tavern','spot:medbox':'clinic'};
 const atBomb=s=>{s.scenario.continuation&&(s.scenario.continuation.discoveredBy=s.scenario.continuation.discoveredBy||{});const b=s.scenario.bombs.find(b=>PLACE[b.where]);const maf=s.players.find(p=>p.team==='mafia');maf.location=PLACE[b.where];const q=s.scenario;for(const n of [q.doyle,...Object.values(q.continuation?.npcs||{})].filter(Boolean))n.location='office';q.doyle.location=maf.location;q.doyle.cowed=false;q.doyle.hp=10;return {maf,q};};
-{const s=fresh(),{maf,q}=atBomb(s);q.doyle.fear=10;const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);
+{const s=fresh(),{maf,q}=atBomb(s);q.doyle.fear=10;const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);settle(s,rng);
  ok(take&&!s.cases.some(c=>c.target===maf.id)&&got(s,maf,/겁에 질린 얼굴로 눈을 돌립니다/),'공포가 10이면 도일이 폭약을 꺼내는 것을 보고도 눈을 돌림');}
-{const s=fresh(),{maf}=atBomb(s);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);
+{const s=fresh(),{maf}=atBomb(s);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);settle(s,rng);
  const c=s.cases.find(c=>c.target===maf.id&&c.caughtKind==='npc');ok(c&&c.npcKind==='dynamite','공포 0이면 지금처럼 고발(npcKind dynamite)');}
-for(const flee of [true,false]){const s=fresh(),{maf}=atBomb(s);veil(s,maf);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,flee?hi:lo);
+for(const flee of [true,false]){const s=fresh(),{maf}=atBomb(s);veil(s,maf);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,flee?hi:lo);settle(s,flee?hi:lo);
  const town=s.players.filter(p=>p.team==='town');const named=s.cases.some(c=>c.target===maf.id);
  ok(town.every(t=>t.known.some(k=>/변장한 사람 1이 .*폭약을 꺼냈소/.test(k.text)&&k.about==='v1'))&&(flee?!named:named)&&(flee?!!maf.faceCover:!maf.faceCover),flee?'변장하고 달아나면 "변장한 사람 1"이 했다는 말만 퍼지고 고발 없음':'변장했어도 붙잡히면 가리개가 벗겨지고 고발됨');}
 
