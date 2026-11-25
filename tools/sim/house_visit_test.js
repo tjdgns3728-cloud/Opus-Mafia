@@ -29,7 +29,7 @@ const fresh=()=>{const s=C.create(['가람','나래','다온','라희','마루',
 {const s=fresh(),d=s.players[5],nb=s.players[6],far=s.players[7];d.location='home';d.houseId=d.id;d.hp=0;d.downed={left:1};nb.location='home';nb.houseId=nb.id;s.stage='plan';
  const v=C.view(s,d.id),scr=NS.read(v);ok(/\[도움 청하기 · 한 번\]/.test(scr.text),'쓰러진 사람 화면에 [도움 청하기 · 한 번]');const m=NS.press(v,scr,{'버튼':'도움 청하기 · 한 번'});ok(m.req?.type==='call-help','누르면 도움 청하기 요청');
  ok(!C.callHelp(s,d.id),'도움을 청함');ok(s.feed.some(e=>e.to.includes(nb.id)&&e.text===('주택가 '+d.name+'의 집에서 도움을 청하는 신음 소리가 들립니다.')),'주택가 사람: 누구 집인지 들음');
- ok(s.feed.some(e=>e.to.includes(far.id)&&e.text==='주택가 쪽에서 누군가 도움을 청하는 소리가 들립니다.'),'다른 곳 사람: 어느 쪽인지만 들음');ok(!!C.callHelp(s,d.id),'두 번째는 안 됨');
+ ok(s.feed.some(e=>e.to.includes(far.id)&&e.text===('주택가 '+d.name+'의 집에서 도움을 청하는 신음 소리가 들립니다.')),'다른 곳 사람도 어느 집인지 들음(2026-11-25 사용자 결정)');ok(!!C.callHelp(s,d.id),'두 번째는 안 됨');
  ok(!/\[도움 청하기/.test(NS.read(C.view(s,d.id)).text),'청한 뒤에는 버튼 없음');}
 // 6. 주택가 안에서 집을 옮기면 "주택가에서 주택가로"를 쓰지 않음(2026-11-25 브라우저 확인에서 찾음)
 {const s=fresh(),me=s.players[1],host=s.players[2];me.location='home';me.houseId=null;host.location='home';host.houseId=host.id;C.chooseMove(s,me.id,{type:'move',place:'home',house:host.id});const n0=s.feed.length;C.applyMoves(s,rng);const mine=s.feed.slice(n0).filter(e=>e.to.includes(me.id)).map(e=>e.text).join(' / ');ok(!/주택가에서 주택가로/.test(mine)&&/다온의 집에 들어갔습니다/.test(mine),'집에서 집으로: '+mine.slice(0,80));
