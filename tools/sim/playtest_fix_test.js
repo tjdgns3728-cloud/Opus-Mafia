@@ -39,7 +39,7 @@ for(const said of [true,false]){const s=fresh(),{maf,place,q}=atBomb(s);q.doyle.
  const voter=s.players.find(p=>p.team==='town');for(const o of C.alive(s)){o.knownCases??=[];if(!o.knownCases.includes(c.id))o.knownCases.push(c.id);}
  const sc=M.suspicion(s,voter,maf.id).score;ok(said?sc<1:sc>=4,`판단: ${said?'찾았다고 말하고 꺼냄 → 약하게':'말없이 꺼냄 → 강하게(처음엔 마피아만 안다)'} (${sc})`);}
 // 5. 재판 화면 맨 위 표시
-{const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes('trial-banner')&&ui.includes('피고 <strong>')&&ui.includes('유죄 표가 무죄 표보다 많으면 피고는 처형되고'),'재판 중에는 이야기 칸 위에 피고·고발·근거·혐의·판결 규칙을 보임');
+{const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes('trial-banner')&&ui.includes('피고 <strong>')&&ui.includes('유죄 표가 무죄 표보다 많고 투표한 사람(기권 포함)의 과반이면 피고는 처형되고'),'재판 중에는 이야기 칸 위에 피고·고발·근거·혐의·판결 규칙을 보임');
  const s=fresh(),t=s.players[1];s.cases.push({id:'c77',day:s.day,closed:false,target:t.id,by:'npc:간호사',byName:'간호사',reason:'폭약',reasons:[],evidence:[],support:[],responses:{},order:1,caught:true,caughtKind:'npc'});C.beginTrial(s,s.cases.at(-1));
  ok(C.view(s,s.players[0].id).trial?.byName==='간호사','화면에 NPC 고발자의 이름이 전해짐');}
 // 6. 게임 기록: 진행 중에 이어서, 한 줄 64KB 아래로
