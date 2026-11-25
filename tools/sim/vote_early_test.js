@@ -22,4 +22,4 @@ const room=s=>({state:s,engine:{time:105},afters:[],closed:false,after(sec,fn){t
 // 5. 사람·AI 표가 지나는 처리에서 확인을 부름, 안내 글
 ok(src.includes('s.trial.votes[id]=a.vote;voteDone(r);'),'표를 받을 때마다 모두 냈는지 확인');
 const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes("vote:'최종 변론·표결 · 2분 · 첫 30초 뒤 모두 표를 내면 끝'")&&ui.includes('첫 30초 뒤 모두 표를 내거나 시간이 끝나면 판결'),'화면 글: 모두 표를 내면 끝');
-ok(src.includes("'재판 대화 시간은 끝까지 보장됩니다.'"),'재판 대화 3분은 그대로 끝까지');
+ok(src.includes("'재판 대화는 1분이 지난 뒤 모두 「말 마침」을 누르거나 시간이 끝나면 끝납니다.'"),'재판 대화: [다음으로]로는 끝나지 않음(제안 C1: 1분 뒤 모두 말 마침이면 끝)');
