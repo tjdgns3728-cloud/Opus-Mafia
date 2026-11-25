@@ -32,7 +32,7 @@ const notes=(s,p)=>p.known.map(k=>k.text).join('\n');
 {const p=fresh().players[0];p.tired=true;const tired=r=>r.terms.some(t=>t.label==='피곤함');
  ok(tired(C.check?C.check(p,'fight',rng,{label:'공격'}):{terms:[{label:'피곤함'}]}),'피곤하면 공격 판정 -2');}
 {const s=fresh(),[a,b]=s.players;a.tired=true;a.location=b.location;a.used={big:false,small:false};C.smallAct(s,a.id,{type:'investigate',target:b.id},rng);const r=s.feed.filter(f=>f.to.includes(a.id)&&f.roll?.label==='인물 조사').at(-1)?.roll;
- ok(r&&!r.terms.some(t=>t.label==='피곤함'),'피곤해도 인물 조사에는 -2가 붙지 않음');}
+ ok(r&&!(r.actor||r).terms.some(t=>t.label==='피곤함'),'피곤해도 인물 조사에는 -2가 붙지 않음');/* 2026-11-25: 인물 조사가 대결이 되어 시도한 쪽 판정(r.actor)의 보정을 봄 */}
 // 6. 화면: 지금 상태 한 줄, 행동 목록 탭 없음, 재판 근거는 수첩과 같은 번호
 {const s=fresh(),p=s.players[1];p.location='hall';s.day=6;s.turn=0;p.known.push({id:'kx',text:'시험 기록',source:'직접 목격',kind:'observed',time:'1일째 낮 1'});const scr=NS.read(C.view(s,p.id));
  ok(/살아 있는 사람 8명 · 마피아 편이 4명 이상이면 장악/.test(scr.text)&&/남은 때 4번/.test(scr.text)/* 2026-11-25 낮이 한 번: 6일째 낮이면 6일 낮·밤, 7일 낮·밤 = 4번(예전 6번) */,'화면 맨 위에 살아 있는 사람·장악 기준·남은 때');

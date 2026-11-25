@@ -5,7 +5,7 @@ const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios;let seed=131;const rng=()
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 ok(C.pp('B3CK','을','를')==='B3CK를'&&C.pp('96BH','을','를')==='96BH를'&&C.pp('ROOM','을','를')==='ROOM을'&&C.pp('A1L','이','가')==='A1L이','영문 끝 글자 뒤 조사: B3CK를, 96BH를, ROOM을, A1L이');
 const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8'),w=fs.readFileSync(path.join(dir,'00World.js'),'utf8');
-ok(ui.includes('인물 조사 난이도14')&&!ui.includes('인물 흔적16'),'규칙 글: 인물 조사 난이도 14(실제 값과 같음)');
+ok(ui.includes('인물 조사는 내 관찰 대 상대 은신 대결(같으면 실패)')&&!ui.includes('인물 조사 난이도14')&&!ui.includes('인물 흔적16'),'규칙 글: 인물 조사는 관찰 대 은신 대결(2026-11-25 사용자 결정, 실제 판정과 같음)');
 ok(ui.includes("${p.bot?'AI 자리':"),'자리 카드도 "AI 자리"(버튼 "AI 자리 추가"와 같은 말)');
 ok(w.includes("sleep:'잠을 잤습니다',watch:'불침번을 섰습니다',shelter:'집 안에 숨었습니다'"),'[내 행동] 줄을 문장으로');
 ok(ui.includes("(p.alive===false?' (숨짐)':'')"),'집 목록에 숨진 사람의 집은 "(숨짐)"');
