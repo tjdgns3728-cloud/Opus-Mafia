@@ -39,6 +39,11 @@ const lastRoll=(s,p,re)=>s.feed.filter(e=>e.to?.includes(p.id)&&e.roll&&re.test(
  const m=st.npcs.mayor;m.location='tavern';S.resolve(s,mf,threat(s,mf,'mayor'),hi);ok(m.pressure===1,'해먼드는 압박 1만 쌓임');
  const d=s.scenario.doyle;d.location='tavern';S.resolve(s,mf,threat(s,mf,'doyle'),hi);ok(d.pressure===1&&d.threatened===true,'도일도 압박 1, 협박받은 것으로 남음(다음 날 아침 털어놓는 이야기)');}
 
+// 3-2. 일터 협박의 본인 기록은 내가 한 일(남이 본 "누군가 …" 글이 아님) — 2026-11-25 CM이 확인 서버에서 "[내 행동]회관 창문이 누군가 던진 돌에 깨졌습니다"를 봄
+{const {s,st,mf}=game();mf.location='hall';st.npcs.mayor.location='tavern';S.resolve(s,mf,threat(s,mf,'mayor'),hi);
+ const mine=s.feed.filter(e=>e.to?.includes(mf.id)&&e.tag==='내 행동').map(e=>String(e.text));
+ ok(mine.some(x=>x==='회관 창문에 돌을 던졌습니다.')&&!mine.some(x=>/누군가/.test(x)),'일터 협박 뒤 본인 기록은 "회관 창문에 돌을 던졌습니다.": '+(mine.join(' / ')||'없음'));}
+
 // 4. 협박할수록 끌어들이기 난이도가 내려감(날마다 협박하고 그때마다 난이도를 봄)
 {const {s,st,mf}=game();mf.location='chapel';const n=st.npcs.bellringer;n.location='chapel';const dcs=[];
  for(let d=1;d<=3;d++){s.day=d;S.resolve(s,mf,recruit(s,mf,'bellringer'),lo);dcs.push(lastRoll(s,mf,/끌어들이기/)?.difficulty);n.recruited=false;S.resolve(s,mf,threat(s,mf,'bellringer'),hi);}
