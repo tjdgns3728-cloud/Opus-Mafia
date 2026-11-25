@@ -21,10 +21,11 @@ const to=(s,id,n0=0)=>s.feed.slice(n0).filter(e=>e.to.includes(id));
  ok(host.length>0&&!host.some(t=>/똑똑히 봤다/.test(t))&&host.every(t=>/누군지는 보지 못했다/.test(t)),'집주인 수첩에 "똑똑히 봤다" 없음 · '+(host[0]||'(없음)'));
  ok(plainSeen,'얼굴을 가리지 않은 습격자는 그대로 "얼굴을 들킴"');}
 
-// 3. 곁에서 지키던 사람을 밟으면 "곁을 지켰습니다"
-{let saw=null,bad=false;for(let i=0;i<60&&!saw;i++){const s=day(fresh());const [P,T,X]=s.players;s.plans={[P.id]:{type:'track',target:T.id},[T.id]:{type:'guardPlayer',target:X.id},[X.id]:{type:'wait'}};for(const p of s.players)if(!s.plans[p.id])s.plans[p.id]={type:'wait'};C.resolveBig(s,rng);
-  const k=P.known.map(k=>k.text).filter(t=>/^추적/.test(t));if(k.some(t=>/무언가를 했습니다/.test(t)))bad=true;saw=k.find(t=>/곁을 지켰습니다/.test(t))||null;}
- ok(saw&&!bad,'곁에서 지키기를 밟은 결과가 "○○의 곁을 지켰습니다" · '+(saw||'(밟기 성공 없음)'));}
+// 3. 곁에서 지키던 사람을 밟으면 "곁을 지켰습니다"(2026-11-25 시험 보강: 주사위를 고정해 밟기가 늘 성공하게 하고, 실패를 "밟기 성공 없음"과 "글이 틀림"으로 나눔)
+{const s=day(fresh());const [P,T,X]=s.players;P.stats.agility=10;T.stats.observe=1;s.plans={[P.id]:{type:'track',target:T.id},[T.id]:{type:'guardPlayer',target:X.id},[X.id]:{type:'wait'}};for(const p of s.players)if(!s.plans[p.id])s.plans[p.id]={type:'wait'};C.resolveBig(s,()=>0.99);
+ const k=P.known.map(k=>k.text).filter(t=>/^추적/.test(t));
+ ok(k.length>0,'밟기 성공(주사위 고정, 은신 10 대 관찰 1) · '+(k[0]||'밟기 성공 없음'));
+ ok(k.length>0&&k.some(t=>/곁을 지켰습니다/.test(t))&&!k.some(t=>/무언가를 했습니다/.test(t)),'곁에서 지키기를 밟은 결과가 "○○의 곁을 지켰습니다" · '+(k.length?'글: '+k.join(' / '):'밟기 성공 없음'));}
 
 // 4. 붙잡기 글: 행동한 사람·붙잡힌 사람·지켜본 사람
 {const s=day(fresh());const P=s.players.find(p=>p.role==='jailor')||s.players[0];P.role='jailor';const [T,X]=s.players.filter(p=>p!==P);s.plans={[P.id]:{type:'jail',target:T.id}};for(const p of s.players)if(!s.plans[p.id])s.plans[p.id]={type:'wait'};const n0=s.feed.length;C.resolveBig(s,rng);

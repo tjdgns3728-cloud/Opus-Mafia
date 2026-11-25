@@ -1,11 +1,12 @@
 // 2026-11-25 휴대폰 화면 고침(fix/mobile-layout-1430): 800px 이하에서만 바깥 틀 스크롤·버튼 44px·작은 글자 12px 이상·이야기 칸 넓히기.
 // 데스크톱의 한 화면 고정 규칙(81줄)은 그대로인지, 휴대폰 규칙이 800px 이하 미디어 쿼리 안에만 있는지 본다. 사용: node mobile_layout_test.js <저장소 경로>
+// 이 시험은 CSS 글만 본다. 실제 배치(버튼 높이·스크롤·잘림)는 브라우저 측정(375×812 등)으로 확인한다.
 const fs=require('fs'),path=require('path');
 const css=fs.readFileSync(path.join(path.resolve(process.argv[2]||'.'),'game','games','noir-trpg','assets','trpg.css'),'utf8').replace(/\r\n/g,'\n');
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 const A='/* 2026-11-25 휴대폰(800px 이하) 고침 시작 */',B='/* 2026-11-25 휴대폰(800px 이하) 고침 끝 */';
 const i=css.indexOf(A),j=css.indexOf(B);
-ok(i>0&&j>i,'휴대폰 고침 덩어리가 있음');
+ok(i>0&&j>i,'휴대폰 고침 덩어리가 있음');if(!(i>0&&j>i))process.exit(1)/* 2026-11-25 시험 보강: 덩어리가 없으면 나머지 확인은 뜻이 없음(전에는 css 전체를 덩어리로 잘못 잘라 일부가 통과) */;
 const block=css.slice(i+A.length,j);
 // 주석을 빼고 미디어 쿼리 하나로 감싸였는지(괄호 짝) 본다
 const body=block.replace(/\/\*[\s\S]*?\*\//g,'').trim();
@@ -26,7 +27,8 @@ ok(has('.action-deck>.fixed-arrow',['height:44px','font-size:13px']),'② 작은
 ok(has('.feed-tabs button,.reading-tools button',['min-height:40px','font-size:12px']),'③ 기록 탭 40px·12px');
 ok(has('header button',['min-height:40px','font-size:12px']),'③ 머리줄 버튼 40px·12px');
 ok(has('nav button',['min-height:40px','font-size:12px']),'③ 내 인물 탭 40px·12px');
-ok(/\.action-progress[^{]*\{[^}]*font-size:12px/.test(body),'③ 진행 글 12px');
+{/* 2026-11-25 시험 보강: 12px 규칙은 휴대폰 덩어리 안에서만 찾는다(전에는 정규식이 덩어리 밖 글까지 볼 수 있었음) */const inner=body.slice(body.indexOf('{')+1,body.lastIndexOf('}'));const rules=[...inner.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map(m=>({sel:m[1].split(',').map(x=>x.trim()),decl:m[2]}));
+ ok(rules.some(r=>r.sel.includes('.action-progress')&&/font-size:12px/.test(r.decl)),'③ 진행 글 12px(휴대폰 덩어리 안의 규칙)');}
 // 데스크톱 한 화면 고정 규칙(81줄)은 그대로
 const fixed=css.indexOf('/* Fixed game viewport; only records, facts and side panels scroll. */');
 const line81=css.slice(fixed,css.indexOf('\n',css.indexOf('\n',fixed)+1));

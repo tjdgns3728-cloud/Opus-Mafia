@@ -3,7 +3,7 @@
 // 5 때가 바뀔 때의 읽기 이름 "밤이 됨 · 이야기"·"새 기록 없음" 6 모두 표를 낸 뒤 시계
 const fs=require('fs'),path=require('path');const dir=path.join(path.resolve(process.argv[2]||'.'),'game','games','noir-trpg','scripts');
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow','09Minds'])require(path.join(dir,f+'.js'));
-globalThis.WebEngine={room(){},Component:class{},define(){}};
+let UIClass=null;globalThis.WebEngine={room(){},Component:class{},define(n,c){if(n==='TRPGUI')UIClass=c;}};
 for(const f of ['03Visuals','20Interface'])new Function('WebEngine',fs.readFileSync(path.join(dir,f+'.js'),'utf8'))(globalThis.WebEngine);
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,NS=globalThis.NoirScreen;
 const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8'),ses=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');
@@ -36,6 +36,11 @@ ok(ui.includes("v.turnStart?'새 기록 없음 · '+(v.turn===2?'밤이 되었�
 // 6
 {const s=fresh();s.stage='vote';const T=s.players[0];s.trial={id:'c1',target:T.id,by:s.players[1].id,reason:'시험',evidence:[],votes:{p1:'guilty'}};const v0=C.view(s,'p2');ok(v0.voteClosing===false,'표가 다 모이기 전 voteClosing 거짓');
  s.voteClosing=s.trial;const v1=C.view(s,'p2');ok(v1.voteClosing===true&&v1.trial.vote===null,'모두 표를 내면 voteClosing 참(남의 표는 보내지 않음)');}
-{// 시계 셈: 열린 뒤 10초에 모두 냄 → 남은 110초 − (120 − 30) = 20초 뒤
- const total=120,rem=left=>Math.max(0,Math.ceil(left-(total-30)));ok(rem(110)===20&&rem(85)===0,'모두 낸 뒤 시계: 10초에 냄 → 0:20 뒤, 35초 뒤 → 곧');
- ok(ui.includes("'모두 표를 냄 · '+fmt(rem)+' 뒤 판결'")&&ui.includes("'모두 표를 냄 · 곧 판결'")&&ui.includes('Math.ceil(left-(total-30))'),'화면 시계 글과 같은 셈');}
+{// 시계: 실제 화면 tick()을 불러 글을 확인(2026-11-25 시험 보강 — 전에는 시험 안에서 셈을 다시 해서 화면 코드가 틀려도 통과했음)
+ ok(typeof UIClass==='function','화면 클래스(TRPGUI)를 읽음');
+ const clock={textContent:'',classList:{toggle(){},remove(){},add(){}}};
+ const run=(left,view)=>{clock.textContent='';if(typeof UIClass!=='function')return '(화면 클래스 없음)';const u=Object.create(UIClass.prototype);u.el=id=>id==='chat-clock'?clock:null;u.followStory=()=>{};u.followChat=()=>{};u.acknowledgeStory=()=>{};u.engine={room:{left:()=>left}};u.now={view,phase:{seconds:120}};try{u.tick();}catch(e){if(!clock.textContent)clock.textContent='(오류 '+e.message+')';}return clock.textContent;};
+ const base={stage:'vote',voteClosing:true,cfg:{voteSeconds:120}};
+ const a=run(110,base);ok(a==='모두 표를 냄 · 0:20 뒤 판결','열린 뒤 10초에 모두 냄(남은 110초) → "모두 표를 냄 · 0:20 뒤 판결" · '+a);
+ const b=run(85,base);ok(b==='모두 표를 냄 · 곧 판결','첫 30초가 지난 뒤(남은 85초) → "모두 표를 냄 · 곧 판결" · '+b);
+ const c=run(110,{...base,voteClosing:false});ok(!/모두 표를 냄/.test(c)&&/1:50/.test(c),'표가 다 모이기 전에는 남은 시간 그대로 · '+c);}
