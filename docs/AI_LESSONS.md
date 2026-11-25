@@ -945,3 +945,11 @@ AI가 비슷한 일을 시작할 때와 관련 파일을 고치기 직전에, `t
 - 이 경험이 보여 주는 것: 사람 화면에 새 버튼을 만들면 같은 변경에서 AI 화면 글(NoirScreen.read의 버튼 목록·창, press의 처리)에도 나오는지 시험으로 본다.
 - 대화: CM 대화 원문 2026-11-25. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
 - 결과물: 저장소 커밋 cbb99cf.
+
+### 2026-11-25 · CM · 확인용 복사본에 제안 코드를 덮어써 결정 기록 넣기가 지워짐
+- 일어난 일: 제안 브랜치로 run32를 돌리려고 setup_claude_run.js(복사 + prep_check.js로 결정 기록 넣기)를 돌린 뒤, 제안 브랜치의 scripts를 복사본에 덮어썼다. 그래서 10Session.js에 넣은 결정 기록 코드가 지워져 이 판의 누른 버튼 기록(decisions.jsonl)이 남지 않았다. setup 파일의 주석에 2026-11-20에 같은 일로 20판의 물음과 답을 잃었다고 적혀 있었다.
+- 원인과 근거: 준비 파일이 무엇을 고치는지 확인하지 않고, 복사 뒤에 다른 파일을 덮어쓰면 그 고침이 사라진다는 것을 놓쳤다.
+- 시도한 해결과 결과: run33부터 "준비 → 제안 코드 복사 → prep_check.js 다시 → prep_allai.js" 순서로 돌림. run32는 판 기록·판정으로만 잼.
+- 이 경험이 보여 주는 것: 확인용 복사본에 무언가를 덮어쓸 때는 준비 단계가 그 파일에 넣은 고침을 마지막에 다시 넣는다.
+- 대화: CM 대화 원문 2026-11-25. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
+- 결과물: 세션 임시 폴더 scratchpad/gamecheck/run32_proposal(decisions.jsonl 없음).
