@@ -17,3 +17,5 @@ const roll=(s,P,T,r)=>{P.used={big:false,small:false};const n0=s.feed.length;C.s
 // 제안 C3: 유죄가 투표한 사람(기권 포함)의 과반이어야 처형
 {const mk=(g,n,a)=>{const s=fresh();s.stage='vote';const T=s.players[0];s.trial={id:'c1',target:T.id,by:s.players[1].id,reason:'시험',evidence:[],votes:{}};let k=1;for(let i=0;i<g;i++)s.trial.votes[s.players[k++].id]='guilty';for(let i=0;i<n;i++)s.trial.votes[s.players[k++].id]='innocent';for(let i=0;i<a;i++)s.trial.votes[s.players[k++].id]='abstain';s.cases.push({...s.trial,day:s.day,closed:false});C.judge(s);return s.verdict;};
  const a=mk(2,1,4),b=mk(4,1,2),c=mk(3,1,3);ok(a&&!a.guilty,'유죄 2·무죄 1·기권 4 → 무죄(과반 아님)');ok(b&&b.guilty,'유죄 4·무죄 1·기권 2 → 유죄');ok(c&&!c.guilty,'유죄 3·무죄 1·기권 3 → 무죄(run31 7일 같은 표)');}
+// 제안 D1: 사람 이동 15초
+ok(C.config.moveSeconds===15&&fs.readFileSync(path.join(dir,'20Interface.js'),'utf8').includes('15초 안에 정하지 않으면'),'사람 이동 시간 15초(설정과 화면 글)');

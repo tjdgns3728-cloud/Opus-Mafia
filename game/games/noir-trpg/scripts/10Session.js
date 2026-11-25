@@ -152,7 +152,7 @@ function morningMove(r,p){const s=r.state;if(s.turn===2||p.nightMoveEpoch===s.ep
 /* 2026-11-21 사용자: 낮 1·낮 2는 먼저 이동 단계. 사람은 10초, AI 자리는 답을 30초까지 기다린다. 모두 정하면 바로 다 같이 옮긴다 */
 function movePhase(r){if(end(r))return;const s=r.state;if(s.turn===2){small(r);return;}s.moveChoice={};s.moveLocked=false;const epoch=s.epoch;
  phase(r,'move',s.cfg.moveWaitSeconds??30,()=>{if(r.state!==s)return;C.applyMoves(s,()=>r.random());refresh(r);small(r);});
- r.after(s.cfg.moveSeconds??10,()=>{if(r.state===s&&s.epoch===epoch&&s.stage==='move'){s.moveLocked=true;for(const p of people(r,s))if(!s.ready.includes(p.id))s.ready.push(p.id);refresh(r);checkedReady(r);}});
+ r.after(s.cfg.moveSeconds??15,()=>{if(r.state===s&&s.epoch===epoch&&s.stage==='move'){s.moveLocked=true;for(const p of people(r,s))if(!s.ready.includes(p.id))s.ready.push(p.id);refresh(r);checkedReady(r);}});
  for(const p of C.alive(s).filter(p=>p.bot&&!p.masked&&!p.downed)){if(aiOn(r))aiMove(r,p.id);else{const d=botDest(r,p);if(d)C.chooseMove(s,p.id,{type:'move',place:d});}}
  refresh(r);}
 async function aiMove(r,id){const s=r.state,epoch=s.epoch,p=C.find(s,id);if(!p||p.hp<=0)return;const live=()=>r.state===s&&s.epoch===epoch&&s.stage==='move'&&p.hp>0;
