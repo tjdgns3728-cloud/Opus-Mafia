@@ -17,6 +17,28 @@ const C=()=>root.NoirTRPG;
  lawyer:["이름과 혐의 사이","hall","재판은 표로 정함. 이름이 적혀 있다고 범인은 아님.\n소문: 술집에서 누가 수상하다는 말이 돎(처음 꺼낸 사람은 모름)."],
  pharmacist:["한정된 처치 물자","clinic","붕대를 남보다 많이 가짐(붕대는 지혈만, 체력 회복은 의사의 약).\n리스의 외투는 진료소에 있음(아직 아무도 주머니를 뒤지지 않음)."]
 };
+/* 2026-11-25 사용자: "단서나 내 단서 같은 것은 게임 시스템에 단서로 넣고 볼 수 있게 하고 게임마스터가 게임을 이야기 하듯 설명해주는게 맞는데" — 첫 이야기는 진행자 서술로 하고, 단서는 수첩에 한 줄씩 넣는다(사실은 그대로, 새 사실 없음) */
+const OPENING_NARR='간밤 블랙 리지의 보안관 리스가 얼굴을 가린 자들과 싸우다 숨졌습니다. 마을로 들어오는 선로마저 끊겨, 바깥의 도움은 {arrive}일째 아침에야 닿습니다. 리스를 죽인 자들은 아직 주민들 사이에 섞여 있습니다. 누구를 고발하고 누구를 처형할지는 모두가 보는 앞에서 표로 정해야 합니다.';
+const HALL_NARR='화약고 문 앞에는 끝을 비틀어 만 꽁초 하나가 떨어져 있습니다. 담배를 그렇게 마는 것은 리스의 버릇이었습니다. 도일이 화약고를 열러 갑니다. 지금까지 드러난 단서는 수첩에서 다시 볼 수 있습니다.';
+const HALL_CLUE='화약고 문 앞에 꽁초(끝을 비틀어 만 것 · 리스의 버릇). 도일이 화약고를 열러 감.';
+const HOOK_NARR={
+ sheriff:'당신은 리스와 함께 순찰을 돌던 동료였습니다. 그의 빈 총집과 수첩이 당신 손에 남았습니다. 수첩에 적힌 화약고 열쇠 주인은 해먼드와 도일, 그리고 번져서 읽을 수 없는 이름 하나입니다. 마지막 장은 찢겨 나갔고 눌린 자국만 남았습니다. 광부들 사이에서는 자정쯤 리스가 화약고 쪽으로 갔다는 소문이 돕니다. 리스의 권총은 지금 회관 안 누군가의 외투 속에 있습니다.',
+ doctor:'리스의 시신에는 폭이 같은 칼자국이 세 곳 있습니다. 한 사람이 칼 한 자루로 찌른 상처입니다. 그의 외투는 진료소 처치대 옆에 있고, 주머니 한쪽이 불룩했습니다. 리스가 쓰러진 골목은 아직 아무도 치우지 않았습니다. 치료제는 몇 병뿐이고 더 들어오지 않습니다.',
+ jailor:'당신은 구금실 열쇠를 가지고 있습니다. 하루에 한 사람을 붙들 수 있지만, 붙든다고 죄가 밝혀지지는 않습니다. 붙들린 사람은 다음 턴에 큰 행동을 하지 못할 뿐입니다. 리스의 수첩은 그의 동료 보안관이 가지고 있습니다.',
+ guard:'아이 하나가 주택가 골목에서 주운 끈을 당신 손에 감아 주었습니다. 군대에서 폭약을 묶을 때 쓰던 매듭입니다. 당신은 곤봉과 붕대를 가지고 있고, 한 번에 한 사람 곁에서 그를 지킬 수 있습니다.',
+ detective:'리스가 쓰러진 주택가 뒤 골목은 아직 아무도 치우지 않았습니다. 사람이 오가면 발자국은 지워질 것입니다. 아이들은 이렇게 말합니다. {childNoise}',
+ reporter:'당신에게는 사진기가 있습니다. 사진에 찍힌 장면은 누구도 쉽게 의심하지 못합니다. 화약고는 아직 잠겨 있습니다.',
+ godfather:'{bombs} 꺼낸 폭약은 갱도에 설치해 터뜨릴 수 있습니다. 도일이 버티는 동안 노조는 움직이지 않지만, 임금을 못 받은 광부들은 쉽게 흔들립니다. 리스의 동료 보안관이 수첩을 가지고 있습니다. 무엇이 적혀 있는지는 모릅니다.',
+ mafioso:'당신의 외투 안에는 리스의 권총이 있습니다. 이니셜이 새겨져 있고 탄환은 {ammo}발입니다. 꺼내는 순간 모두가 알아볼 것입니다. {bombs} 꺼낸 폭약은 갱도에 설치해 터뜨릴 수 있습니다. 주택가 뒤 골목은 아직 아무도 치우지 않았고, 간밤에 무엇이 남았는지 당신도 다 알지 못합니다.',
+ consigliere:'{bombs} 숨긴 곳을 아는 것은 우리 편뿐입니다. 꺼낸 폭약은 갱도에 설치해 터뜨릴 수 있습니다. 술집 뒤에 노조 장부가 있다는 소문이 돕니다. 당신은 같은 곳의 사람을 조사해 그가 실제로 한 일을 알아낼 수 있습니다.',
+ kidnapper:'당신은 하루에 한 사람을 붙들 수 있습니다. 몸싸움에서 이겨야 하고, 지면 상대가 당신의 얼굴을 기억합니다. {bombs} 꺼낸 폭약은 갱도에 설치해 터뜨릴 수 있습니다. 도일이 버티는 동안 노조는 넘어오지 않습니다. 갱도 입구는 사람이 드뭅니다.',
+ lawyer:'재판은 표로 정해집니다. 이름이 적혀 있다고 범인인 것은 아닙니다. 술집에서는 누가 수상하다는 말이 돌지만, 처음 꺼낸 사람이 누군지는 아무도 모릅니다.',
+ pharmacist:'당신은 붕대를 남보다 많이 가지고 있습니다. 붕대로는 피만 멎게 할 뿐, 체력을 돌리는 것은 의사의 약입니다. 리스의 외투는 진료소에 있고, 아직 아무도 그 주머니를 뒤지지 않았습니다.'
+};
+/* 직업 도입 글(hooks의 셋째 칸, 줄마다 하나) 가운데 단서인 줄만 수첩에 넣는다. 능력·소지품 설명과 마피아의 폭약 줄(작전 기록에 이미 있음)은 넣지 않는다 */
+const HOOK_CLUES={sheriff:[0,1,2,3],doctor:[0,1,2],jailor:[1],guard:[0],detective:[0,1],reporter:[1],godfather:[1,2],mafioso:[0,2],consigliere:[1],kidnapper:[2],lawyer:[1],pharmacist:[1]};
+function bombsNarr(s){const sp=s.scenario.spots||['chapel'];return '우리 편은 화약고에서 가져온 폭약 두 개를 나눠 숨겼습니다: '+sp.map(k=>SPOT_NAME[k]).join(', ')+'.';}
+function clueNote(s,p,text,source,team=false){const kind=/^(소문|아이들 말):/.test(text)?'claim':'observed';const n=C().learn(s,p.id,text,null,source,kind);if(n&&team)n.teamOnly=true;return n;}
 function story(s,ids,text,extra={}){if(!ids.length)return;return C().emit(s,ids,'story',text,{authored:true,actionRecord:false,...extra});}
 function here(s,place){return C().alive(s).filter(p=>p.location===place&&!(s.turn===2&&place==='home'&&p.houseId));}
 function local(s,p){return C().alive(s).filter(o=>C().sameSpace(s,p,o));}
@@ -46,18 +68,18 @@ function start(s,rng=Math.random){/* 한 판에 한 번만 시작한다(다시 �
     /* 새 장소: 상인이 손님 이야기를 하는지, 리스의 서랍에 쪽지가 있는지(있으면 무엇인지), 해먼드가 서랍 이야기를 하는지, 다리에 남은 흔적, 광부가 다리 이야기를 하는지 */
     merchantTalks:rumorRoll('merchant')<0.6,memo,officeLead:rumorRoll('officeLead')<(memo?0.75:0.3),bridge:['saw','big','small'][Math.floor(rumorRoll('bridge')*3)],bridgeLead:rumorRoll('bridgeLead')<0.6};s.scenario={version:'black-ridge-1',documents:[],spots,rumor,/* 폭약은 두 개, 마을 안 두 곳에 하나씩. 본거지에는 두지 않는다(2026-11-16 사용자 결정) */bombs:spots.map(k=>SPOT_WHERE[k]).map((where,i)=>({id:'d'+i,where})),mineClosed:false,announced:false,secured:false,fuse:null,exploded:false,dayScenes:{},doyle:{id:'npc-doyle',name:'도일',hp:10,location:'hall',stats:{fight:5,agility:5},defense:'dodge',threatened:false,cowed:false,protected:false,disclosed:false},mayor:{name:'해먼드',location:'hall'}};
  for(const p of s.players){p.storyKnown=[];p.sceneVisits={};p.houseId=null;const h=hooks[p.role]||hooks.lawyer;p.personalLead={title:h[0],place:h[1],action:'그 장소의 증거 조사하기',done:false};if(p.team==='mafia'){p.storyKnown.push('cache');(C().learn(s,p.id,'우리 편은 화약고에서 가져온 폭약 두 개를 하나씩 나눠 숨겼다: '+spots.map(k=>SPOT_NAME[k]).join(', ')+'. 숨긴 곳에서 큰 행동으로 꺼낼 수 있다.',null,'자신이 아는 작전','observed')||{}).teamOnly=true;}if(p.role==='mafioso'&&!s.players.some(q=>q.reesePistol)/* 2026-11-25: 11명 판에 대행자가 둘이어도 리스의 권총은 하나뿐 — 먼저 나온 대행자만 */){p.items.pistol=1;p.items.ammo=3;p.reesePistol=true;}}
- story(s,s.players.map(p=>p.id),OPENING.replace('{arrive}',String((s.cfg?.days||7)+1)),{tag:'사건',source:'P-confirmed-opening'});
+ story(s,s.players.map(p=>p.id),OPENING_NARR.replace('{arrive}',String((s.cfg?.days||7)+1)),{source:'P-confirmed-opening'});for(const p of s.players)clueNote(s,p,OPENING.replace('{arrive}',String((s.cfg?.days||7)+1)),'처음 사건');
  hallScene(s);
- for(const p of s.players)story(s,[p.id],(hooks[p.role]?.[2]||hooks.lawyer[2]).replace('{bombs}',bombsText(s)).replace('{childNoise}',CHILD_NOISE[rumor.child]||CHILD_NOISE.chapel).replace('{ammo}',String(p.items.ammo||0)),{private:true,tag:'내 단서',source:'story/story_jobs.md'});
- for(const p of s.players.filter(p=>p.team==='mafia')){const mates=s.players.filter(o=>o.team==='mafia'&&o.id!==p.id).map(o=>o.name+'('+C().roles[o.role].name+')');story(s,[p.id],mates.length?'같은 편: '+mates.join(', ')+' (다른 사람은 모름).':'같은 편 없음.',{private:true,tag:'내 단서'});story(s,[p.id],'살아 있는 사람의 절반을 우리 편으로 → 금광과 마을 장악(광산 일은 회관 표로 정함).\n폭약이 사라지면 도일이 갱도를 닫고, 품삯이 끊긴 광부는 살길을 쥔 쪽에 섬.\n선로는 우리가 끊음 → 열차가 오기 전에 해내야 함.',{private:true,tag:'목표'});(C().learn(s,p.id,mates.length?'같은 편: '+mates.join(', '):'같은 편 없음',null,'처음부터 아는 사실','observed')||{}).teamOnly=true;}
+ for(const p of s.players){const role=hooks[p.role]?p.role:'lawyer',fill=t=>t.replace('{childNoise}',CHILD_NOISE[rumor.child]||CHILD_NOISE.chapel).replace('{ammo}',String(p.items.ammo||0));story(s,[p.id],fill((HOOK_NARR[role]||'').replace('{bombs}',bombsNarr(s)))+' 이 단서들은 수첩에서 다시 볼 수 있습니다.',{private:true,source:'story/story_jobs.md'});const lines=fill(hooks[role][2].replace('{bombs}',bombsText(s))).split('\n');for(const i of HOOK_CLUES[role]||[])if(lines[i])clueNote(s,p,lines[i],'내 단서',p.team==='mafia');}
+ for(const p of s.players.filter(p=>p.team==='mafia')){const mates=s.players.filter(o=>o.team==='mafia'&&o.id!==p.id).map(o=>o.name+'('+C().roles[o.role].name+')');story(s,[p.id],(mates.length?'당신과 같은 편은 '+mates.join(', ')+'입니다. 다른 사람은 이 사실을 모릅니다.':'이번 판에 당신과 같은 편은 없습니다.')+' 당신들의 목표는 살아 있는 사람의 절반을 우리 편으로 만들어 금광과 마을을 손에 넣는 것입니다. 광산 일은 회관의 표로 정해집니다. 폭약이 사라지면 도일이 갱도를 닫고, 품삯이 끊긴 광부들은 살길을 쥔 쪽에 섭니다. 선로는 우리가 끊었습니다. 열차가 오기 전에 해내야 합니다.',{private:true});clueNote(s,p,'목표: 살아 있는 사람의 절반을 우리 편으로 → 금광과 마을 장악(광산 일은 회관 표로 정함). 폭약이 사라지면 도일이 갱도를 닫고, 품삯이 끊긴 광부는 살길을 쥔 쪽에 섬. 선로는 우리가 끊음 → 열차가 오기 전에 해내야 함.','목표',true);(C().learn(s,p.id,mates.length?'같은 편: '+mates.join(', '):'같은 편 없음',null,'처음부터 아는 사실','observed')||{}).teamOnly=true;}
  /* 리스를 죽인 두 사람과 리스가 남긴 마지막 흔적(판마다 단추 또는 할퀸 상처). 골목의 큰·작은 발자국은 두 범인의 장화와 맞는다 */{const mafia=s.players.filter(p=>p.team==='mafia').sort((a,b)=>(b.role==='mafioso')-(a.role==='mafioso')),killers=mafia.slice(0,2),clue=rng()<.5?'button':'scratch';s.scenario.reese={killers:killers.map(k=>k.id),clue};for(const p of s.players){const r=rng();p.boots=r<.25?'big':r<.75?'mid':'small';}
-  const A=killers[0],B=killers[1];if(A){A.boots='big';A.reeseMark={type:clue,hidden:false};story(s,[A.id],'그날 밤 리스와 맞붙다가 '+(clue==='button'?'외투 단추 하나를 잃음':'리스에게 손등을 긁힘')+'. 누가 조사하면 보임(작은 행동으로 감출 수 있지만 완전히 지워지지는 않음). 골목에 내 큰 장화 자국.',{private:true,tag:'내 단서'});}if(B){B.boots='small';story(s,[B.id],'그날 밤 골목에 내 작은 장화 자국이 남음.',{private:true,tag:'내 단서'});}else{const inn=s.players.filter(p=>p.team!=='mafia');if(inn.length)inn[Math.floor(rng()*inn.length)].boots='small';}
-  for(const d of s.players.filter(p=>p.role==='doctor')){d.storyKnown.push('reese-last');const t=clue==='button'?'리스 시신 오른손에 검은 뿔단추 하나(외투 주머니에 넣어 둠) → 외투 단추가 빈 사람이 리스와 맞붙은 사람.':'리스 손톱 밑에 다른 사람의 피와 살갗 → 손등에 긁힌 상처가 있는 사람이 리스와 맞붙은 사람.';story(s,[d.id],t,{private:true,tag:'내 단서'});C().learn(s,d.id,t,null,'직접 살핀 시신','observed');}}
+  const A=killers[0],B=killers[1];if(A){A.boots='big';A.reeseMark={type:clue,hidden:false};story(s,[A.id],'그날 밤 당신은 리스와 맞붙다가 '+(clue==='button'?'외투 단추 하나를 잃었습니다':'리스에게 손등을 긁혔습니다')+'. 누가 당신을 조사하면 드러납니다. 작은 행동으로 감출 수 있지만 완전히 지워지지는 않습니다. 골목에는 당신의 큰 장화 자국이 남았습니다.',{private:true});clueNote(s,A,'그날 밤 리스와 맞붙다가 '+(clue==='button'?'외투 단추 하나를 잃음':'리스에게 손등을 긁힘')+'. 누가 조사하면 보임(작은 행동으로 감출 수 있지만 완전히 지워지지는 않음). 골목에 내 큰 장화 자국.','내 단서',true);}if(B){B.boots='small';story(s,[B.id],'그날 밤 골목에는 당신의 작은 장화 자국이 남았습니다.',{private:true});clueNote(s,B,'그날 밤 골목에 내 작은 장화 자국이 남음.','내 단서',true);}else{const inn=s.players.filter(p=>p.team!=='mafia');if(inn.length)inn[Math.floor(rng()*inn.length)].boots='small';}
+  for(const d of s.players.filter(p=>p.role==='doctor')){d.storyKnown.push('reese-last');const t=clue==='button'?'리스 시신 오른손에 검은 뿔단추 하나(외투 주머니에 넣어 둠) → 외투 단추가 빈 사람이 리스와 맞붙은 사람.':'리스 손톱 밑에 다른 사람의 피와 살갗 → 손등에 긁힌 상처가 있는 사람이 리스와 맞붙은 사람.';story(s,[d.id],clue==='button'?'리스의 시신 오른손에는 검은 뿔단추 하나가 쥐여 있었습니다. 당신은 그것을 외투 주머니에 넣어 두었습니다. 외투 단추가 빈 사람이 리스와 맞붙은 사람입니다.':'리스의 손톱 밑에는 다른 사람의 피와 살갗이 끼어 있었습니다. 손등에 긁힌 상처가 있는 사람이 리스와 맞붙은 사람입니다.',{private:true});C().learn(s,d.id,t,null,'직접 살핀 시신','observed');}}
  sync(s);
 }
 function afterGathering(s){}
 // 첫 장면 바로 뒤에 모두가 보는 장면. 회관 대화가 시작되기 전에 나와야 이야기할 거리가 생긴다.
-function hallScene(s){story(s,s.players.map(p=>p.id),'화약고 문 앞에 꽁초(끝을 비틀어 만 것 · 리스의 버릇). 도일이 화약고를 열러 감.',{tag:'단서'});}
+function hallScene(s){story(s,s.players.map(p=>p.id),HALL_NARR);for(const p of s.players)clueNote(s,p,HALL_CLUE,'처음 단서');}
 function chapterText(s,place){const q=s.scenario,d=q.doyle;
  if(place==='warehouse'){if(d.hp<=0)return '갱도 앞에서 도일의 몸이 움직이지 않습니다. 입구에 걸린 폐쇄 팻말이 바람에 흔들립니다.';if(s.day===1&&s.turn===0)return '갱도는 어둡고 화약고에는 자물쇠가 걸려 있습니다. 문틀 밑에 무언가 떨어져 있습니다. 도일이 열쇠를 들고 이쪽으로 오고 있습니다.';return q.secured?'도일이 회수한 폭약 수를 장부와 맞춰 봅니다. "물건은 돌아왔소. 가져간 사람이 누군지는 아직 모르는 일이오."':d.cowed?'도일이 떨리는 손으로 폐쇄 팻말을 내립니다. "일은 다시 하시오. 누구 돈인지는 묻지 마시오."':'도일이 빈 폭약 칸을 가리킵니다. "두 개요. 사람을 갱도에 들여보냈다가 어디서 터질지 알 수 없소." 광부들이 닫힌 입구 앞에 멈춰 섭니다.';}
  if(place==='chapel'&&s.day>=4)return '교회 창으로 오후의 빛이 들어옵니다. 종줄은 움직이지 않습니다. 누군가 이곳을 연락 장소로 쓰는지 알아보려면 직접 만나거나 실제로 남긴 것을 찾아야 합니다.';
