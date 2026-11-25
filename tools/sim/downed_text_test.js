@@ -13,4 +13,4 @@ const mine=fresh.filter(e=>e.to.includes(V.id)).map(e=>e.text).join(' / '),their
 ok(/당신은 쓰러졌습니다/.test(mine)&&!new RegExp(V.name+' 쓰러짐').test(mine),'본인에게는 "당신은 쓰러졌습니다"(자기 이름 3인칭 아님) · '+mine.slice(0,80));
 ok(/6일째 낮이 끝나기 전에/.test(mine)&&!/내일 낮/.test(mine),'마감은 날짜로(5일째 낮에 쓰러지면 6일째 낮)');
 ok(/의사가 큰 행동으로 살릴 수 있음/.test(theirs)&&!/같은 곳 사람은 큰 행동으로/.test(theirs),'같은 곳 사람에게는 "같은 곳의 의사가 큰 행동으로 살릴 수 있음" · '+theirs.slice(0,80));
-const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes('쓰러져 있어 말하거나 행동할 수 없습니다.')&&ui.includes("me.downed?'쓰러져 있음 · 행동할 수 없음'"),'쓰러져 있는 동안 대화 칸 대신 이유, 행동 횟수 대신 "쓰러져 있음"');
+const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes('쓰러져 있어 말하거나 행동할 수 없습니다.')&&ui.includes('composer.hidden=!!v.me?.downed')&&ui.includes("me.downed?'쓰러져 있음 · 행동할 수 없음'"),'쓰러져 있는 동안 대화 칸 대신 이유, 행동 횟수 대신 "쓰러져 있음"');
