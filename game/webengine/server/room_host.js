@@ -417,6 +417,10 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
       if (R.status !== "lobby") return refuse("already_started", "이미 시작했습니다.");
       const here = R.seats.filter(x => x.on).length;      // seats whose screens are away take no part: they are given up at the start
       if (here < MIN) return refuse("too_few", `${MIN}명부터 시작할 수 있습니다 (지금 ${here}명).`, {min: MIN, now: here});
+      if (rules.canStart) {                                  // (optional) the game may allow only some seat counts
+        const say = R.guard("시작 확인", () => rules.canStart(R.api, here));
+        if (say && say.ok === false) return refuse("cannot_start", String(say.error || "지금은 시작할 수 없습니다."), {now: here});
+      }
       for (const x of R.seats.filter(x => !x.on)) removeSeat(R, x);
       R.status = "play";
       R.ai = {asked: 0, sent: 0, answered: 0, blocked: 0, failed: 0, seconds: 0};      // the AI count of this board starts here
