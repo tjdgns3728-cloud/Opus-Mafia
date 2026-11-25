@@ -10,7 +10,7 @@ const names=['가람','나래','다온','라희','마루','바다','사랑','아
 const mk=(n,sd)=>{let seed=sd;const rng=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};const s=C.create(Array.from({length:n},(_,i)=>({id:'p'+i,name:names[i],bot:true})),rng);return {s,rng};};
 const mafiaRoles=s=>s.players.filter(p=>p.team==='mafia').map(p=>p.role).sort();
 {let all=true;for(let k=1;k<=200;k++){const {s}=mk(8,k*7919);if(JSON.stringify(mafiaRoles(s))!==JSON.stringify(['godfather','mafioso']))all=false;}ok(all,'8명: 200판 모두 마피아 2명 = 대부·대행자');}
-{const third={};let all=true,town=true;const pool=['sheriff','doctor','jailor','guard','detective','reporter','lawyer','pharmacist'];
+{const third={};let all=true,town=true;const pool=['sheriff','doctor','jailor','guard','detective','watchman','reporter','lawyer']/* 제안 브랜치: 11명은 약제사 대신 야경꾼 */;
  for(let k=1;k<=300;k++){const {s}=mk(11,k*104729);const m=mafiaRoles(s);if(m.length!==3||!m.includes('godfather')||!m.includes('mafioso')){all=false;continue;}const rest=[...m];rest.splice(rest.indexOf('godfather'),1);rest.splice(rest.indexOf('mafioso'),1);third[rest[0]]=(third[rest[0]]||0)+1;
   const t=s.players.filter(p=>p.team==='town').map(p=>p.role).sort();if(JSON.stringify(t)!==JSON.stringify([...pool].sort()))town=false;}
  ok(all,'11명: 300판 모두 마피아 3명이고 대부·대행자 포함');
