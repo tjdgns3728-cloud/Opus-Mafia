@@ -7,7 +7,7 @@ const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,M=globalThis.NoirMinds;
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 let x=11;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};const hi=()=>0.99,lo=()=>0.01;
 const fresh=()=>{const s=C.create(['사람','도현','서아','시온','하준','나린','이안','수현'].map((n,i)=>({id:'p'+i,name:n,bot:i>0})),rng);S.start(s);s.day=2;s.turn=0;s.stage='plan';s.scenario.discovered=true;for(const p of s.players){p.location='hall';p.used={big:false,small:false};}return s;};
-const roles=s=>({gf:s.players.find(p=>p.role==='godfather'),town:s.players.filter(p=>p.team==='town')});
+const roles=s=>({gf:s.players.find(p=>p.role==='godfather'),mf:s.players.find(p=>p.role==='mafioso')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 NPC 고발을 보는 시험은 대행자로 */,town:s.players.filter(p=>p.team==='town')});
 const got=(s,p,re)=>s.feed.some(e=>e.to?.includes(p.id)&&re.test(String(e.text)));
 const big=(s,p)=>S.choices(s,p,'big'),find=(s,p,verb,npc)=>big(s,p).find(a=>a.verb===verb&&a.npc===npc);
 
@@ -26,7 +26,7 @@ const veil=(s,p)=>{s.aliases??={};s.aliases[p.id]=(s.aliasSeq=(s.aliasSeq||0)+1)
 // 2. 돈 끌어들이기 없음. 아무것도 하지 않았을 때 난이도 20(설득 10인 대부가 주사위 10 = 10%), 해먼드는 22. 거절당하면 맨얼굴이면 공포 0에서 고발
 // 2026-11-19 사용자 "그러니깐 아무것도 안했을 때 확률은 10%정도이고 뭔가 겁을 먹게하거나 이야기 전개 방식이 마피아를 따를 수 밖에 없으면 난이도를 낮추는 식으로 해달라는 의미였어요"
 const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.feed.filter(e=>e.to?.includes(p.id)&&e.roll?.label===label).at(-1)?.roll;
-{const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
+{const s=fresh(),{mf:gf}=roles(s);/* 고발을 보는 시험: 대행자 */s.scenario.mineClosed=false;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
  ok(!big(s,gf).some(a=>a.verb==='recruitNpcPaid'),'돈을 쥐여 주며 끌어들이기는 없음');
  S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.85));const r1=rollOf(s,gf,'술집 주인 끌어들이기');
  ok(r1&&r1.difficulty===10&&!n.recruited&&n.refusals===1&&got(s,gf,/흔들릴 까닭이 없어 보입니다/),'아무것도 하지 않았으면 난이도 10(설득은 더하지 않음): 주사위 9면 거절(판정은 함)');
@@ -81,7 +81,7 @@ const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.fe
  gf.location='clinic';const stock=st.stock;S.resolve(s,gf,find(s,gf,'threatNpc','nurse'),hi);ok(st.stock===Math.max(0,stock-2),'진료소 붕대 창고를 망가뜨리면 붕대가 둘 줄어듦');}
 
 // 6. 행동 협박을 그 NPC가 보면: 공포만큼 덜한 확률로 고발, 겁에 질리면 입을 다묾
-{const s=fresh(),{gf}=roles(s);gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
+{const s=fresh(),{mf:gf}=roles(s);/* 고발을 보는 시험: 대행자 */gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
  S.resolve(s,gf,find(s,gf,'threatNpc','barkeep'),lo);ok(s.cases.some(c=>c.target===gf.id&&c.npcKind==='pressure'),'보는 앞에서 맨얼굴로 하면(주사위가 낮으면) 고발');}
 {const s=fresh(),{gf}=roles(s);gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
  S.resolve(s,gf,find(s,gf,'threatNpc','barkeep'),hi);ok(!s.cases.some(c=>c.target===gf.id)&&got(s,gf,/겁에 질린 얼굴로 입을 다뭅니다/),'공포가 쌓여 있으면(주사위가 높으면) 입을 다묾');}
@@ -96,7 +96,7 @@ const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.fe
 // 7-1. 폭약 목격: 공포가 크면 눈을 돌리고, 얼굴을 가렸으면 이름 없이 소리치며, 붙잡히면 얼굴이 드러난다
 function settle(s,r){/* 2026-11-25: 폭약을 꺼내다 들킨 사람은 이번 때가 끝날 때 고른다. 고르지 않으면 그대로 가져감 */if(s.scenario.confronts?.some(c=>!c.done)){s.stage='hazard';S.resolveHazard(s,r);}}
 const PLACE={chapel:'chapel',cart:'warehouse','spot:barrel':'tavern','spot:medbox':'clinic'};
-const atBomb=s=>{s.scenario.continuation&&(s.scenario.continuation.discoveredBy=s.scenario.continuation.discoveredBy||{});const b=s.scenario.bombs.find(b=>PLACE[b.where]);const maf=s.players.find(p=>p.team==='mafia');maf.location=PLACE[b.where];const q=s.scenario;for(const n of [q.doyle,...Object.values(q.continuation?.npcs||{})].filter(Boolean))n.location='office';q.doyle.location=maf.location;q.doyle.cowed=false;q.doyle.hp=10;return {maf,q};};
+const atBomb=s=>{s.scenario.continuation&&(s.scenario.continuation.discoveredBy=s.scenario.continuation.discoveredBy||{});const b=s.scenario.bombs.find(b=>PLACE[b.where]);const maf=s.players.find(p=>p.team==='mafia'&&p.role!=='godfather')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */;maf.location=PLACE[b.where];const q=s.scenario;for(const n of [q.doyle,...Object.values(q.continuation?.npcs||{})].filter(Boolean))n.location='office';q.doyle.location=maf.location;q.doyle.cowed=false;q.doyle.hp=10;return {maf,q};};
 {const s=fresh(),{maf,q}=atBomb(s);q.doyle.fear=10;const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);settle(s,rng);
  ok(take&&!s.cases.some(c=>c.target===maf.id)&&got(s,maf,/겁에 질린 얼굴로 눈을 돌립니다/),'공포가 10이면 도일이 폭약을 꺼내는 것을 보고도 눈을 돌림');}
 {const s=fresh(),{maf}=atBomb(s);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);settle(s,rng);
@@ -106,6 +106,6 @@ for(const flee of [true,false]){const s=fresh(),{maf}=atBomb(s);veil(s,maf);cons
  ok(town.every(t=>t.known.some(k=>/변장한 사람 1이 .*폭약을 꺼냈소/.test(k.text)&&k.about==='v1'))&&(flee?!named:named)&&(flee?!!maf.faceCover:!maf.faceCover),flee?'변장하고 달아나면 "변장한 사람 1"이 했다는 말만 퍼지고 고발 없음':'변장했어도 붙잡히면 가리개가 벗겨지고 고발됨');}
 
 // 8. 규칙 판단: 끌어들이기·협박 고발은 폭약 고발과 다른 까닭으로 센다
-{const s=fresh(),{gf}=roles(s);s.scenario.mineClosed=false;gf.location='tavern';s.scenario.continuation.npcs.barkeep.location='tavern';S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.5));
+{const s=fresh(),{mf:gf}=roles(s);/* 고발을 보는 시험: 대행자 */s.scenario.mineClosed=false;gf.location='tavern';s.scenario.continuation.npcs.barkeep.location='tavern';S.resolve(s,gf,find(s,gf,'recruitNpc','barkeep'),mid(0.5));
  const c=s.cases.find(c=>c.target===gf.id);const t=s.players.find(p=>p.team==='town'&&p.bot),m=M.suspicion(s,t,gf.id);
  ok(!!c&&m.why.some(w=>w==='NPC가 직접 들은 끌어들이기 권유')&&!m.why.some(w=>/폭약 고발/.test(w)),'규칙 판단은 폭약 고발이 아니라 "NPC가 직접 들은 끌어들이기 권유"로 셈: '+m.why.join(' / '));}

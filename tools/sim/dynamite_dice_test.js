@@ -45,7 +45,7 @@ const search=(s,p,k,r)=>{S.resolve(s,p,opt(s,p,k),r);return lastRoll(s,p);};
  const r=search(s,p,'barrel',()=>0.99);ok(r.success&&/술통은 비어 있습니다/.test(mine(s,p))&&p.known.some(k=>/빈 술통은 비어 있었다/.test(String(k.text))),'성공했는데 비었으면 "술통은 비어 있습니다"가 나오고 수첩에 남음');}
 
 // 5. 꺼내다 NPC에게 들키면: 바로 고발하지 않고, 이번 때가 끝날 때 [폭약을 돌려준다] / [그대로 가져간다]를 고른다
-const setup=(masked=false)=>{const s=game();s.scenario.spots=['cart','barrel'];s.scenario.bombs=[{id:'d0',where:'cart'},{id:'d1',where:'spot:barrel'}];const bk=ST.npc(s,'barkeep');bk.location='tavern';bk.hp=10;bk.recruited=false;const m=s.players.find(o=>o.team==='mafia');m.location='tavern';if(masked){s.aliases??={};s.aliases[m.id]=(s.aliasSeq=(s.aliasSeq||0)+1);m.faceCover=true;}S.resolve(s,m,{type:'scene',sceneKey:'take'},rng);return {s,m};};
+const setup=(masked=false)=>{const s=game();s.scenario.spots=['cart','barrel'];s.scenario.bombs=[{id:'d0',where:'cart'},{id:'d1',where:'spot:barrel'}];const bk=ST.npc(s,'barkeep');bk.location='tavern';bk.hp=10;bk.recruited=false;const m=s.players.find(o=>o.team==='mafia'&&o.role!=='godfather')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */;m.location='tavern';if(masked){s.aliases??={};s.aliases[m.id]=(s.aliasSeq=(s.aliasSeq||0)+1);m.faceCover=true;}S.resolve(s,m,{type:'scene',sceneKey:'take'},rng);return {s,m};};
 {const {s,m}=setup();const v=S.hazardView(s,m);
  ok(s.scenario.bombs.find(b=>b.id==='d1').where==='carry:'+m.id&&!s.cases.some(c=>c.target===m.id),'꺼낸 직후: 폭약은 품에 있고 아직 고발 없음');
  ok(/앞을 막아섭니다/.test(mine(s,m))&&/15초 안에 폭약을 술집 주인에게 돌려줄지, 그대로 가져갈지/.test(mine(s,m)),'술집 주인이 막아서고, 때가 끝날 때 고른다고 알려 줌');

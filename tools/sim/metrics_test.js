@@ -10,7 +10,7 @@ const fresh=()=>{const s=C.create(['사람','도현','서아','시온','하준',
 const kinds=s=>(s.metrics||[]).map(m=>m.kind);
 
 // 1. 변장·끌어들이기·NPC 반응·찾기·재판·죽음이 지표로 남는다
-{const s=fresh(),t=s.players.find(p=>p.team==='town'&&p.name!=='사람'),gf=s.players.find(p=>p.role==='godfather');
+{const s=fresh(),t=s.players.find(p=>p.team==='town'&&p.name!=='사람'),gf=s.players.find(p=>p.role==='mafioso')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */;
  t.location='hall';C.smallAct(s,t.id,{type:'cover'},rng);const cv=s.metrics.find(m=>m.kind==='cover');ok(cv&&cv.alias===1&&cv.actor===t.id&&cv.team==='town'&&cv.seenBy===0,'변장: 번호·누가·보는 사람 수');
  s.scenario.mineClosed=false;gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';gf.used.big=false;
  const rec=S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep');S.resolve(s,gf,rec,()=>0.5);/* 주사위 6: 아무 이유 없이 권하면 난이도 20이라 거절 */

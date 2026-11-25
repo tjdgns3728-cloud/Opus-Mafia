@@ -68,3 +68,21 @@ const lastRoll=(s,p,re)=>s.feed.filter(e=>e.to?.includes(p.id)&&e.roll&&re.test(
  const r=lastRoll(s,mf,/도일 끌어들이기/),lab=(r?.terms||[]).map(x=>x.label+x.value).join(',');
  ok(/곁에서 지키는 사람-3/.test(lab)&&/구조된 광부의 노조 증언-4/.test(lab),'도일 편에 서기 -3, 광부 증언 -4가 도일 끌어들이기 판정에 붙음: '+lab);
  d.cowed=true;ok(big(s,t).some(a=>a.sceneKey==='withdraw'),'넘어간 도일에게 광부 증언 뒤 [노조 지지 거두기 설득]을 할 수 있음');}
+
+// 9. 대부의 능력(2026-11-25 사용자 "NPC가 고발안하게 하죠"): NPC는 대부를 고발하지 않음. 사람은 그대로 고발 가능
+{const setup=role=>{const {s,st,mf,gf}=game();const m=role==='godfather'?gf:mf;s.day=2;m.location='tavern';m.faceCover=null;const n=st.npcs.barkeep;n.location='tavern';n.fear=0;return {s,m,n};};
+ {const {s,m,n}=setup('godfather');ok(S.accuseChance(s,n)>=0.9,'고발 확률이 높은 술집 주인('+S.accuseChance(s,n)+')');S.resolve(s,m,threat(s,m,'barkeep'),lo);
+  ok(!s.cases.some(c=>c.target===m.id),'얼굴을 드러낸 대부가 술집 주인 앞에서 협박해도 고발 사건이 생기지 않음');
+  ok(s.feed.some(e=>e.to?.includes(m.id)&&/겁에 질린 얼굴로 입을 다뭅니다/.test(String(e.text))),'대부에게는 지금 있는 "입을 다묾" 글이 그대로 나옴');}
+ {const {s,m}=setup('mafioso');S.resolve(s,m,threat(s,m,'barkeep'),lo);ok(s.cases.some(c=>c.target===m.id&&c.npcKind==='pressure'),'같은 조건에서 대행자는 고발됨');}
+ {const {s,m}=setup('godfather');const h=threat(s,m,'barkeep').hint,r=recruit(s,m,'barkeep').hint;ok(/대부를 고발하지 않습니다/.test(h)&&!/고발당할 수 있습니다/.test(h)&&/대부를 고발하지 않습니다/.test(r)&&!/당신을 고발할 수 있습니다/.test(r),'대부 본인 화면의 협박하기·끌어들이기 설명은 "고발하지 않습니다"');
+  const {s:s2,m:m2}=setup('mafioso');ok(/고발당할 수 있습니다/.test(threat(s2,m2,'barkeep').hint),'대행자 화면 설명은 그대로 "고발당할 수 있습니다"');}
+ ok(/대부를 두려워해서, 대부가 하는 일을 봐도 고발하지 않습니다\. 사람은 고발할 수 있습니다\./.test(C.roles.godfather.desc),'대부 직업 설명에 NPC가 고발하지 않는다는 문장');}
+
+// 10. 대부가 NPC 앞에서 폭약을 꺼내도 15초 대치·고발이 없음(대행자는 대치)
+{const setup=role=>{const {s,st,mf,gf}=game();const m=role==='godfather'?gf:mf;s.day=2;s.scenario.spots=['cart','barrel'];s.scenario.bombs=[{id:'d0',where:'cart'},{id:'d1',where:'spot:barrel'}];m.storyKnown=[...(m.storyKnown||[]),'cache:barrel'];
+  const n=st.npcs.barkeep;n.location='tavern';n.fear=0;m.location='tavern';m.faceCover=null;return {s,m};};
+ {const {s,m}=setup('godfather');const opt=big(s,m).find(a=>a.sceneKey==='take');ok(!opt||/대부를 고발하지 않습니다/.test(opt.warn||'')&&!/고발당할 수 있습니다/.test(opt.warn||''),'대부 화면의 폭약 꺼내기 경고는 "고발하지 않습니다": '+(opt?.warn||'(선택지 없음)'));
+  S.resolve(s,m,{type:'scene',sceneKey:'take'},lo);ok(!(s.scenario.confronts||[]).some(c=>c.pid===m.id)&&!s.cases.some(c=>c.target===m.id),'대부가 술집 주인 앞에서 폭약을 꺼내도 대치·고발 없음');
+  ok(s.scenario.bombs.some(b=>b.where==='carry:'+m.id),'폭약은 대부 품에 있음');}
+ {const {s,m}=setup('mafioso');S.resolve(s,m,{type:'scene',sceneKey:'take'},lo);ok((s.scenario.confronts||[]).some(c=>c.pid===m.id),'같은 조건에서 대행자는 술집 주인이 막아서 대치');}}

@@ -14,7 +14,7 @@ ok(!src10.includes('NoirMinds.principles')&&src10.split('defeatsFor(s,p)').lengt
 ok(!/RULE_FACTS|숨긴 폭약의 자리는 처음에 마피아만 안다/.test(src10),'AI 지시문에 폭약 행동을 가르치는 글을 넣지 않음(사용자: 지시 대신 패배기록으로)');
 {const s=fresh(),p=s.players[0];const line=T.cannedTalk(s,p,'hall');ok(line&&!/가 보겠습니다|남아 사람들 이야기/.test(line)&&p.intendPlace,'AI 끈 컴퓨터 자리의 첫 회관 말은 잡담(갈 곳은 따로 정해 둠): '+line);}
 // 2. 곁에서 지키기: 누구나, 낮에만, 같은 곳. 퇴역군인은 막아설 때 보정 +2
-{const s=fresh(),maf=s.players.find(p=>p.team==='mafia'),town=s.players.find(p=>p.team==='town'&&p.role!=='guard'),other=s.players.find(p=>p.id!==maf.id&&p.id!==town.id);
+{const s=fresh(),maf=s.players.find(p=>p.team==='mafia'&&p.role!=='godfather')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */,town=s.players.find(p=>p.team==='town'&&p.role!=='guard'),other=s.players.find(p=>p.id!==maf.id&&p.id!==town.id);
  ok(C.choices(s,maf.id,'big').some(a=>a.type==='guardPlayer'&&a.target===other.id),'마피아(대행자 등)도 사람 곁에서 지키기를 고를 수 있음');
  ok(C.choices(s,town.id,'big').some(a=>a.type==='guardPlayer'),'퇴역군인이 아닌 시민도 고를 수 있음');
  s.turn=2;ok(!!C.validate(s,town.id,{type:'guardPlayer',target:other.id},'big'),'밤에는 고를 수 없음');s.turn=0;
@@ -29,7 +29,7 @@ const guardFight=role=>{const s=fresh(),[atk]=s.players.filter(p=>p.team==='mafi
 {const src07=fs.readFileSync(path.join(dir,'07StoryActions.js'),'utf8');ok(!src07.includes("['guard','jailor','sheriff'].includes(p.role))add('guardNpc'")&&/퇴역군인은 6까지/.test(src07)&&src07.includes("guard.role==='guard'?6:4"),'NPC 곁에서 지키기도 누구나, 퇴역군인은 6까지 막음');}
 // 3·4. 폭약: 컴퓨터 자리는 NPC가 보는 낮에 꺼내지 않는다. NPC가 고발하면 꺼내기 전에 찾았다고 말했는지 남긴다
 const PLACE={chapel:'chapel',cart:'warehouse','spot:barrel':'tavern','spot:medbox':'clinic'};
-const atBomb=s=>{const b=s.scenario.bombs.find(b=>PLACE[b.where]);const maf=s.players.find(p=>p.team==='mafia');maf.location=PLACE[b.where];const q=s.scenario;for(const n of [q.doyle,...Object.values(q.continuation?.npcs||{})].filter(Boolean))n.location='office';return {maf,place:maf.location,q};};
+const atBomb=s=>{const b=s.scenario.bombs.find(b=>PLACE[b.where]);const maf=s.players.find(p=>p.team==='mafia'&&p.role!=='godfather')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */;maf.location=PLACE[b.where];const q=s.scenario;for(const n of [q.doyle,...Object.values(q.continuation?.npcs||{})].filter(Boolean))n.location='office';return {maf,place:maf.location,q};};
 {const s=fresh(),{maf,place,q}=atBomb(s);ok(S.botAction(s,maf,'big')?.sceneKey==='take','NPC가 없으면 컴퓨터 마피아가 폭약을 꺼냄');
  q.doyle.location=place;q.doyle.cowed=false;ok(S.botAction(s,maf,'big')===null,'NPC(도일)가 보는 낮에는 꺼내지 않음');}
 for(const said of [true,false]){const s=fresh(),{maf,place,q}=atBomb(s);q.doyle.location=place;q.doyle.cowed=false;q.doyle.hp=10;
