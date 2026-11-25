@@ -55,7 +55,7 @@ ok(!ui.includes('상대도 당신을 봅니다.')&&ui.includes('조사당한 사
 ok(typeof UI?.prototype?.isStarting==='function','시작 중 표시 메서드가 있음');
 ok(ui.includes("(this.isStarting()?'시작하는 중…':'마을 이야기 시작')"),'시작 버튼 글이 시작 중에는 "시작하는 중…"');
 // 7. 재판 아래 버튼 글 (2026-11-25 시험 보강: 비동기 블록 밖으로 옮겨, 앞 확인이 오류로 멈춰도 늘 돈다)
-ok(ui.includes("v.stage==='trial'?'재판 대화 · 시간이 끝나면 최종 변론'")&&!ui.includes('재판 대화 3분 · 시간이 끝나면 최종 변론'),'재판 아래 버튼에 고정 "3분" 없음(30초 추가와 어긋나지 않음)');
+ok(ui.includes("v.stage==='trial'?'재판 대화 · 1분 뒤 25초 조용하면 최종 변론'")/* 2026-11-25 C1a */&&!ui.includes('재판 대화 3분 · 시간이 끝나면 최종 변론'),'재판 아래 버튼에 고정 "3분" 없음(30초 추가와 어긋나지 않음)');
 (async()=>{
  const btn={dataset:{do:'start'},disabled:false,closest(){return this;}};
  const has=u=>typeof u.isStarting==='function';
