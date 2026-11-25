@@ -33,6 +33,8 @@ const night=(st,plansFn)=>{st.plans={};plansFn(st);for(const p of st.players)if(
 {const {s,host,guest,maf}=dayStay('town');toNight(s);const n0=night(s,st=>{st.plans[guest.id]={type:'sleep'};st.plans[host.id]={type:'sleep'};st.plans[maf.id]={type:'attack',target:host.id,weapon:'knife',nightRaid:true,flee:'stay'};});ok(!/집에서 묵다가|집 안에서 깨어 있었음/.test(to(s,n0,maf)+to(s,n0,guest)),'대조: 아무도 불침번이 아니면 묵기 맞대결 글 없음');}
 // 4. 묵는 사람 자기 집을 습격하면 빈 집
 {const {s,host,guest,maf}=dayStay('town');toNight(s);const n0=night(s,st=>{st.plans[maf.id]={type:'attack',target:guest.id,weapon:'knife',nightRaid:true,flee:'stay'};});ok(maf.houseId===guest.id&&/자리를 옮겨 닿을 수 없었습니다/.test(to(s,n0,maf)),'남의 집에서 묵는 사람의 집을 습격하면 빈 집 · 습격자 위치 '+maf.houseId);}
+// 1b. 화면 버튼 이름(사람·AI 같은 화면): 실제 서버 확인 판에서 버튼이 "stayOver"로 나온 것을 고침
+{const ui=require('fs').readFileSync(require('path').join(dir,'20Interface.js'),'utf8');ok(ui.includes("stayOver:'이 집에서 묵기'")&&ui.includes("stayOver:'오늘 밤 집으로 돌아가지 않고"),'버튼 이름 "이 집에서 묵기"와 설명이 있음(전: stayOver 그대로)');}
 // 5. 배신: 마피아가 시민 집에서 묵으면 밤에 그 집 사람을 바로 공격할 수 있음(기존 공격 처리)
 {const {s,host,guest:maf,err}=dayStay('mafia');ok(!err&&maf.stayOver,'마피아도 남의 집에서 묵기를 고를 수 있음 · '+(err||''));toNight(s);ok(maf.location==='home'&&maf.houseId===host.id,'밤에 마피아가 '+host.name+'의 집에 남음(본거지로 가지 않음)');
  const atk=C.choices(s,maf.id,'big').find(a=>a.type==='attack'&&a.target===host.id&&!a.nightRaid);ok(!!atk,'밤에 같은 집 사람 바로 공격 선택지 · '+(atk&&atk.label));
