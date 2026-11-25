@@ -244,3 +244,37 @@ button.term-npc:focus-visible,button.term-item:focus-visible,button.term-clue:fo
 /* 2026-11-24 다시 설계 2단계: 소지품마다 쓰임 한 줄 */
 .item{flex-wrap:wrap}
 .item .item-desc{flex:1 0 100%;color:#a99f8f;font-size:11px;line-height:1.4;margin-top:2px}
+
+/* 2026-11-25 휴대폰(800px 이하) 고침 시작 */
+/* 휴대폰 점검(375x812): 81줄의 한 화면 고정 규칙이 모든 너비에 걸려 바깥 틀이 스크롤되지 않았다 — 주민 수첩·내 인물 칸(화면 아래)에 닿을 수 없음.
+   800px 이하에서만: 바깥 틀은 세로로 스크롤, 가운데 칸은 한 화면 높이 그대로(이동·행동 버튼이 첫 화면에), 옆 칸은 내용 높이대로 아래에 이어짐.
+   버튼은 44px·글자 13px, 작은 글자는 12px 이상, 장면 그림을 줄여 이야기 칸을 넓힌다. */
+@media(max-width:800px){
+#noir:has(.layout){overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+.layout{height:auto;max-height:none}
+.center,.layout{overscroll-behavior:auto}
+/* 가운데 칸은 적어도 한 화면 높이. 행동 칸이 길면(이동 단계 등) 그만큼 늘어 버튼이 잘리지 않고, 짧으면 이야기 칸이 남는 높이를 채운다.
+   이야기 칸(.story-split)은 contain:size로 글 길이가 칸 높이를 늘리지 않게 한다 */
+.center{height:auto;min-height:calc(100dvh - 48px);grid-template-rows:minmax(38px,auto) 24px 55px 40px minmax(180px,1fr) 26px 45px auto}
+.center:has(>.trial-banner){grid-template-rows:minmax(38px,auto) 24px 55px auto 40px minmax(180px,1fr) 26px 45px auto}
+/* 이동 단계(15초)는 장소 버튼이 4줄까지 첫 화면에 다 보여야 하므로, 그때만 이야기 줄 최소 높이를 90px로 낮춘다 */
+.center:has(.actions .night-move){grid-template-rows:minmax(38px,auto) 24px 55px 40px minmax(90px,1fr) 26px 45px auto}
+.center:has(>.trial-banner):has(.actions .night-move){grid-template-rows:minmax(38px,auto) 24px 55px auto 40px minmax(90px,1fr) 26px 45px auto}
+.scene-caption{padding:3px 10px;font-size:13px}
+.story-split{contain:size;grid-template-rows:minmax(0,3fr) minmax(0,1fr)}
+aside{height:auto;max-height:none;overflow:visible}
+.people{overflow:visible}
+.choice-row button,.night-move button,.combat-choice button,.proposal button{min-height:44px;font-size:13px;padding:8px 10px}
+.actions>.ready{min-height:44px;font-size:13px;padding:8px 12px}
+.action-deck,.action-page.action-slot{height:178px}
+.action-page .slot-title{min-height:44px}
+.action-deck>.fixed-arrow{height:44px;top:7px;font-size:13px}
+.slot-title,.slot-hint,.action-progress,.combat-choice p,.combat-choice small,.action-slot .chosen{font-size:12px}
+.feed-tabs button,.reading-tools button{min-height:40px;font-size:12px;padding:6px 10px}
+header button{min-height:40px;font-size:12px}
+nav button{min-height:40px;font-size:12px}
+.facts button{min-height:40px;font-size:12px;padding:6px 10px}
+.location-bar small,.chat-clock>span,.environment>small{font-size:12px}
+.environment p{font-size:12px}
+}
+/* 2026-11-25 휴대폰(800px 이하) 고침 끝 */
