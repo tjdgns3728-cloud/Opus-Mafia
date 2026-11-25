@@ -370,7 +370,7 @@ const NoirScreen={
   return {text,buttons:btns,epoch:v.epoch,stage:v.stage};},
  /* 누름 하나({"버튼","고른 것","적은 글"})를 사람 화면이 보내는 요청으로. 돌려주는 것: {req} 또는 {error} */
  press(v,scr,ans){const name=screenNorm(ans?.['버튼']);if(!name)return {error:'버튼 이름이 없음'};
-  const b=scr.buttons.find(b=>b.name===name)||scr.buttons.find(b=>screenNorm(b.name)===name)||scr.buttons.find(b=>screenNorm(b.label)===name&&!b.disabled)||scr.buttons.find(b=>name.startsWith('['+b.name+']'));
+  const b=scr.buttons.find(b=>b.name===name)||scr.buttons.find(b=>screenNorm(b.name)===name)||scr.buttons.find(b=>screenNorm(b.label)===name&&!b.disabled)||scr.buttons.find(b=>name.startsWith('['+b.name+']'))||(()=>{/* 2026-11-25 run30·31: "이동하기 (행동 소모 없음)"을 "이동하기"로 줄여 누른 것 — 앞부분이 맞는 버튼이 하나뿐일 때만 그 버튼 */const hits=scr.buttons.filter(b=>!b.disabled&&screenNorm(b.name).startsWith(name+' '));return hits.length===1?hits[0]:null;})();
   if(!b)return {error:'화면에 없는 버튼: '+name};if(b.disabled)return {error:'지금 누를 수 없는 버튼: '+name};
   const arr=x=>Array.isArray(x)?x:x==null||x===''?[]:[x],picks=arr(ans['고른 것']).map(screenNorm).filter(Boolean),texts=arr(ans['적은 글']).map(x=>String(x).trim()),d=b.data,w=b.win;
   const A=(action,slot)=>({req:{type:'action',action,slot,epoch:v.epoch,stage:v.stage}});
