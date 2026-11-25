@@ -977,3 +977,11 @@ AI가 비슷한 일을 시작할 때와 관련 파일을 고치기 직전에, `t
 - 이 경험이 보여 주는 것: 내려받기 금지는 "브라우저로 파일 주소를 여는 것"까지 포함해 분신에게 명시해야 한다.
 - 대화: CM 대화 원문 2026-11-25. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
 - 결과물: 실험실 reports/2026-11-25_research_human_results_1340/REPORT.md
+
+### 2026-11-25 · CM(A3 제안 분신) · launch.json 항목을 셸 이스케이프로 넣다 경로 역슬래시가 사라짐(같은 갈래 네 번째)
+- 일어난 일: A3 제안 분신이 실행 설정 항목 black-ridge-a3-8887을 셸 명령으로 넣다가 Windows 경로의 역슬래시가 사라져 "C:UserscomAppData…"가 됐다. 사람 화면 분신이 이를 보고했고, A3 분신도 스스로 알아채 Write로 만든 파일(gamecheck/a3_launch.js)로 다시 넣었다.
+- 원인과 근거: CM이 분신 지시에 "긴 고침·정규식은 패치 파일로"만 적고 "launch.json 같은 경로가 든 설정도 셸로 쓰지 말 것"을 적지 않았다. 분신은 짧은 설정 추가라 여겼다.
+- 시도한 해결과 결과: 이후 분신 지시에 "launch.json 항목은 Write로 만든 스크립트로, 셸 이스케이프 금지"를 넣음(run35·A3 두 번째 판).
+- 이 경험이 보여 주는 것: 역슬래시가 든 Windows 경로는 코드가 아니어도 셸을 거치면 깨진다. 분신에게 넘기는 규칙에 경로·설정 파일도 포함해 적는다.
+- 대화: CM 대화 원문 2026-11-25. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
+- 결과물: 실험실 reports/2026-11-25_ai_run_a3_partial/REPORT.md
