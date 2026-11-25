@@ -16,4 +16,4 @@ const fresh=()=>{const s=C.create(['가람','나래','다온','라희','마루',
  else if(t.hp===0&&i>150){}}
  ok(done,'9를 맞는 경우가 나옴');}
 // 3. 화면 글
-{const fs=require('fs');const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes("pistol:'피해 9~10(누가 쏘든 같음) · 맞으면 출혈 · ")&&!ui.includes('최소5 피해'),'화면 글: 권총 피해 9~10, 맞으면 출혈');}
+{const fs=require('fs');const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes("pistol:'피해 9~10 맞으면 출혈'")&&!ui.includes('최소5 피해'),'화면 글: 권총 피해 9~10, 맞으면 출혈');}
