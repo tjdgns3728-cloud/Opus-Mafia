@@ -285,7 +285,7 @@ class UI extends WebEngine.Component{
 /* 2026-11-24 사용자: "ai도 당연히 인간이 보는 화면으로 똑같이 보면서 게임해야죠 안그럼 게임을 제대로 하는지도 알 수도 없잖아요." → 사용자가 고른 방식 "화면 글".
    AI 자리에 사람 화면을 이 파일의 같은 코드로 그려 글로 준다. 사람이 눌러서 열어 볼 수 있는 탭과 창은 모두 펼쳐 한 번에 보인다.
    AI는 화면의 버튼 이름과 창의 목록 항목으로 답하고, press()가 그 답을 사람 화면이 보내는 요청과 같은 모양으로 바꾼다(처리는 10Session.js의 act 하나). */
-const SCREEN_ACTS=new Set(['action-group','scene-choice','trial-open','npc-menu','move-choice','move-home'/* 2026-11-25 주택가 → 집 목록 */,'call-help'/* 2026-11-25 쓰러진 사람 도움 청하기 */,'defend','protect','vote','consent-yes','consent-no','accept','reject','hazard','share','save-will']);
+const SCREEN_ACTS=new Set(['action-group','scene-choice','trial-open','npc-menu','move-choice','move-home'/* 2026-11-25 주택가 → 집 목록 */,'call-help'/* 2026-11-25 쓰러진 사람 도움 청하기 */,'defend','protect','vote','consent-yes','consent-no','accept','reject','hazard','share','save-will','extend-time'/* 2026-11-25 C1 판: 재판 대화 [시간 30초 추가](사람 화면 시계 옆) */]);
 const screenDec=t=>String(t).replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&');
 const screenAttrs=t=>{const o={};String(t||'').replace(/([\w-]+)(?:="([^"]*)")?/g,(m,k,x)=>{o[k]=x===undefined?true:screenDec(x);return m;});return o;};
 const screenFlat=h=>screenDec(String(h).replace(/<[^>]+>/g,' ')).replace(/\s+/g,' ').trim();
@@ -320,7 +320,7 @@ const NoirScreen={
  /* v: 그 자리의 화면 정보(C.view). 돌려주는 것: text(화면 글), buttons(누를 수 있는 버튼과 버튼이 여는 창) */
  read(v){const u=screenUI(v),me=v.me,ctx={buttons:[],terms:new Map(),checks:[],people:new Set()},parts=[];const sec=(title,html)=>{const t=screenText(html,ctx);if(t)parts.push('■ '+title+'\n'+t);};
   const play=u.play(v),cut=(a,b)=>{const i=play.indexOf(a);if(i<0)return '';const j=b?play.indexOf(b,i):-1;return play.slice(i,j<0?undefined:j);};
-  sec('지금',cut('<div class="location-bar">','<div class="story-title">'));
+  sec('지금',cut('<div class="location-bar">','<div class="story-title">')+cut('<b id="chat-clock"','</div>')/* 2026-11-25: 시계 옆 버튼(재판 시간 30초 추가)도 사람 화면처럼. 단계 이름은 위와 같아 뺌 */);
   sec('내 인물',cut('<div class="self-card">','<nav>')+cut('<div class="time-budget">','</aside>'));
   sec('주민 수첩 · 플레이어',u.herePlayers(v).map(p=>u.personCard(p,me)).join(''));
   sec('주민 수첩 · NPC',u.npcCards(v));
@@ -388,6 +388,7 @@ const NoirScreen={
    case 'npc-menu':{const o=screenMatch(w.options,picks)||w.options[0];return o?{req:{type:'npc-talk',topic:o.value}}:{error:'물을 것이 없음'};}
    case 'move-home':{if(!w)return {error:'열리지 않는 버튼: '+name};const o=screenMatch(w.options,picks);if(!o)return {error:'갈 집을 고르지 않음'};return A({type:'move',place:'home',house:o.value},'small');}
    case 'call-help':return {req:{type:'call-help'}};
+   case 'extend-time':return {req:{type:'extend-time'}};
    case 'move-choice':return A(d['data-place']?{type:'move',place:d['data-place']}:{type:'stay'},'small');
    case 'defend':return {req:{type:'reaction',defense:d['data-defense']}};
    case 'protect':return {req:{type:'protect',target:d['data-id']}};
