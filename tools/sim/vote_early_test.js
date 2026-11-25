@@ -21,5 +21,5 @@ const room=s=>({state:s,engine:{time:105},afters:[],closed:false,after(sec,fn){t
 {const s=fresh(),r=room(s);r.engine.time=103;for(const p of s.players.slice(1))s.trial.votes[p.id]='guilty';V.checkedReady(r);r.run();ok(r.closed,'단계를 연 뒤 확인에서 모두 냈으면 끝냄');}
 // 5. 사람·AI 표가 지나는 처리에서 확인을 부름, 안내 글
 ok(src.includes('s.trial.votes[id]=a.vote;voteDone(r);'),'표를 받을 때마다 모두 냈는지 확인');
-const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes("vote:'최종 변론·표결 · 2분 · 모두 표를 내면 끝'")&&ui.includes('모두 표를 내거나 시간이 끝나면 판결'),'화면 글: 모두 표를 내면 끝');
+const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes("vote:'최종 변론·표결 · 2분 · 첫 30초 뒤 모두 표를 내면 끝'")&&ui.includes('첫 30초 뒤 모두 표를 내거나 시간이 끝나면 판결'),'화면 글: 모두 표를 내면 끝');
 ok(src.includes("'재판 대화 시간은 끝까지 보장됩니다.'"),'재판 대화 3분은 그대로 끝까지');
