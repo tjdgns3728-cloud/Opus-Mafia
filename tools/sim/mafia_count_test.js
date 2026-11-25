@@ -32,5 +32,5 @@ const mafiaRoles=s=>s.players.filter(p=>p.team==='mafia').map(p=>p.role).sort();
 {const ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(ui.includes('<option value="8">8명</option><option value="11">11명</option></select>')&&!/value="(4|6|12)">/.test(ui),'로비 참가 인원은 8명·11명만');
  ok(ui.includes('8명(마피아 2명) 또는 11명(마피아 3명)일 때 시작할 수 있습니다'),'대기실에 시작 가능 인원 안내');}
 ok(ROOM.min===8&&ROOM.max===11,'방 인원 8~11');
-ok(ROOM.canStart(null,8).ok&&ROOM.canStart(null,11).ok&&ROOM.canStart(null,9).ok===false&&ROOM.canStart(null,10).error==='8명 또는 11명일 때 시작할 수 있습니다 (지금 10명).','시작은 8명·11명만, 9·10명은 안내와 함께 거절');
+ok(ROOM.canStart(null,8).ok&&ROOM.canStart(null,11).ok&&ROOM.canStart(null,9).ok===false&&ROOM.canStart(null,10).error==='8명 또는 11명일 때 시작할 수 있습니다 (지금 화면이 켜진 자리 10명).','시작은 8명·11명만, 9·10명은 안내와 함께 거절');
 ok(fs.readFileSync(path.join(root,'game','webengine','server','room_host.js'),'utf8').includes('rules.canStart(R.api, here)'),'엔진이 시작 전에 게임의 canStart를 물음');
