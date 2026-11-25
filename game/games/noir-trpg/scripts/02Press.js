@@ -13,7 +13,7 @@ function validate(s,p,a){
 }
 function capture(s,p,a){const c=C(),t=c.find(s,a.target);
  if(p.hp<=0)return;
- if(!t||t.location!==p.location||!c.visible(s,p,t)){c.narrate(s,p.id,'사진기를 들었지만 찍으려던 인물의 모습을 확인할 수 없다. 셔터를 내리고 빈 필름을 그대로 둔다.');return;}
+ if(!t||t.location!==p.location||!c.visible(s,p,t)){c.narrate(s,p.id,'사진기를 들었지만 찍으려던 인물의 모습을 확인할 수 없었습니다. 사진기를 내리고 필름을 그대로 두었습니다.');return;}
  const subjects=s.players.filter(o=>o.id!==p.id&&o.location===p.location&&c.visible(s,p,o)).map(o=>({id:c.idFor(s,p,o),name:c.nameFor(s,p,o),condition:o.hp===0?'쓰러져 움직이지 않음':o.bleeding?'상처에서 피가 흐름':o.hp<=5?'상처를 입은 모습':'서 있는 모습'}));
  // Only this observer's confirmed, visible outcomes from this common turn enter the photograph.
  const moments=s.feed.filter(e=>e.kind==='combat'&&e.to.includes(p.id)&&e.epoch===s.epoch&&e.place===p.location&&e.cameraText).map(e=>e.cameraText);
@@ -22,9 +22,9 @@ function capture(s,p,a){const c=C(),t=c.find(s,a.target);
  (p.photos??=[]).push(photo);
  const facts=`${c.places[p.location].name}에서 촬영. ${subjects.map(o=>o.name+' — '+o.condition).join('; ')}.${moments.length?' '+moments.join(' '):''}`;
  c.learn(s,p.id,facts,t.id,'본인이 촬영한 사진','evidence',photo.id);
- c.narrate(s,p.id,`당신은 ${t.name} 쪽으로 사진기를 들어 셔터를 누른다. 그 자리에 보이던 인물과 주변 풍경이 필름에 남는다. 누구에게 보여줄지는 아직 정하지 않았다.`,{photo:photo.id});
+ c.narrate(s,p.id,`당신은 ${t.name} 쪽으로 사진기를 들어 셔터를 눌렀습니다. 그 자리에 보이던 인물과 주변 풍경이 필름에 남았습니다. 누구에게 보여 줄지는 아직 정하지 않았습니다.`,{photo:photo.id});
  const witnesses=s.players.filter(o=>o.hp>0&&o.id!==p.id&&o.location===p.location&&c.visible(s,o,p));
- for(const o of witnesses)c.emit(s,[o.id],'story',`${C().pp(p.name,'이','가')} 사진기를 들어 ${c.visible(s,o,t)?t.name+' 쪽으로':'눈앞의 풍경을 향해'} 셔터를 누른다.`,{localEvent:true});
+ for(const o of witnesses)c.emit(s,[o.id],'story',`${C().pp(p.name,'이','가')} 사진기를 들어 ${c.visible(s,o,t)?t.name+' 쪽으로':'눈앞의 풍경을 향해'} 셔터를 눌렀습니다.`,{localEvent:true});
 }
 function publish(s,p,a){if(p.hp<=0)return;const c=C(),err=validate(s,p,a);if(err){c.narrate(s,p.id,err);return;}
  const photo=p.photos.find(x=>x.id===a.photo),paper={id:'paper'+(++s.serial),number:(s.newspapers||[]).length+1,by:p.id,byName:'이름 없는 발행인',time:c.label(s),headline:String(a.headline).trim(),article:String(a.article).trim(),photo:{...copy(photo),byName:'이름 없는 사진사'}};
