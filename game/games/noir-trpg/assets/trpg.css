@@ -278,3 +278,8 @@ nav button{min-height:40px;font-size:12px}
 .environment p{font-size:12px}
 }
 /* 2026-11-25 휴대폰(800px 이하) 고침 끝 */
+
+/* 2026-11-25 행동 창 버튼 줄 늘 보이기: 사람 자리 마피아 판에서 1024×768 감추기 창의 경고·버튼, 1340×1239 밤 [이동하기] 창의 확인 버튼이 창 아래로 밀려 스크롤해야 보였다.
+   창(overlay 안의 div)은 화면 높이에 맞춰 스크롤하고, 버튼 줄(.picker-footer)은 창 아래에 붙여 늘 보이게 한다. 내용은 그 뒤로 스크롤된다. */
+.overlay>div{max-height:min(88vh,calc(100dvh - 32px))}
+.overlay>div:has(>.picker-footer){padding-bottom:0}.overlay>div .picker-footer{position:sticky;bottom:0;z-index:2;background:#151417;box-shadow:0 -14px 14px -4px #151417;padding-bottom:20px}

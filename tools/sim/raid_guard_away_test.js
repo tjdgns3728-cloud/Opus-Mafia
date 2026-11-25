@@ -20,7 +20,7 @@ const setup=target=>{const s=fresh();toNight(s);const m=s.players.find(p=>p.team
 {const {s,m,A,B,n0,placed}=setup('A');ok(placed.m===A.id,'습격자 위치는 지키러 나간 사람의 집('+A.name+') · 실제 '+placed.m);ok(!s.feed.slice(n0).some(e=>e.to.includes(B.id)&&/같은 곳의 누군가에게 공격 시도/.test(e.text)),'지켜지는 집 주인에게 "같은 곳의 누군가에게 공격 시도"가 가지 않음');
  ok(!s.feed.slice(n0).some(e=>/undefined/.test(String(e.text))),'빈 값 없음');}
 // 대조: A가 B의 집 앞을 지키는데 마피아가 B의 집을 습격 → A가 문 앞에서 맞섬, B는 침입을 모름(2026-11-24 설계 그대로)
-{let met=0,quiet=0,n=40;for(let i=0;i<n;i++){const {s,m,A,B,n0}=setup('B');const fm=to(s,n0,m),fb=to(s,n0,B),fa=to(s,n0,A);if(new RegExp(A.name+'[이가] 깨어 있었음').test(fm)&&!/아무도 오지 않았습니다/.test(fa))met++;if(!/문을 밀고 들어옴|집에 들어옴|잠결에/.test(fb))quiet++;}
+{let met=0,quiet=0,n=40;for(let i=0;i<n;i++){const {s,m,A,B,n0}=setup('B');const fm=to(s,n0,m),fb=to(s,n0,B),fa=to(s,n0,A);if(new RegExp(A.name+'[이가] (깨어 있었음|'+B.name+'의 집 앞을 지키고 있었음)').test(fm)&&!/아무도 오지 않았습니다/.test(fa))met++;if(!/문을 밀고 들어옴|집에 들어옴|잠결에/.test(fb))quiet++;}
  ok(met===n,'대조: 지켜지는 집을 습격하면 지키는 사람이 문 앞에서 맞섬 ('+met+'/'+n+')');ok(quiet===n,'대조: 지켜지는 집 주인은 침입 글을 받지 않음 ('+quiet+'/'+n+')');}
 // 집에서 불침번을 서는 사람은 그대로 맞붙음(남의 집 지키기를 뺀 것이 불침번에 번지지 않음)
 {let duel=0,n=30;for(let i=0;i<n;i++){const s=fresh();toNight(s);const m=s.players.find(p=>p.team==='mafia'),[V]=s.players.filter(p=>p.team==='town');s.plans={[V.id]:{type:'watch'},[m.id]:{type:'attack',target:V.id,weapon:'knife',nightRaid:true,flee:'stay'}};for(const p of s.players)if(!s.plans[p.id])s.plans[p.id]=p.team==='mafia'?{type:'wait'}:{type:'sleep'};const n0=s.feed.length;C.announceClashes(s);s.stage='plan';C.resolveBig(s,rng);if(/깨어 있었음/.test(to(s,n0,m)))duel++;}
