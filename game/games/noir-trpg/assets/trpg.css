@@ -276,6 +276,9 @@ nav button{min-height:40px;font-size:12px}
 .facts button{min-height:40px;font-size:12px;padding:6px 10px}
 .location-bar small,.chat-clock>span,.environment>small{font-size:12px}
 .environment p{font-size:12px}
+/* 2026-11-25 화면 회귀 점검: 칸을 178px로 늘리면서 안쪽 트랙 높이를 그대로 두어 [큰 행동] 쪽이 아래로 밀려 잘렸다(768에서 28px, 375에서 42px) — 트랙은 칸 두 개 높이 */
+.action-track{height:356px}
+.picker-footer button{min-height:44px}
 }
 /* 2026-11-25 휴대폰(800px 이하) 고침 끝 */
 
