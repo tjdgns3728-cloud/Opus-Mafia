@@ -21,9 +21,9 @@ const deck=(scr,slot)=>scr.buttons.filter(b=>['action-group','trial-open','scene
  const m3=NS.press(v,scr,{'버튼':'감추기','고른 것':['얼굴 가리기']});ok(m3.req?.action?.type==='cover','감추기 → 얼굴 가리기');
  ok(!m1.req?.action?._kind,'보내는 요청에 화면용 값(_kind)이 섞이지 않음');
  const w=scr.text.slice(scr.text.indexOf('■ 창 · [사람에게 하는 일]'));ok(/무엇을 합니까\?/.test(w)&&/「곁에서 지키기」를 고르면:/.test(w),'AI 화면 글: 묶음 창에 "무엇을 합니까?"와 행동마다 이어지는 목록(2026-11-25: 을/를을 받침에 맞춤)');{const hits=[...scr.text.matchAll(/■ 창 · \[([^\]]+)\](을|를) 누르면/g)];ok(hits.length>0&&hits.every(m=>C.pp(m[1],'을','를')===m[1]+m[2]),'AI 화면 글: 창 이름 뒤 을/를이 받침에 맞음(2026-11-25) '+hits.map(m=>m[1]+m[2]).join(', '));}}
-// 3. 인물·현장은 셋까지, 대부에게는 도일 협박·해먼드 끌어들이기가 먼저
+// 3. 인물·현장: 2026-11-24 셋까지 → 2026-11-25 사용자 "끌어드리기는 하나의 행동만 보여야죠": 자르지 않고, 대상만 다른 행동은 한 종류(끌어들이기 → 대상 칸에 해먼드)
 {const s=fresh(),gf=s.players.find(p=>p.role==='godfather');gf.location='hall';s.scenario&&(s.scenario.discovered=true);const v=C.view(s,gf.id),scr=NS.read(v);const b=scr.buttons.find(b=>/^인물·현장/.test(b.name)&&b.data['data-slot']==='big');
- if(b){ok(b.win?.kinds?.length<=3,'인물·현장 창은 셋까지('+b.win.kinds.length+'가지)');ok(b.win.kinds.some(k=>/해먼드 끌어들이기/.test(k.name)),'대부의 인물·현장에 해먼드 끌어들이기가 보임: '+b.win.kinds.map(k=>k.name).join(' / '));}
+ if(b){const ks=b.win?.kinds||[];ok(ks.length===new Set(ks.map(k=>k.name)).size,'인물·현장 종류 이름이 겹치지 않음('+ks.length+'가지)');const K=ks.find(k=>k.name==='끌어들이기');ok(!!K&&K.fields.some(f=>f.key==='npc'&&f.options.some(o=>o.name==='해먼드'))&&!ks.some(k=>/ 끌어들이기$/.test(k.name)),'대부의 인물·현장: 끌어들이기 한 종류, 대상 칸에 해먼드: '+ks.map(k=>k.name).join(' / '));}
  else ok(false,'대부의 큰 행동에 인물·현장이 있음');}
 // 4. 마피아 밤의 흔적 손보기
 {const s=fresh(),m=s.players.find(p=>p.team==='mafia'),v0=s.players.find(p=>p.team==='town');m.items.knife=1;s.plans={[m.id]:{type:'attack',target:v0.id,weapon:'knife',flee:'stay'}};for(const p of s.players)if(!s.plans[p.id])s.plans[p.id]={type:'wait'};C.announceClashes(s);s.stage='plan';C.resolveBig(s,rng);
