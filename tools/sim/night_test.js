@@ -14,7 +14,7 @@ const tOpts=C.choices(s,town[0].id,'big').map(a=>a.type);/* 2026-11-24 사용자
 ok(C.choices(s,town[0].id,'small').length===0,'시민 밤 작은 행동 없음');
 ok(!!C.validate(s,town[0].id,{type:'move',place:'hall'},'big'),'시민은 밤에 이동 불가');
 const mOpts=[...C.choices(s,mafia[0].id,'big'),...S.choices(s,mafia[0],'big')];
-ok(mOpts.some(a=>a.type==='attack'&&a.nightRaid),'마피아: 본거지에서 집 습격 선택지 있음');
+ok(!mOpts.some(a=>a.type==='attack'&&a.nightRaid)&&(()=>{const st=s.stage;s.stage='plan';const o=C.orgChoices(s,mafia[0].id);s.stage=st;return o.length>0;})(),'마피아: 밤 집 습격은 개인 선택지가 아니라 조직 습격 선택지(제안 F1)');
 ok(!mOpts.some(a=>a.type==='move'&&a.place==='hideout'),'본거지로 가는 이동 선택지 없음');
 ok(!!C.validate(s,town[0].id,{type:'move',place:'hideout'},'small'),'시민은 본거지로 갈 수 없음');
 ok(!C.validate(s,mafia[0].id,{type:'move',place:'chapel'},'small'),'마피아 밤 무료 이동 가능(교회)');

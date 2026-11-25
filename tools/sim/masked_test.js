@@ -47,9 +47,9 @@ ok(got(m,/당신은 이제 검은 복면입니다/)&&got(gf,/마을 밖에서 �
 ok(!C.view(s,tA.id).people.some(p=>p.id===m.id),'시민의 명단에는 없음');
 ok(C.view(s,gf.id).people.some(p=>p.id===m.id&&p.role==='masked'),'같은 편의 명단에는 있음(직업: 복면 조직원)');
 ok(C.consentStatus(s,{support:[]}).total===C.alive(s).length-1,'재판 동의 인원에서 빠짐');
-const raid=S.choices(s,m,'big').find(a=>a.type==='attack'&&a.target===tA.id&&a.weapon==='knife');ok(!!raid,'밤에는 시민의 집을 습격할 수 있음');
+const st0=s.stage;s.stage='plan';const raid=C.orgChoices(s,m.id).find(a=>a.target===tA.id&&a.weapon==='knife');s.stage=st0;ok(!!raid,'밤에는 시민의 집을 조직 습격할 수 있음(제안 F1)');
 // 9. 불침번에게 맞서면 다치고, 복면이라 얼굴은 보이지 않는다
-s.stage='plan';s.plans={};tA.items.club=1;tA.stats.fight=9;C.queue(s,tA.id,{type:'watch'});C.queue(s,m.id,{...raid});for(const p of C.alive(s).filter(p=>p.team==='town'&&p.id!==tA.id))C.queue(s,p.id,{type:'sleep'});
+s.stage='plan';s.plans={};tA.items.club=1;tA.stats.fight=9;C.queue(s,tA.id,{type:'watch'});C.orgAttack(s,m.id,raid);C.queue(s,m.id,{type:'wait'});for(const p of C.alive(s).filter(p=>p.team==='town'&&p.id!==tA.id))C.queue(s,p.id,{type:'sleep'});
 C.announceClashes(s);let y=5;C.resolveBig(s,()=>{y=(y*16807)%2147483647;return y/2147483647;});
 ok(tA.known.some(k=>/얼굴을 천으로 가려 누군지는 보지 못했다/.test(k.text)),'불침번은 복면 사내가 들어온 것을 보지만 얼굴은 못 봄');
 const fought=last(m,/복면 덕에 얼굴은 안 들킴/);ok(!!fought,'새 조직원에게: '+fought.slice(0,70));
