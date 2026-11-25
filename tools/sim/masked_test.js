@@ -16,7 +16,7 @@ ok(C.view(s,town[0].id).story.cast.length===8&&C.view(s,town[0].id).story.cast.e
 s.day=1;s.turn=1;s.stage='plan';s.scenario.discovered=true;s.scenario.mineClosed=true;/* 2026-11-19: 갱도가 닫혀 술집 주인·종지기·하숙집 주인이 흔들리는 때 */for(const p of s.players)p.location='hall';
 gf.location='tavern';const optB=S.choices(s,gf,'big').find(a=>a.verb==='recruitNpc'&&a.npc==='barkeep');
 ok(optB&&/어제 술집에 누가 왔는지/.test(optB.hint)&&/두 번 성공할 때마다/.test(optB.hint),'술집 주인 끌어들이기 설명: '+(optB?.hint||'없음').slice(0,80));
-ok(!S.choices(s,gf,'big').some(a=>a.verb==='threatNpc'&&a.npc==='barkeep'),'술집 주인에게는 협박장(노조·회관용)을 보내지 않음');
+ok(S.choices(s,gf,'big').some(a=>a.verb==='threatNpc'&&a.npc==='barkeep'&&a.label==='술집 주인 협박하기'),'술집 주인도 협박할 수 있음(2026-11-25 사용자: 마피아 누구나 같은 자리의 NPC에게 "협박하기")');
 // 3. 끌어들이기 전에는 간호사가 약상자 귀띔을 하고, 끌어들인 뒤에는 하지 않는다
 s.scenario.spots=['medbox','barrel'];s.scenario.rumor={...s.scenario.rumor,medbox:true,barrel:true};/* 간호사가 약상자 이야기를 하는 판 */const [tA,tB,tC,tD]=town;tA.location='clinic';S.arrival(s,tA);/* 2026-11-23: NPC 말은 묻는 작은 행동 때만 */S.askNpc(s,tA,'nurse');ok(tA.npcHeard.includes('lead:medbox'),'끌어들이기 전: 간호사에게 물으면 약상자 이야기를 함');
 // 4. 술집 주인 끌어들이기(실패 → 성공)

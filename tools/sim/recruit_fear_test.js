@@ -70,21 +70,21 @@ const mid=v=>()=>v;/* 주사위 = 1+floor(v*10) */const rollOf=(s,p,label)=>s.fe
 
 // 5. 행동 협박: 일터에서만, 하루에 한 번, 압박(지위가 높으면 덜)과 공포가 쌓이고 보이지 않음, 암거래 상인은 없음
 {const s=fresh(),{gf,town}=roles(s);gf.location='tavern';const st=s.scenario.continuation,n=st.npcs.barkeep;n.location='hall';
- const a=find(s,gf,'pressureNpc','barkeep');ok(!!a&&/술통/.test(a.label),'술집에서 "뒷마당 술통 깨뜨리기"를 고를 수 있음(술집 주인이 없어도)');
- ok(!town.some(t=>{t.location='tavern';return find(s,t,'pressureNpc','barkeep');}),'시민은 고를 수 없음');for(const t of town)t.location='hall';
+ const a=find(s,gf,'threatNpc','barkeep');ok(!!a&&a.label==='술집 주인 협박하기'&&/술통/.test(a.hint),'술집에서 [술집 주인 협박하기](뒷마당 술통 깨뜨리기)를 고를 수 있음(술집 주인이 없어도, 2026-11-25부터 "협박하기" 하나)');
+ ok(!town.some(t=>{t.location='tavern';return find(s,t,'threatNpc','barkeep');}),'시민은 고를 수 없음');for(const t of town)t.location='hall';
  const f0=S.fearOf(s,n);S.resolve(s,gf,a,hi);ok(n.pressure===3&&S.fearOf(s,n)===f0+2,'압박 3, 공포 +2');
- ok(!find(s,gf,'pressureNpc','barkeep'),'같은 날에는 다시 고를 수 없음');
+ ok(!find(s,gf,'threatNpc','barkeep'),'같은 날에는 다시 고를 수 없음');
  ok(town.some(t=>s.feed.some(e=>e.to?.includes(t.id)&&/술통이 누군가에게 깨졌습니다/.test(String(e.text)))),'술집 주인이 없을 때는 누가 했는지 모른 채 마을에 알려짐');
  const v=JSON.stringify(C.view(s,gf.id))+JSON.stringify(C.view(s,town[0].id));ok(!/"pressure"|"fear"|"refusals"|"wavering"/.test(v),'압박·공포·거절·망설임 값은 화면 자료에 실리지 않음');
- gf.location='hall';const m=st.npcs.mayor;m.location='tavern';S.resolve(s,gf,find(s,gf,'pressureNpc','mayor'),hi);ok(m.pressure===1,'해먼드(지위가 높음)는 같은 일에 압박이 1만 쌓임');
- gf.location='rail';ok(!big(s,gf).some(a=>a.verb==='pressureNpc'&&a.npc==='merchant'),'암거래 상인은 협박하지 않음');
- gf.location='clinic';const stock=st.stock;S.resolve(s,gf,find(s,gf,'pressureNpc','nurse'),hi);ok(st.stock===Math.max(0,stock-2),'진료소 붕대 창고를 망가뜨리면 붕대가 둘 줄어듦');}
+ gf.location='hall';const m=st.npcs.mayor;m.location='tavern';S.resolve(s,gf,find(s,gf,'threatNpc','mayor'),hi);ok(m.pressure===1,'해먼드(지위가 높음)는 같은 일에 압박이 1만 쌓임');
+ gf.location='rail';ok(!big(s,gf).some(a=>a.verb==='threatNpc'&&a.npc==='merchant'),'암거래 상인은 협박하지 않음');
+ gf.location='clinic';const stock=st.stock;S.resolve(s,gf,find(s,gf,'threatNpc','nurse'),hi);ok(st.stock===Math.max(0,stock-2),'진료소 붕대 창고를 망가뜨리면 붕대가 둘 줄어듦');}
 
 // 6. 행동 협박을 그 NPC가 보면: 공포만큼 덜한 확률로 고발, 겁에 질리면 입을 다묾
 {const s=fresh(),{gf}=roles(s);gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
- S.resolve(s,gf,find(s,gf,'pressureNpc','barkeep'),lo);ok(s.cases.some(c=>c.target===gf.id&&c.npcKind==='pressure'),'보는 앞에서 맨얼굴로 하면(주사위가 낮으면) 고발');}
+ S.resolve(s,gf,find(s,gf,'threatNpc','barkeep'),lo);ok(s.cases.some(c=>c.target===gf.id&&c.npcKind==='pressure'),'보는 앞에서 맨얼굴로 하면(주사위가 낮으면) 고발');}
 {const s=fresh(),{gf}=roles(s);gf.location='tavern';const n=s.scenario.continuation.npcs.barkeep;n.location='tavern';
- S.resolve(s,gf,find(s,gf,'pressureNpc','barkeep'),hi);ok(!s.cases.some(c=>c.target===gf.id)&&got(s,gf,/겁에 질린 얼굴로 입을 다뭅니다/),'공포가 쌓여 있으면(주사위가 높으면) 입을 다묾');}
+ S.resolve(s,gf,find(s,gf,'threatNpc','barkeep'),hi);ok(!s.cases.some(c=>c.target===gf.id)&&got(s,gf,/겁에 질린 얼굴로 입을 다뭅니다/),'공포가 쌓여 있으면(주사위가 높으면) 입을 다묾');}
 
 // 7. 공포: 숨진 사람(재판 처형 빼고), 그 자리의 공격, 협박이 쌓이면 폭약을 꺼내도 NPC가 눈을 돌림
 {const s=fresh(),n=s.scenario.continuation.npcs.mayor;const f0=S.fearOf(s,n);

@@ -147,7 +147,7 @@ const WHY={'search:desk':'관찰 판정입니다. 리스의 책상 서랍을 뒤
  ignite:'도화선에 불을 붙입니다. 갱도에 있는 사람이 모두 죽습니다. 당신도 15초 안에 빠져나오지 않으면 죽습니다.',
  plant:'그 사람의 집에 폭약 하나를 놓습니다.',
  disarm:'도화선을 끊고 폭약을 거둡니다. 성공하면 이 폭약은 터지지 않습니다.',
- protect:'도일 편에 섭니다. 그 뒤로는 누가 도일을 협박해도 잘 통하지 않습니다.',
+ protect:'도일 편에 섭니다. 그 뒤로는 누가 도일을 끌어들이려 해도 잘 통하지 않습니다.',
  threaten:'성공하면 도일이 노조를 넘깁니다. 광부들이 마피아 편에 서서, 이기는 조건을 셀 때 마피아가 한 명 더 있는 것으로 셉니다. 실패해도 협박한 사실은 남아, 도일이 나중에 사람들에게 알릴 수 있습니다.',
 
  disclose:'도일이 협박받은 사실을 사람들에게 알리게 합니다.'};
@@ -160,7 +160,7 @@ function choices(s,p,slot){if(!s.scenario||p.hp<=0||s.turn===2&&p.team==='town'|
  if(p.items.dynamite){if(p.location==='hall')add('secure','폭약을 회관에 맡기기');if(p.location==='chapel')add('bury','폭약을 종탑 아래 묻기');if(p.location==='warehouse'){add('cart','폭약을 수레에 숨기기');if(q.exploded&&q.continuation?.npcs?.miner?.inside&&q.continuation.npcs.miner.hp>0&&s.turn!==2)add('blastOpen','가진 폭약으로 막힌 통로 열기 · 안에 갇힌 광부를 구함');if(p.team==='mafia'&&!['lit','exploded'].includes(q.fuse?.status))add('arm','갱도에 폭약 설치하기');}/* 2026-11-24 사용자: 남의 집에 폭약 놓기는 없앰 */}
  if(['armed','extinguished'].includes(q.fuse?.status)&&p.location==='warehouse'&&p.storyKnown.some(k=>k.startsWith('fuse:')))add('disarm','발견한 도화선 끊고 폭약 회수');
  
- if(p.location===q.doyle.location&&q.doyle.hp>0&&s.turn!==2){/* 2026-11-18: 직업마다 고를 수 있는 것이 달라 직업이 드러나지 않게 모두에게 */if(!q.doyle.protected)add('protect','도일 편에 서기');/* 2026-11-24 사용자: 구조된 광부가 증언한 뒤에는 노조 지지를 거두자고 설득할 수 있다 */if(q.minerTestified&&q.doyle.cowed&&!q.doyle.withdrawTried?.[p.id+':'+s.epoch])add('withdraw','도일에게 노조 지지를 거두자고 설득');if(p.team==='mafia'&&!q.doyle.cowed&&s.day>=2/* 2026-11-21 사용자: 1일째 낮 2까지는 도일을 섭외(협박)할 수 없다 */){add('threaten','도일에게 노조를 넘기라고 협박');/* 돈으로 하는 운영 자금 제안은 2026-11-19 뺌 */}if(q.doyle.threatened&&!q.doyle.disclosed)add('disclose','도일에게 협박장을 공개하자고 설득');}
+ if(p.location===q.doyle.location&&q.doyle.hp>0&&s.turn!==2){/* 2026-11-18: 직업마다 고를 수 있는 것이 달라 직업이 드러나지 않게 모두에게 */if(!q.doyle.protected)add('protect','도일 편에 서기');/* 2026-11-24 사용자: 구조된 광부가 증언한 뒤에는 노조 지지를 거두자고 설득할 수 있다 */if(q.minerTestified&&q.doyle.cowed&&!q.doyle.withdrawTried?.[p.id+':'+s.epoch])add('withdraw','도일에게 노조 지지를 거두자고 설득');/* 2026-11-25 사용자: 도일 노조 협박(설득 판정 16, 2일째부터)은 마피아 누구나 하는 "도일 협박하기"와 "도일 끌어들이기"(07StoryActions)로 합침 */if(q.doyle.threatened&&!q.doyle.disclosed)add('disclose','도일에게 협박장을 공개하자고 설득');}
  if(s.turn===2&&p.team==='mafia')for(const t of C().alive(s).filter(t=>t.team!=='mafia'&&t.location==='home'))for(const w of Object.keys(C().weapons))if(w==='fist'||p.items[w]&&(w!=='pistol'||p.items.ammo))a.push({type:'attack',nightRaid:true,target:t.id,weapon:w,label:t.name+'의 집 습격 · '+C().weapons[w].name,hint:'그 집에 들어가 공격합니다. 총을 쏘면 다른 집에서 어느 집인지 듣습니다.'});
  /* 플레이어 영입은 보류(2026-11-14) */
  return a;
@@ -210,7 +210,7 @@ function resolve(s,p,a,rng){const q=s.scenario,d=q.doyle;/* 2026-11-21: 같은 �
  if(a.sceneKey==='disarm'){const r=C().check(p,'observe',rng,{label:'도화선 분리',dc:12});if(r.success){q.bombs.filter(b=>b.where==='armed').forEach(b=>b.where='carry:'+p.id);q.fuse.status='disarmed';}C().emit(s,[p.id],'check',r.success?'도화선을 끊고 설치된 폭약을 회수했습니다. 이 폭약은 이제 점화할 수 없습니다.':'매듭을 풀다가 멈췄습니다. 아직 설치된 폭약이 남아 있습니다.',{roll:r,authored:true,actionRecord:true});}
  if(a.sceneKey==='ignite'){q.fuse.status='lit';q.hazardPending=true;localAction(s,p,C().pp(p.name,'이','가')+' 도화선에 불을 붙입니다. 불꽃이 갱도 안쪽을 향해 달려갑니다. 그 자리에 남아 폭발을 맞으면 살아남을 수 없습니다.');}
  /* 2026-11-21: 도일이 이미 노조를 넘긴 뒤 */if(a.sceneKey==='protect'&&d.cowed){d.protected=true;story(s,[p.id],'도일 편에 서기로 했습니다. 하지만 도일은 이미 노조를 넘긴 뒤입니다.',{actionRecord:true});localAction(s,p,C().pp(p.name,'이','가')+' 도일 곁에서 주민들과 함께 버티겠다고 말합니다. 도일이 눈을 피합니다. "…고맙소. 하지만 이미 늦었소."');}
- else if(a.sceneKey==='protect'){d.protected=true;story(s,[p.id],'도일 편에 서기로 했습니다. 이제 누가 도일을 협박해도 잘 통하지 않습니다. 당신이 도일 곁에 있으면 그 사람을 직접 봅니다.',{actionRecord:true});localAction(s,p,C().pp(p.name,'이','가')+' 도일 곁에서 주민들과 함께 버티겠다고 말합니다. '+(q.mineClosed?'도일이 접으려던 폐쇄 팻말을 다시 세웁니다. "그럼 넘기지 않겠소."':'도일이 고개를 끄덕입니다. "누가 협박해 와도 노조는 넘기지 않겠소."'));}
+ else if(a.sceneKey==='protect'){d.protected=true;story(s,[p.id],'도일 편에 서기로 했습니다. 이제 누가 도일을 끌어들이려 해도 잘 통하지 않습니다. 당신이 도일 곁에 있으면 그 사람을 직접 봅니다.',{actionRecord:true});localAction(s,p,C().pp(p.name,'이','가')+' 도일 곁에서 주민들과 함께 버티겠다고 말합니다. '+(q.mineClosed?'도일이 접으려던 폐쇄 팻말을 다시 세웁니다. "그럼 넘기지 않겠소."':'도일이 고개를 끄덕입니다. "누가 협박해 와도 노조는 넘기지 않겠소."'));}
  if(['threaten','disclose'].includes(a.sceneKey)){const terms=[...(d.protected?[{label:'도일 곁을 지키는 사람',value:a.sceneKey==='disclose'?2:-3}]:[]),...(a.sceneKey==='threaten'&&q.minerTestified?[{label:'구조된 광부의 노조 증언',value:-4}]:[])],r=C().check(p,'persuade',rng,{label:{threaten:'도일 협박',disclose:'협박 공개 설득'}[a.sceneKey],dc:16,terms});if(a.sceneKey==='threaten')d.threatened=true;if(r.success){if(a.sceneKey==='disclose')d.disclosed=true;else{d.cowed=true;q.mineClosed=false;}}const text=a.sceneKey==='disclose'?(r.success?'도일이 협박장을 내놓습니다. "내가 입을 다물면 다음 집이 당하겠지."':'도일은 협박장을 주머니에 넣습니다. "가족이 있소. 조금만 더 시간을 주시오."'):r.success?'도일이 고개를 떨굽니다. "좋소. 노조 운영을 넘기겠소. 사람들만 건드리지 마시오."':'도일이 협박장을 구겨 쥡니다. "협박으로 광부들 목숨을 사지는 못하오."';const ev=localAction(s,p,C().pp(p.name,'이','가')+' 도일에게 '+(a.sceneKey==='threaten'?'노조를 넘기지 않으면 세 집을 해치겠다는 협박장을 내놓습니다. ':'협박을 공개하자고 말합니다. ')+text);C().emit(s,[p.id],'check',r.success?'상대가 제안을 받아들였습니다.':'상대가 거절했습니다.',{roll:r,event:ev.id});}
  sync(s);
 }
