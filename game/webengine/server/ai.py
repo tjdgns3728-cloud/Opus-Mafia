@@ -50,15 +50,25 @@ def limit_for(kind: str, pid: str | None = None) -> float | None:
     return lim.get(kind)
 
 
+_ROWS_CACHE: dict = {"key": None, "rows": []}
+
+
 def _rows() -> list[dict]:
+    """The call log as rows. Read again only when the file changed (size or time) — every call's estimate reads it,
+    and with thousands of rows a fresh read per call delayed calls by seconds when several seats asked at once."""
     if not LOG.is_file():
         return []
+    st = LOG.stat()
+    key = (st.st_size, st.st_mtime_ns)
+    if _ROWS_CACHE["key"] == key:
+        return _ROWS_CACHE["rows"]
     out = []
     for line in LOG.read_text(encoding="utf-8").splitlines():
         try:
             out.append(json.loads(line))
         except json.JSONDecodeError:
             pass
+    _ROWS_CACHE.update(key=key, rows=out)
     return out
 
 
@@ -67,8 +77,9 @@ def estimate(model: str, prompt_chars: int, purpose: str = "", expect_out: int |
     output length of earlier calls with the same purpose, and how far past estimates were from the real cost."""
     if provider() in ("fake", "off"):        # no real AI: nothing to pay, nothing to block (ENGINE-002)
         return {"model": model, "usd": 0.0, "won": 0.0, "raw_usd": 0.0, "out_tokens": 0}
-    cfg, rows = settings(), [r for r in _rows() if r.get("ok") and
-                            (provider() != "codex-cli" or r.get("provider") == "codex-cli")]
+    # provider() reads the settings file — once here, not once per log row (2026-11-26: 7,858 rows took 2.8 s per estimate)
+    prov = provider()
+    cfg, rows = settings(), [r for r in _rows() if r.get("ok") and (prov != "codex-cli" or r.get("provider") == "codex-cli")]
     p_in, p_out = (cfg.get("가격") or {}).get(model, [3, 15])
     ratios = [((r.get("tokens_in") or 0) + (r.get("cache_read") or 0) + (r.get("cache_write") or 0)) / r["prompt_chars"]
               for r in rows if r.get("prompt_chars", 0) > 200 and (r.get("tokens_in") or r.get("cache_read") or r.get("cache_write"))]

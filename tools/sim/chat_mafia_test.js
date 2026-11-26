@@ -6,7 +6,9 @@ const game = path.join(repo, 'game', 'games', 'chat-mafia');
 process.env.CHAT_MAFIA_DEFEAT_FILE = path.join(os.tmpdir(), 'chat_mafia_defeats_test.jsonl');   // 시험은 패배기록 파일을 건드리지 않는다(가짜 답 판은 어차피 쓰지 않음)
 process.env.CHAT_MAFIA_NOTES_FILE = path.join(os.tmpdir(), 'chat_mafia_talk_notes_test.jsonl');  // 말 돌아보기 메모도 시험용 파일에만
 try { fs.unlinkSync(process.env.CHAT_MAFIA_NOTES_FILE); } catch {}
-process.env.CHAT_MAFIA_HUMAN_FILE = path.join(os.tmpdir(), 'chat_mafia_human_test.jsonl');     // 사람 글 모음도 시험용 파일만
+process.env.CHAT_MAFIA_HUMAN_FILE = path.join(os.tmpdir(), 'chat_mafia_human_test.jsonl');
+process.env.CHAT_MAFIA_ANSWERS_FILE = path.join(os.tmpdir(), 'chat_mafia_answers_test.jsonl');     // AI 답 기록도 시험용 파일만
+try { fs.unlinkSync(process.env.CHAT_MAFIA_ANSWERS_FILE); } catch {}     // 사람 글 모음도 시험용 파일만
 fs.writeFileSync(process.env.CHAT_MAFIA_HUMAN_FILE, ['시험 글 하나', '시험 글 둘?', '시험 글 셋'].map(t => JSON.stringify({g: 'x', t})).join('\n') + '\n');
 const {createHost, loadEngine} = require(path.join(repo, 'game', 'webengine', 'server', 'room_host.js'));
 const W = loadEngine(path.join(repo, 'game', 'webengine', 'runtime'));
@@ -170,7 +172,7 @@ const who = (S, r) => S.players.find(p => p.role === r);
   ok(n.S.players.find(p => p.startRole === 'framer').role === 'mafioso' || who(n.S, 'framer') === undefined, '대부가 죽어 죽일 사람이 없으면 남은 마피아가 조직원이 됨');
   { const S = make(R6); S.stage = 'night'; S.night = {acts: {}}; const bd = who(S, 'busdriver');
     const b1 = RR.nightButtons(S, bd); RR.chooseNight(S, bd, {target: who(S, 'sheriff').id}); const b2 = RR.nightButtons(S, bd);
-    ok(b1.every(b => /태우기$/.test(b.label)) && b2.some(b => /^\d+번 \S+, \d+번 \S+ 자리 바꾸기$/.test(b.label)) && b2.some(b => b.label === '고른 것 취소'), '버스 기사: 첫째를 고른 뒤 둘째 버튼이 나옴(취소 가능)');
+    ok(b1.every(b => /태우기$/.test(b.label)) && b2.every(b => /태우기$/.test(b.label) || b.label === '고른 것 취소') && b2.some(b => b.act.target2) && b2.some(b => b.label === '고른 것 취소'), '버스 기사: 첫째를 고른 뒤 둘째 버튼이 나옴(취소 가능)');
     who(S, 'vigilante').uses = 0;
     ok(RR.nightButtons(S, who(S, 'vigilante')).length === 0, '총알을 다 쓴 자경단은 버튼 없음'); }
   { const S = make(R6); S.silenced = {[who(S, 'mayor').id]: 2}; S.day = 2; S.stage = 'talk';
@@ -192,9 +194,13 @@ const who = (S, r) => S.players.find(p => p.role === r);
     let x = aiRoom(['2번 이름2 태우기']);
     await R.turn(x.room, 's1');
     ok(x.S.night.acts.s1 && x.S.night.acts.s1.target === 's2' && !x.S.night.acts.s1.target2 && x.timers.length >= 1, 'AI 버스 기사가 첫째만 고르면 "이제 둘째를 고릅니다" 글로 곧 다시 물음');
-    x = aiRoom(['2번 이름2 태우기', '2번 이름2, 3번 이름3 자리 바꾸기']);
+    x = aiRoom(['2번 이름2 태우기', '3번 이름3 태우기']);
     await R.turn(x.room, 's1');
-    ok(x.S.night.acts.s1 && x.S.night.acts.s1.target2 === 's3', 'AI가 한 답에서 첫째와 둘째를 차례로 누를 수 있음(누를 때마다 바뀐 버튼을 다시 봄)');
+    ok(x.S.night.acts.s1 && x.S.night.acts.s1.target === 's2' && x.S.night.acts.s1.target2 === 's3', 'AI가 한 답에서 두 사람을 차례로 "태우기" 하면 둘이 자리를 바꿈(실제 판 XMM7의 AI가 누른 그대로)');
+    x = aiRoom(['없는 버튼']);
+    await R.turn(x.room, 's1');
+    { const rows = fs.readFileSync(process.env.CHAT_MAFIA_ANSWERS_FILE, 'utf8').split('\n').filter(Boolean).map(JSON.parse); const last = rows[rows.length - 1];
+      ok(last && last.presses.length === 1 && last.presses[0].want === '없는 버튼' && last.presses[0].found === false && last.buttons.some(b => /태우기$/.test(b)), 'AI 답 기록: 화면에 없는 버튼을 누르려 하면 found=false와 그때의 버튼이 남음'); }
   })();
 }
 {
@@ -220,6 +226,9 @@ const who = (S, r) => S.players.find(p => p.role === r);
     await R.turn(room, 's2');
     for (let k = 0; k < 40 && timers.length; k++) timers.shift()();
     ok(sent.join('|') === '나 의사|3번 수상|4|5|6', '"말" 목록을 칸마다 한 번씩 차례로 보냄(빈 칸 빼고 다섯 칸까지)');
+    const rows = fs.readFileSync(process.env.CHAT_MAFIA_ANSWERS_FILE, 'utf8').split('\n').filter(Boolean).map(JSON.parse);
+    const last = rows[rows.length - 1];
+    ok(last && last.stage === 'talk' && last.no === 2 && last.role === 'doctor' && /나 의사/.test(last.text) && last.says === 5 && last.sameStage === true, 'AI 답 기록: 단계·자리·직업·답 원문·보낸 줄 수가 남음(시험용 파일)');
     ok(R.promptFor(S.players[1], S.bots.s2, '(화면)').includes('한 칸이 채팅 한 번'), '물음에 "말"이 글 목록이라는 것이 적힘');
   })();
 }

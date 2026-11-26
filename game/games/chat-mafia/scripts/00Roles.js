@@ -164,7 +164,7 @@
       const first = mine && mine.target && !mine.target2 ? find(S, mine.target) : null;
       if (!first) for (const q of others) b(`${label(q)} ${k === 'swap' ? '태우기' : '조종하기'}`, {target: q.id}, q.id);
       else for (const q of live.filter(q => k === 'control' || (q.id !== first.id && q.id !== me.id)))
-        b(k === 'swap' ? `${label(first)}, ${label(q)} 자리 바꾸기` : `${label(first)}의 능력을 ${label(q)}에게 쓰게 하기`, {target: first.id, target2: q.id}, q.id);
+        b(k === 'swap' ? `${label(q)} 태우기` : `${label(first)}의 능력을 ${label(q)}에게 쓰게 하기`, {target: first.id, target2: q.id}, q.id);
     }
     if (mine) b('고른 것 취소', {mode: 'cancel'}, 'self');
     return out;
@@ -179,9 +179,9 @@
     if (!btn) return {ok: false, error: '지금 고를 수 없는 것입니다.'};
     const t = a.target && find(S, a.target), t2 = a.target2 && find(S, a.target2);
     const k = R.night.kind;
-    if ((k === 'swap' || k === 'control') && !t2) { N.acts[p.id] = {target: t.id}; return {ok: true, tell: `${k === 'swap' ? '태울' : '조종할'} 첫 사람: ${label(t)}. 이제 둘째를 고릅니다.`}; }
+    if ((k === 'swap' || k === 'control') && !t2) { N.acts[p.id] = {target: t.id}; return {ok: true, tell: k === 'swap' ? `태울 첫 사람: ${label(t)}. 함께 태울 둘째를 고르면 두 사람의 자리를 바꿉니다.` : `조종할 사람: ${label(t)}. 이제 그 사람의 능력을 쓸 대상을 고릅니다.`}; }
     N.acts[p.id] = {target: t ? t.id : null, target2: t2 ? t2.id : null, mode: a.mode || null};
-    const what = btn.label.replace(/ \(남은 .*\)$/, '');
+    const what = k === 'swap' ? `${label(t)}, ${label(t2)} 자리 바꾸기` : btn.label.replace(/ \(남은 .*\)$/, '');
     const res = {ok: true, tell: `오늘 밤: ${what}`};
     if (k === 'kill' && isMafia(p)) res.mafia = `${R.name} ${label(p)}님이 오늘 밤 ${label(t)}님을 죽이기로 했습니다.`;
     return res;

@@ -309,6 +309,9 @@
   function saveRow(file, row) {
     try { const fs = fsMod(); if (fs && file) fs.appendFileSync(file, JSON.stringify(row) + '\n'); } catch (e) { /* 남기지 못해도 판은 그대로 */ }
   }
+  // AI 답 기록: 물을 때의 단계·자리, 답 원문, 누르려 한 버튼마다 눌렸는지. 이 컴퓨터의 logs에만(저장소에 없음). 실제 AI 판에서만 남긴다.
+  // 2026-11-26 사용자 "네, 남겨 보세요"(찬반이 눌리지 않는 까닭·버스 기사가 둘째를 못 고르는 까닭을 찾으려고).
+  const answersFile = () => logFile('CHAT_MAFIA_ANSWERS_FILE', 'chat_mafia_ai_answers.jsonl');
   const loadDefeats = name => loadRows(defeatFile(), name, 'situation');
   const saveDefeat = row => saveRow(defeatFile(), row);
   const loadNotes = name => loadRows(notesFile(), name, 'next');
@@ -469,16 +472,20 @@
     B.busy = true; B.dirty = false; B.asks++;
     room.refresh();                                    // 보는 사람의 화면에 "생각 중"(판에 낀 자리의 보기는 바뀌지 않는다)
     const epoch = S.epoch, seen = S.log.length;
+    const rec = room.ai.mode === 'on' ? {time: new Date().toISOString(), room: room.code, day: S.day, stage: S.stage, no: p.no, role: p.role, alive: p.alive,
+                                         buttons: v.buttons.filter(b => b.act.type !== 'will').map(b => b.label).slice(0, 30), presses: []} : null;
     let r = null;
     try { r = await room.ai.ask(promptFor(p, B, M.screenText(v)), {purpose: p.alive ? `참가자 ${M.stageName(S)}`.slice(0, 40) : '죽은 사람 대화', tag: 'chat-mafia', timeout}); }
     catch (e) { r = null; }
     B.busy = false;
     room.refresh();
-    if (room.state !== S || S.stage === 'over') return;
+    if (rec) Object.assign(rec, {ok: !!(r && r.ok), text: r && r.ok ? String(r.text).slice(0, 2000) : String((r && r.error) || '답 없음').slice(0, 300),
+                                 stageNow: S.stage, sameStage: S.epoch === epoch, left: Math.round(((S.endsAt || 0) - now(room)) * 10) / 10});
+    if (room.state !== S || S.stage === 'over') { if (rec) saveRow(answersFile(), rec); return; }
     const gap = rand(room, p.alive ? S.cfg.AI.다시묻기초 : S.cfg.AI.죽은뒤다시묻기초);
     B.nextOk = now(room) + gap;
     const a = r && r.ok ? parseAnswer(r.text) : null;
-    if (!a) { B.failed++; return later(room, id, B, seen); }
+    if (!a) { B.failed++; if (rec) saveRow(answersFile(), {...rec, parsed: false}); return later(room, id, B, seen); }
     B.answered++;
     let did = false;
     if (S.epoch === epoch) {
@@ -486,8 +493,9 @@
         const fresh = M.view(S, id, now(room));        // 누를 때마다 바뀐 버튼을 다시 본다(사람 화면처럼)
         const want = typeof x === 'string' ? x : x && x['버튼'];
         const b = fresh.buttons.find(b => b.label === String(want ?? '').trim()) || fresh.buttons.find(b => norm(b.label) === norm(want));
-        if (!b) continue;
+        if (!b) { if (rec) rec.presses.push({want: String(want ?? '').slice(0, 80), found: false}); continue; }
         const res = act(room, id, b.text ? {...b.act, text: (x && x['적은 글']) || ''} : b.act);
+        if (rec) rec.presses.push({want: String(want ?? '').slice(0, 80), found: true, ok: !!(res && res.ok), error: res && !res.ok ? res.error : undefined});
         if (res && res.ok) { B.pressed++; did = true; }
       }
     } else if (a['누름'] && a['누름'].length) B.stale++;
@@ -501,6 +509,7 @@
       const q = alive.find(q => M.label(q) === who) || alive.find(q => norm(M.label(q)) === norm(who)) || alive.find(q => q.name === who) || alive.find(q => `${q.no}번` === who);
       if (q) outs.push([String(w['말']).trim(), q.id, 'whisper']);
     }
+    if (rec) { rec.says = outs.length; saveRow(answersFile(), rec); }
     if (outs.length) { did = true; typeOut(room, id, outs); }
     if (!did) B.waited++;
     room.refresh();
