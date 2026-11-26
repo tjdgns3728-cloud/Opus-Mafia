@@ -1,4 +1,4 @@
-// 8인 채팅 마피아 — 사람의 화면(브라우저마다 돈다). 서버가 보낸 내 자리의 보기(ChatMafia.view)만 그린다.
+// 채팅 마피아 — 사람의 화면(브라우저마다 돈다). 서버가 보낸 내 자리의 보기(ChatMafia.view)만 그린다.
 // AI 자리는 같은 보기를 ChatMafia.screenText로 글로 받는다: 여기 보이는 칸(사람들·대화·버튼·유언·규칙)이 그 글에도 같은 차례로 있다.
 (function () {
   'use strict';
@@ -6,7 +6,7 @@
   const E = x => String(x ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
   WebEngine.script('채팅마피아화면', class extends WebEngine.Component {
-    static title = '8인 채팅 마피아 화면';
+    static title = '11인 채팅 마피아 화면';
     static help = '처음 화면 · 기다리는 방 · 판 화면';
 
     start() {
@@ -34,15 +34,15 @@
     home() {
       this.mode = 'home';
       this.root.innerHTML = `<section class="home">
-        <h1>8인 채팅 마피아</h1>
-        <p class="muted">여덟 명이 채팅으로 하는 마피아입니다. 빈자리는 AI가 채웁니다.</p>
+        <h1>11인 채팅 마피아</h1>
+        <p class="muted">열한 명이 채팅으로 하는 마피아입니다. 빈자리는 AI가 채웁니다.</p>
         <label>부를 이름<input id="cm-name" maxlength="12" placeholder="예: 가람" value="${E(this.name)}"></label>
         <button id="cm-make" class="gold">방 만들기</button>
         <label>방 이름 (다른 사람이 만든 방)<input id="cm-code" maxlength="8" placeholder="예: K7QM"></label>
         <button id="cm-join">들어가기</button>
         <hr>
         <button id="cm-watch">AI끼리 하는 판 보기</button>
-        <p class="muted small">AI 여덟이 판을 하고, 나는 보기만 합니다. 모든 직업·마피아끼리 대화·귓속말·밤 행동이 보입니다.</p>
+        <p class="muted small">AI 열하나가 판을 하고, 나는 보기만 합니다. 모든 직업·마피아끼리 대화·귓속말·밤 행동이 보입니다.</p>
         <p class="notice">${E(this.notice)}</p>
       </section>`;
       const room = this.engine.room, name = () => { const v = this.root.querySelector('#cm-name').value.trim(); this.name = v; try { localStorage.setItem('cm-name', v); } catch (e) {} return v; };
@@ -100,7 +100,7 @@
       this.mode = 'game';
       this.rendered.clear(); this.maxI = 0; this.stick = true;
       this.root.innerHTML = `<section class="game">
-        <header><b>8인 채팅 마피아</b><span id="cm-stage"></span><span id="cm-time" class="time"></span><span id="cm-role" class="role"></span></header>
+        <header><b>11인 채팅 마피아</b><span id="cm-stage"></span><span id="cm-time" class="time"></span><span id="cm-role" class="role"></span></header>
         <div class="cols">
           <aside class="players"><h3>사람들</h3><div id="cm-players"></div></aside>
           <div class="center">
@@ -186,7 +186,7 @@
       this.drawBanner(v, now);
       this.drawLog(v);
       this.drawSay(v);
-      q('#cm-me').innerHTML = `<b>${E(v.me.role)}</b> <span class="muted">${E(v.me.team)}</span><p>${E(v.me.roleDesc)}</p>`;
+      q('#cm-me').innerHTML = `<b>${E(v.me.role)}</b> <span class="muted">${E(v.me.team)}</span><p>${E(v.me.roleDesc)}</p>${(v.me.notes || []).map(n => `<p class="note">${E(n)}</p>`).join('')}`;
       const will = q('#cm-will');
       if (document.activeElement !== will && will.dataset.saved !== v.me.will) { will.value = v.me.will; will.dataset.saved = v.me.will; }
       will.disabled = !v.me.alive || v.stage === 'over'; q('#cm-will-save').disabled = will.disabled;
@@ -199,7 +199,7 @@
 
     drawPlayers(v) {
       const byAt = {};
-      for (const b of v.buttons) if (b.at && !['verdict', 'will'].includes(b.at)) (byAt[b.at] = byAt[b.at] || []).push(b);
+      for (const b of v.buttons) if (b.at && !['verdict', 'will', 'self'].includes(b.at)) (byAt[b.at] = byAt[b.at] || []).push(b);
       const box = this.root.querySelector('#cm-players');
       if (box.childElementCount !== v.players.length)
         box.innerHTML = v.players.map(() => '<div class="p"><div class="pl"></div><div class="ps"></div><div class="pb"></div></div>').join('');
@@ -238,6 +238,8 @@
         if (v.stage === 'talk') parts.push(`<b>낮 대화</b>${v.chat.whisper ? ' · 받는 사람을 고르면 귓속말이 됩니다.' : ''}`);
         if (v.stage === 'morning' || v.stage === 'execution') parts.push(`<b>${E(v.stageName)}</b>`);
       }
+      const selfB = v.buttons.filter(b => b.at === 'self');
+      if (selfB.length && !v.result) parts.push(selfB.map(b => `<button data-act='${E(JSON.stringify(b.act))}'>${E(b.label)}</button>`).join(' '));
       parts.push(`<span id="cm-flash" class="flash">${E(this.flash || '')}</span>`);
       this.set(el, parts.join(' '));
     }
@@ -255,6 +257,7 @@
         if (l.kind === 'chat' || l.kind === 'mafia' || l.kind === 'dead') d.innerHTML = `${l.kind !== 'chat' ? `<i>${l.kind === 'mafia' ? '마피아끼리' : '죽은 사람끼리'}</i> ` : ''}<b>${E(l.name)}</b> ${E(l.text)}`;
         else if (l.kind === 'whisper') d.innerHTML = `<i>귓속말 ${E(l.name)} → ${E(l.toName)}</i> ${E(l.text)}`;
         else if (l.kind === 'me') d.innerHTML = `<i>나에게만</i> ${E(l.text)}`;
+        else if (l.kind === 'spy') d.innerHTML = `<i>스파이가 엿들음</i> ${E(l.text)}`;
         else d.textContent = l.text;
         el.appendChild(d);
         this.rendered.add(l.i); this.maxI = Math.max(this.maxI, l.i);
@@ -284,11 +287,11 @@
       this.mode = 'watch';
       this.rendered.clear(); this.maxI = 0; this.stick = true;
       this.root.innerHTML = `<section class="game watch">
-        <header><b>8인 채팅 마피아</b><span class="tag hot">관전</span><span id="cm-stage"></span>
+        <header><b>11인 채팅 마피아</b><span class="tag hot">관전</span><span id="cm-stage"></span>
           <label class="eye"><input type="checkbox" id="cm-citizen"${this.citizen ? ' checked' : ''}> 시민 눈으로 보기</label>
           <span id="cm-time" class="time"></span></header>
         <div class="cols">
-          <aside class="players"><h3>AI 여덟</h3><div id="cm-players"></div></aside>
+          <aside class="players"><h3>AI 열하나</h3><div id="cm-players"></div></aside>
           <div class="center">
             <div id="cm-banner" class="banner"></div>
             <div id="cm-log" class="log"></div>
@@ -346,6 +349,7 @@
         if (p.verdict && full) bits.push(`<span class="tag">${E(p.verdict)}</span>`);
         if (p.thinking && full) bits.push('<span class="thinking">생각 중…</span>');
         if (p.typing && (full || p.typing.pub)) bits.push(`<span class="typing">입력 중…${full && !p.typing.pub ? ` (${E(p.typing.to)})` : ''}</span>`);
+        if (full && p.notes && p.notes.length && p.alive) bits.push(`<div class="will">${E(p.notes.join(' · '))}</div>`);
         if (full && p.will && p.alive) bits.push(`<div class="will">유언: ${E(p.will)}</div>`);
         this.set(ps, bits.join(' '));
       });

@@ -98,3 +98,8 @@ details pre{white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.7;col
 .l.story{border-left:3px solid #8a6cff;padding-left:8px;margin:2px 0;background:rgba(138,108,255,.08)}
 .l.later{opacity:0;animation:cm-in .35s ease forwards}
 @keyframes cm-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* 중립 편(스타2 마피아 직업) */
+.tag.neutral{background:rgba(214,170,60,.18);color:#e0b850}
+.p.t-neutral{border-left:3px solid #c9a23a}
+.card .note{margin:4px 0 0;color:#e0b850;font-size:.9em}
