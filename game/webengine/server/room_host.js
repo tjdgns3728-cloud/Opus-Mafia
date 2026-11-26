@@ -69,10 +69,11 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
     const R = {code, seed, engine, input, seats: [], byKey: new Map(), status: "lobby", version: 1, events: [], waiters: [], phase: null,
                result: null, fault: "", touched: Date.now(), api: null,
                nextSeat: 1, round: 1, from: 0, left: new Set(), emptyAt: 0, bots: 0,
+               watch: false, watchers: [], nextWatch: 1,       // a watch room: only computer seats play, people come in to watch (docs/ROOM.md)
                ai: {asked: 0, sent: 0, answered: 0, blocked: 0, failed: 0, seconds: 0}};
     const seatInfo = s => ({id: s.id, name: s.name, host: s.host, on: s.on, bot: s.bot});
     const session = () => `play:room:${code}:${R.round}`;
-    const people = () => R.seats.some(s => !s.bot && s.on);
+    const people = () => R.seats.some(s => !s.bot && s.on) || R.watchers.some(w => w.on);
     let touched = false;                              // something for the screens changed outside a request (a timer, an AI answer): one bump for all of it
     const touch = () => { if (touched) return; touched = true; queueMicrotask(() => { touched = false; if (rooms.has(code)) bump(); }); };
     // One AI ask of this room's rules (engine.ai's tools all come through here — runtime/ai.js). Never throws; "no answer"
@@ -265,6 +266,14 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
 
     R.payload = (seat, since) => {
       const p = R.phase;
+      if (seat.watch) {                               // one who watches: the game's whole-board view and every event
+        const view = rules && R.status !== "lobby" ? guard("보는 사람의 보기", () => clone(rules.watch(R.api))) : null;
+        return {ok: true, n: R.version, room: code, game: O.name, status: R.status, round: R.round, min: MIN, max: MAX, me: seat.id, host: seat.host,
+          watching: true, watchers: R.watchers.filter(w => w.on).length, seats: R.seats.map(seatInfo), bots: !!BOT,
+          phase: p ? {name: p.name, left: left(), seconds: p.seconds / engine.timeScale, mine: false, sent: false, own: null} : null,
+          view: view ?? null, result: R.status === "over" ? R.result : null, fault: R.fault,
+          events: R.events.filter(ev => ev.i > Math.max(since, R.from)).map(ev => ({...ev, to: ev.to === "all" ? "all" : [...ev.to]}))};
+      }
       const view = rules && R.status !== "lobby" ? guard(`자리 ${seat.id}의 보기`, () => clone(rules.view(R.api, seat.id))) : null;
       const own = p && p.ids.includes(seat.id) ? p.ph.intents()[seat.id] : null;
       return {ok: true, n: R.version, room: code, game: O.name, status: R.status, round: R.round, min: MIN, max: MAX, me: seat.id, host: seat.host,
@@ -290,11 +299,19 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
     R.seats.push(seat); if (!bot) R.byKey.set(key, seat);
     return seat;
   }
+  // One who watches a watch room: a key like a seat's, but no seat — not dealt in, not counted in min/max, sends nothing to the board.
+  function addWatcher(R, name, host) {
+    const key = crypto.randomBytes(18).toString("base64url");
+    const w = {id: "w" + R.nextWatch++, name, host, key, on: true, seen: Date.now(), pending: 0, closed: [], offAt: 0, bot: false, watch: true};
+    R.watchers.push(w); R.byKey.set(key, w);
+    return w;
+  }
+  const humans = R => [...R.seats.filter(s => !s.bot), ...R.watchers];      // the people of a room (a room has seats or watchers, never both)
   // The maker's seat is gone or away when the room is (again) a waiting room: the first seat with a screen makes the start.
   function rehost(R) {
-    const host = R.seats.find(s => s.host);
+    const all = humans(R), host = all.find(s => s.host);
     if (host && host.on) return;
-    const next = R.seats.find(s => s.on && !s.bot);
+    const next = all.find(s => s.on);
     if (!next) return;
     if (host) host.host = false;
     next.host = true;
@@ -303,7 +320,15 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
   function removeSeat(R, seat) {
     R.seats = R.seats.filter(s => s !== seat);
     if (!seat.bot) { R.byKey.delete(seat.key); R.left.add(seat.key); }
-    if (!R.seats.some(s => !s.bot)) { log(`방 ${R.code} 닫음 — 기다리는 방에 아무도 남지 않음`); return dropRoom(R); }
+    if (!humans(R).length) { log(`방 ${R.code} 닫음 — 기다리는 방에 아무도 남지 않음`); return dropRoom(R); }
+    rehost(R);
+    R.bump();
+  }
+  // One who watches goes (leave, or away too long in the waiting room). The last one going closes the room: nobody is left to watch.
+  function removeWatcher(R, w) {
+    R.watchers = R.watchers.filter(x => x !== w);
+    R.byKey.delete(w.key); R.left.add(w.key);
+    if (!humans(R).length) { log(`방 ${R.code} 닫음 — 보는 사람이 아무도 남지 않음`); return dropRoom(R); }
     rehost(R);
     R.bump();
   }
@@ -323,25 +348,40 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
     R.touched = Date.now();
     if (typeof req.tab === "string" && seat.closed.includes(req.tab)) return {R, seat};      // a late request of a window that already said goodbye
     seat.seen = Date.now();
-    if (!seat.on) { seat.on = true; seat.offAt = 0; if (rules && rules.presence && R.status === "play") R.guard("자리 돌아옴", () => rules.presence(R.api, seat.id, true)); R.bump(); }
+    if (!seat.on) { seat.on = true; seat.offAt = 0; if (!seat.watch && rules && rules.presence && R.status === "play") R.guard("자리 돌아옴", () => rules.presence(R.api, seat.id, true)); R.bump(); }
     return {R, seat};
   }
 
   async function handle(req) {
     const op = String(req.op || "");
-    if (op === "info") return {ok: true, game: O.name, min: MIN, max: MAX, rules: !!rules, aiMode: O.aiMode};
+    const canWatch = !!rules && typeof rules.watch === "function" && !!BOT;
+    if (op === "info") return {ok: true, game: O.name, min: MIN, max: MAX, rules: !!rules, aiMode: O.aiMode, watch: canWatch};
     if (!rules) return refuse("no_rules", "이 게임에는 방의 규칙(WebEngine.room)이 없어 서버에서 판을 돌릴 수 없습니다.");
     if (op === "create" || op === "join") {
       const n = cleanName(req.name);
       if (n.error) return n.error;
+      const watch = req.watch === true;
+      if (watch && !canWatch) return refuse("no_watch", "이 게임에는 컴퓨터 자리끼리 하는 판을 보는 길이 없습니다.");
       if (op === "create") {
         if (rooms.size >= O.maxRooms) return refuse("rooms_limit", "지금은 방을 더 만들 수 없습니다.");
         const R = makeRoom(newCode());
+        if (watch) { R.watch = true; const w = addWatcher(R, n.name, true); return {ok: true, room: R.code, seat: w.id, key: w.key, watch: true}; }
         const seat = addSeat(R, n.name, true);
         return {ok: true, room: R.code, seat: seat.id, key: seat.key};
       }
       const R = rooms.get(String(req.room || "").toUpperCase());
       if (!R) return gone(req.room);
+      // a watch room takes only watchers (at any time), a room people play takes no watcher: who watches sees everything
+      if (R.watch && !watch) return refuse("watch_only", "이 방은 컴퓨터 자리끼리 하는 판을 보는 방입니다. 보기로만 들어올 수 있습니다.", {watch: true});
+      if (!R.watch && watch) return refuse("not_watch_room", "사람이 하는 판은 볼 수 없습니다(보는 사람은 모든 것을 봅니다).");
+      if (watch) {
+        if (R.watchers.length >= 20) return refuse("watch_full", "이 방을 보는 사람이 너무 많습니다 (20명).", {max: 20});
+        if (R.watchers.some(w => w.name === n.name)) return refuse("name_taken", "같은 이름이 이미 있습니다. 다른 이름을 넣으세요.");
+        const w = addWatcher(R, n.name, false);
+        R.touched = Date.now();
+        R.bump();
+        return {ok: true, room: R.code, seat: w.id, key: w.key, watch: true};
+      }
       if (R.status !== "lobby") return refuse(R.status === "over" ? "room_over" : "room_started", R.status === "over" ? "이 방의 판은 끝났습니다. 방에 있는 사람이 방을 다시 열면 들어올 수 있습니다." : "이 방은 이미 판을 시작했습니다.");
       if (R.seats.length >= MAX) {                         // full — but a seat whose screen is away gives its place to the newcomer
         const away = R.seats.filter(s => !s.on).sort((a, b) => a.offAt - b.offAt)[0];
@@ -375,8 +415,10 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
       away(R, seat);
       return {ok: true};
     }
+    if (seat.watch && ["intent", "act", "chat"].includes(op)) return refuse("watching", "보는 사람은 판에 끼어들 수 없습니다.");
     if (op === "leave") {                                 // the person chose to go: in the waiting room the seat is given up at once
-      if (R.status === "lobby") removeSeat(R, seat);
+      if (seat.watch) removeWatcher(R, seat);             // one who watches simply goes (the last one closes the room)
+      else if (R.status === "lobby") removeSeat(R, seat);
       else { seat.seen = 0; away(R, seat); }
       return {ok: true};
     }
@@ -405,7 +447,7 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
     }
     if (op === "reopen") {                                // after the end: back to the waiting room, same seats and keys
       if (R.status !== "over") return refuse("not_over", "판이 끝난 뒤에만 방을 다시 열 수 있습니다.");
-      const host = R.seats.find(x => x.host);
+      const host = humans(R).find(x => x.host);
       const say = rules.reopen ? R.guard(`자리 ${seat.id}의 다시 열기`, () => rules.reopen(R.api, seat.id)) : (seat.host || !host || !host.on);
       if (say === false || (say && say.ok === false)) return refuse("cannot_reopen", String((say && say.error) || "방을 만든 사람만 방을 다시 열 수 있습니다."));
       if (host && !host.on && host !== seat) { host.host = false; seat.host = true; }      // the maker's screen is away: the one who opens it makes the start
@@ -463,20 +505,20 @@ function createHost({WebEngine, rules, data = () => null, log = () => {}, opts =
   function away(R, seat) {
     if (!seat.on) return;
     seat.on = false; seat.offAt = Date.now();
-    if (rules && rules.presence && R.status === "play") R.guard("자리 끊김", () => rules.presence(R.api, seat.id, false));
+    if (!seat.watch && rules && rules.presence && R.status === "play") R.guard("자리 끊김", () => rules.presence(R.api, seat.id, false));
     R.bump();
   }
   const sweep = setInterval(() => {
     const t = Date.now();
     for (const R of [...rooms.values()]) {
-      for (const seat of [...R.seats]) {
-        if (seat.bot) continue;
+      for (const seat of humans(R)) {
+        if (!rooms.has(R.code)) break;
         if (seat.on && !seat.pending && t - seat.seen > O.away * 1000) away(R, seat);
-        if (R.status === "lobby" && !seat.on && t - seat.offAt > O.lobbyGrace * 1000) removeSeat(R, seat);     // gone from the waiting room for good
+        if (R.status === "lobby" && !seat.on && t - seat.offAt > O.lobbyGrace * 1000) seat.watch ? removeWatcher(R, seat) : removeSeat(R, seat);     // gone from the waiting room for good
       }
       if (!rooms.has(R.code)) continue;
       // a started room with no person's screen: its AI is already silent (askAI); after a while the room is closed
-      if (R.seats.some(s => !s.bot && s.on)) R.emptyAt = 0;
+      if (humans(R).some(s => s.on)) R.emptyAt = 0;
       else if (!R.emptyAt) R.emptyAt = t;
       else if (R.status !== "lobby" && t - R.emptyAt > O.emptyClose * 1000) { log(`방 ${R.code} 닫음 — 사람의 화면이 하나도 없음`); dropRoom(R); continue; }
       if (t - R.touched > O.idle * 1000) { log(`방 ${R.code} 닫음 — ${Math.round(O.idle / 60)}분 동안 아무도 오지 않음`); dropRoom(R); }

@@ -81,6 +81,49 @@ const base = () => {
   const asked = Object.values(S.bots).reduce((a, B) => a + B.asks, 0), said = Object.values(S.bots).reduce((a, B) => a + B.said, 0);
   ok(asked > 0 && said > 0, `AI 자리가 물음 ${asked}번, 말 ${said}번(가짜 답)`);
   ok(!logs.some(m => /오류/.test(m)), '서버 기록에 오류 없음' + (logs.length ? ' — ' + logs.slice(0, 3).join(' / ') : ''));
+
+  // ③ AI끼리 하는 판 보기(관전 방): AI 여덟이 하고 사람은 보기만 한다
+  const info = await host.handle({op: 'info'});
+  ok(info.watch === true, '이 게임은 관전 방을 열 수 있음');
+  const w = await host.handle({op: 'create', name: '보는이', watch: true});
+  ok(w.ok && w.watch && /^w/.test(w.seat), '관전 방 만들기(보는 사람은 자리가 아님)');
+  const j1 = await host.handle({op: 'join', room: w.room, name: '끼어들기'});
+  ok(!j1.ok && j1.code === 'watch_only', '관전 방에는 사람 자리로 들어올 수 없음');
+  const j2 = await host.handle({op: 'join', room: w.room, name: '같이봄', watch: true});
+  ok(j2.ok && j2.watch, '다른 사람도 보기로 들어올 수 있음');
+  const j3 = await host.handle({op: 'join', room: c.room, name: '엿보기', watch: true});
+  ok(!j3.ok && j3.code === 'not_watch_room', '사람이 하는 방은 볼 수 없음');
+  for (let i = 0; i < 8; i++) await host.handle({op: 'bot_add', room: w.room, key: w.key});
+  const ws = await host.handle({op: 'start', room: w.room, key: w.key});
+  ok(ws.ok, 'AI 여덟 자리로 시작');
+  const WR = host.rooms.get(w.room);
+  ok(WR.api.seats().length === 8 && WR.api.seats().every(s => s.bot) && new Set(WR.api.seats().map(s => s.name)).size === 8, 'AI 여덟의 이름이 모두 다름: ' + WR.api.seats().map(s => s.name).join(', '));
+  const wa = await host.handle({op: 'act', room: w.room, key: w.key, action: {type: 'will', text: 'x'}});
+  const wc = await host.handle({op: 'chat', room: w.room, key: w.key, text: '안녕'});
+  ok(!wa.ok && wa.code === 'watching' && !wc.ok && wc.code === 'watching', '보는 사람은 행동·채팅을 보낼 수 없음');
+  let wn = await host.handle({op: 'news', room: w.room, key: w.key, since: 0});
+  ok(wn.watching && wn.view && wn.view.watching && wn.view.players.length === 8 && wn.view.players.every(p => p.role), '보는 사람의 보기: 여덟 모두의 직업이 보임');
+  ok(wn.view.log.some(l => !l.pub && /에게만$/.test(l.place) && /직업은/.test(l.text)), '보는 사람의 보기: 각자에게만 간 줄(직업 알림)도 보임');
+  const seatView = rules.view(WR.api, WR.api.seats()[0].id);
+  ok(seatView.players.filter(p => !p.me && !p.ally).every(p => p.role === null), '판에 낀 AI 자리의 보기는 그대로 숨김(보는 사람의 보기와 따로)');
+  const t1 = Date.now();
+  while (Date.now() - t1 < 90000) {
+    wn = await host.handle({op: 'news', room: w.room, key: w.key, since: 0});
+    if (wn.status === 'over') break;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  const WS = WR.api.state;
+  ok(wn.status === 'over' && WS.result, `관전 방의 판이 끝남: ${WS.result ? WS.result.text : '끝나지 않음'}, ${WS.day}일째`);
+  ok(!WR.fault, '관전 방 규칙 오류 없음' + (WR.fault ? ': ' + WR.fault : ''));
+  ok(WS.log.some(l => l.ch === 'mafia') ? wn.view.log.some(l => l.place === '마피아끼리') : true, '마피아에게만 간 알림은 "마피아끼리"로 보임');
+  const again = await host.handle({op: 'reopen', room: w.room, key: w.key});
+  const again2 = await host.handle({op: 'start', room: w.room, key: w.key});
+  ok(again.ok && again2.ok, '관전 방: 한 판 더(다시 열고 바로 시작)');
+  await host.handle({op: 'leave', room: w.room, key: j2.key});
+  ok(host.rooms.has(w.room), '보는 사람 하나가 나가도 방은 남음');
+  await host.handle({op: 'leave', room: w.room, key: w.key});
+  ok(!host.rooms.has(w.room), '마지막 보는 사람이 나가면 방이 닫힘(AI도 멈춤)');
+  ok(!logs.some(m => /오류/.test(m)), '서버 기록에 오류 없음(관전 포함)' + (logs.length ? ' — ' + logs.slice(0, 3).join(' / ') : ''));
   host.stop();
   console.log(failed ? `실패 ${failed}건` : '모두 통과');
 })();

@@ -73,4 +73,23 @@ h3{font-size:13px;color:var(--muted);margin:6px 0 8px;font-weight:normal}
 .side button{margin-top:6px}
 details{margin-top:14px}
 details pre{white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.7;color:#c9c7c0}
+.small{font-size:12px}
+.home hr{border:0;border-top:1px solid var(--line);margin:22px 0 4px}
+/* AI끼리 하는 판 보기 */
+.game header label.eye{display:flex;align-items:center;gap:6px;margin:0;color:var(--muted);font-size:13px;cursor:pointer}
+.game header label.eye input{width:auto;margin:0}
+.tag.mafia{background:#4a2624;color:#f0b7ae}
+.tag.town{background:#22344a;color:#b9d0ee}
+.p.t-mafia{border-left:3px solid var(--red)}
+.p.t-town{border-left:3px solid var(--blue)}
+.thinking{color:var(--gold);margin-left:6px}
+.will{color:var(--muted);margin-top:3px;font-size:12px;overflow-wrap:anywhere}
+.ait{width:100%;border-collapse:collapse;font-size:12px}
+.ait td{padding:2px 3px;text-align:right;color:#c9c7c0}
+.ait td:first-child{text-align:left;color:var(--ink)}
+.ait tr.dead td{opacity:.5}
+.ait td{white-space:nowrap}
+.ait td:first-child{max-width:84px;overflow:hidden;text-overflow:ellipsis}
+.ait tr.h td{color:var(--muted);font-size:10px;padding:2px 2px;border-bottom:1px solid var(--line)}
+.log .l.hidden-line{background:#1a1b20}
 @media (max-width:900px){.cols{grid-template-columns:1fr}.players,.side{border:0;max-height:none}.center{min-height:70vh}}

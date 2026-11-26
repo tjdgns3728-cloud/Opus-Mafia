@@ -288,7 +288,7 @@ def make_handler(game: Path, host: Host):
             except (ValueError, UnicodeDecodeError):
                 return self.json({"ok": False, "error": "잘못된 요청"}, 400)
             # only these fields go on — a screen cannot name its seat, its role or any state
-            req = {"op": op, **{k: body[k] for k in ("room", "key", "name", "intent", "action", "text", "to", "since", "e", "wait", "tab", "bot") if k in body}}
+            req = {"op": op, **{k: body[k] for k in ("room", "key", "name", "intent", "action", "text", "to", "since", "e", "wait", "tab", "bot", "watch") if k in body}}
             result = host.ask(req)
             if op == "info" and result.get("ok"):
                 from . import ai

@@ -15,7 +15,8 @@
     {name: '고양이집사', style: '반말. 궁금한 게 많아 물음표를 자주 쓴다.'},
     {name: '밤산책', style: '존댓말. 짧고 건조하다.'},
     {name: '빵빵이', style: '반말. 장난스럽고 감정 표현이 크다(ㅠㅠ, ??, ㄷㄷ).'},
-    {name: '초코우유', style: '반말과 존댓말을 섞는다. 느긋하고 말끝을 흐린다(…).'}
+    {name: '초코우유', style: '반말과 존댓말을 섞는다. 느긋하고 말끝을 흐린다(…).'},
+    {name: '귤까는중', style: '존댓말. 친절하고 맞장구를 잘 친다(맞아요, 그쵸).'}      // 2026-11-26 관전(AI 여덟)용으로 하나 더
   ];
   const STYLE = Object.fromEntries(BOTS.map(b => [b.name, b.style]));
   const rand = (room, [a, b]) => a + room.random() * Math.max(0, b - a);
@@ -217,7 +218,7 @@
         if (p.role === 'mafia') {
           if (t.id === id) return no('나를 고를 수 없습니다.');
           N.mafia = {by: id, target: t.id};
-          add(room, {kind: 'sys', to: M.mafiaRoom(S), text: `${L(p)}님이 ${L(t)}님을 습격 대상으로 골랐습니다.`});
+          add(room, {kind: 'sys', to: M.mafiaRoom(S), ch: 'mafia', text: `${L(p)}님이 ${L(t)}님을 습격 대상으로 골랐습니다.`});
           return {ok: true};
         }
         if (p.role === 'police') {
@@ -240,7 +241,7 @@
           if (t.role === 'mafia' && !p.contacted) {
             p.contacted = true;
             tellMe(room, id, '마피아를 찾아 접선했습니다. 이제 마피아와 서로 알고, 마피아끼리 대화에 낍니다.');
-            add(room, {kind: 'sys', to: M.mafiaRoom(S).filter(x => x !== id), text: `조력자 ${L(p)}님이 접선했습니다. 이제 마피아끼리 대화에 낍니다.`});
+            add(room, {kind: 'sys', to: M.mafiaRoom(S).filter(x => x !== id), ch: 'mafia', text: `조력자 ${L(p)}님이 접선했습니다. 이제 마피아끼리 대화에 낍니다.`});
           }
           return {ok: true};
         }
@@ -399,12 +400,14 @@
     const v = M.view(S, id, now(room));
     if (!wants(v)) return;
     B.busy = true; B.dirty = false; B.asks++;
+    room.refresh();                                    // 보는 사람의 화면에 "생각 중"(판에 낀 자리의 보기는 바뀌지 않는다)
     const epoch = S.epoch, seen = S.log.length;
     const timeout = Math.max(3, Math.min(S.cfg.AI.답기다림최대초, (S.endsAt - now(room)) / (room.engine.timeScale || 1) - 0.5));
     let r = null;
     try { r = await room.ai.ask(promptFor(p, B, M.screenText(v)), {purpose: p.alive ? `참가자 ${M.stageName(S)}`.slice(0, 40) : '죽은 사람 대화', tag: 'chat-mafia', timeout}); }
     catch (e) { r = null; }
     B.busy = false;
+    room.refresh();
     if (room.state !== S || S.stage === 'over') return;
     const gap = rand(room, p.alive ? S.cfg.AI.다시묻기초 : S.cfg.AI.죽은뒤다시묻기초);
     B.nextOk = now(room) + gap;
@@ -513,6 +516,7 @@
       dayTalk(room);
     },
     view(room, id) { const S = room.state; return S.players ? M.view(S, id, now(room)) : null; },
+    watch(room) { const S = room.state; return S.players ? M.watchView(S, now(room)) : null; },      // AI끼리 하는 판을 보는 사람의 보기(엔진이 관전 방에만 준다)
     chat, act,
     bot: {name: (room, n, taken) => (BOTS.find(b => !taken.includes(b.name)) || {name: 'AI ' + n}).name, decide: () => null},
     presence(room, id, on) { /* 끊김은 화면의 자리 목록이 보인다. 판은 그대로 간다 */ }

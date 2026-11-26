@@ -8,6 +8,7 @@
 //   chat(room, seatId, {text, to}) → "all" | [seatId, …] | {to, tag} | null   who receives the line (null = not sent)
 //   act(room, seatId, action)   something a seat does right away, outside a phase (optional)
 //   presence(room, seatId, on)  a seat's screen went away or came back (optional)
+//   watch(room) → data          the whole board for those who watch a room of computer seats only (optional; needs bot)
 //   room: code · seed · state (the game's own object) · engine (phase · actors · knowledge · random) · seats() · seat(id)
 //         phase(name, {seats, seconds, done(intents, info), showWaiting, check}) · current · closePhase()
 //         tell(to, data) · end(result) · reopen() · refresh() · random() · round
@@ -17,7 +18,8 @@
 //   room.ai — engine.ai's tools (propose · narrate · speakAs · check · fake) asked by the rules · room.ai.mode · room.ai.stats
 //
 // Screen side (runs in each browser):   engine.room
-//   await create(name) · await join(code, name) · await resume() → {ok, room, seat} or {ok: false, error, gone}
+//   await create(name, {watch}?) · await join(code, name, {watch}?) · await resume() → {ok, room, seat} or {ok: false, error, gone}
+//   (watch: a room where only computer seats play and people watch — rules.watch(room) gives their view; now.watching)
 //   await start() · await submit(intent) · await act(action) · await chat(text, to?) · await reopen() · leave()
 //   await addBot() · await removeBot(seatId?) — the maker, in the waiting room
 //   now → the newest news {room, status, seats, me, host, phase, view, result} · left() → seconds left in the phase · events
@@ -151,12 +153,13 @@
       // seconds left in the open phase, counted down here from the server's number (every screen shows the same)
       left() { return now && now.phase && now.phase.left != null ? Math.max(0, now.phase.left - (clock() - got) / 1000) : null; },
       async info() { return post("info", {}); },
-      async create(name) {
-        const r = await post("create", {name: String(name ?? "")});
+      // {watch: true}: a watch room — only computer seats play, this screen (and any who join it the same way) watches
+      async create(name, opts = {}) {
+        const r = await post("create", {name: String(name ?? ""), ...(opts && opts.watch ? {watch: true} : {})});
         return r.ok ? enter(r) : r;
       },
-      async join(code, name) {
-        const r = await post("join", {room: String(code ?? "").trim().toUpperCase(), name: String(name ?? "")});
+      async join(code, name, opts = {}) {
+        const r = await post("join", {room: String(code ?? "").trim().toUpperCase(), name: String(name ?? ""), ...(opts && opts.watch ? {watch: true} : {})});
         return r.ok ? enter(r) : r;
       },
       // The address says ?room=&seat= and this browser still holds that seat's key: come back to the same seat.

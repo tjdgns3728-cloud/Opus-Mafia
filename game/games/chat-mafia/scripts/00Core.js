@@ -168,6 +168,64 @@
     };
   }
 
+  // 보는 사람(AI끼리 하는 판을 보는 사람)의 보기: 모든 직업, 모든 대화(마피아끼리·귓속말·나에게만), 밤 행동, AI가 생각/입력 중인지.
+  // 엔진은 이 보기를 관전 방(AI 자리만 있는 방)의 보는 사람에게만 준다. 판에 낀 자리(사람·AI)는 이것을 받지 않는다.
+  function placeOf(S, l) {
+    if (l.to === 'all') return '';
+    if (l.to === 'dead') return '죽은 사람끼리';
+    if (l.kind === 'mafia' || l.ch === 'mafia') return '마피아끼리';
+    if (l.kind === 'whisper') return `귓속말 ${l.name} → ${l.toName}`;
+    const who = (Array.isArray(l.to) ? l.to : []).map(id => find(S, id)).filter(Boolean);
+    return `${who.map(label).join(', ')}에게만`;
+  }
+  function typingTo(S, q, now) {
+    const t = (S.typing || {})[q.id];
+    if (!t || t.until <= now) return null;
+    if (t.to === 'all') return {to: '모두에게', pub: true};
+    if (Array.isArray(t.to) && t.to.length === 1 && t.to[0] !== q.id) { const r = find(S, t.to[0]); return {to: `귓속말 → ${r ? label(r) : '?'}`, pub: false}; }
+    const ch = chatPlace(S, q).channel;
+    return {to: ch === 'mafia' ? '마피아끼리' : ch === 'dead' ? '죽은 사람끼리' : '일부에게', pub: false};
+  }
+  function watchView(S, now) {
+    const N = S.stage === 'night' && S.night ? S.night : null;
+    const who = id => { const q = id && find(S, id); return q ? label(q) : '?'; };
+    const night = [];
+    if (N) {
+      const has = r => alive(S).some(q => q.role === r);
+      if (has('mafia')) night.push({role: '마피아', text: N.mafia ? `${who(N.mafia.by)} → ${who(N.mafia.target)} 습격` : '아직 고르지 않음'});
+      if (has('police')) night.push({role: '경찰', text: N.police ? `${who(N.police)} 조사 → ${find(S, N.police).role === 'mafia' ? '마피아' : '마피아 아님'}` : '아직 고르지 않음'});
+      if (has('doctor')) night.push({role: '의사', text: N.doctor ? `${who(N.doctor)} 치료` : '아직 고르지 않음'});
+      if (has('helper')) night.push({role: '조력자', text: N.helper ? `${who(N.helper)} 알아봄 → ${ROLES[find(S, N.helper).role].name}` : '아직 고르지 않음'});
+    }
+    const players = S.players.map(q => {
+      const B = S.bots && S.bots[q.id];
+      return {
+        id: q.id, no: q.no, name: q.name, alive: q.alive, bot: !!q.bot,
+        role: ROLES[q.role].name, team: ROLES[q.role].team, mafiaSide: mafiaSide(q), contacted: !!q.contacted,
+        died: q.died ? `${q.died.day}일째 ${q.died.how}` : null, will: q.will || '',
+        typing: typingTo(S, q, now), thinking: !!(B && B.busy),
+        votes: S.stage === 'vote' ? Object.values(S.votes).filter(t => t === q.id).length : 0,
+        votedFor: S.stage === 'vote' && S.votes[q.id] ? who(S.votes[q.id]) : null,
+        verdict: S.stage === 'verdict' && q.id in (S.verdict || {}) ? (S.verdict[q.id] ? '찬성' : '반대') : null,
+        accused: S.accused === q.id && ['defense', 'verdict'].includes(S.stage),
+        acquitted: S.stage === 'vote' && S.acquitted.includes(q.id),
+        ai: B ? {asks: B.asks, answered: B.answered, failed: B.failed, said: B.said, whispers: B.whispers, pressed: B.pressed, waited: B.waited} : null
+      };
+    });
+    const tally = S.stage === 'verdict' ? {yes: Object.values(S.verdict || {}).filter(x => x === true).length, no: Object.values(S.verdict || {}).filter(x => x === false).length,
+                                            voters: alive(S).filter(q => q.id !== S.accused).length} : null;
+    return {
+      watching: true, title: '8인 채팅 마피아', day: S.day, stage: S.stage, stageName: stageName(S), left: Math.max(0, Math.ceil((S.endsAt || 0) - now)),
+      need: S.stage === 'vote' ? needVotes(S) : 0,
+      accused: S.accused && ['defense', 'verdict'].includes(S.stage) ? label(find(S, S.accused)) : null,
+      tally, night, players,
+      log: S.log.map(l => ({i: l.i, day: l.day, stage: l.stage, kind: l.kind, name: l.name || null, from: l.from || null, text: l.text, toName: l.toName || null,
+                            pub: l.to === 'all', place: placeOf(S, l)})),
+      result: S.result || null,
+      rules: rulesText(S.cfg)
+    };
+  }
+
   // 보기 → 화면 글(AI가 받는 화면). 사람 화면에 보이는 칸을 같은 차례로 글로 옮긴다.
   function lineText(l) {
     if (l.kind === 'chat') return `${l.name}: ${l.text}`;
@@ -235,5 +293,5 @@
   }
 
   globalThis.ChatMafia = {DEFAULTS, ROLES, ROLE_ORDER, config, rulesText, find, alive, mafiaSide, label, needVotes, mafiaRoom,
-                          chatPlace, recipients, canSee, stageName, buttonsFor, view, screenText, lineText, deal, winner};
+                          chatPlace, recipients, canSee, stageName, buttonsFor, view, watchView, placeOf, screenText, lineText, deal, winner};
 })();
