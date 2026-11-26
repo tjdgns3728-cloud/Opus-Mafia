@@ -7,7 +7,7 @@ process.env.CHAT_MAFIA_DEFEAT_FILE = path.join(os.tmpdir(), 'chat_mafia_defeats_
 process.env.CHAT_MAFIA_NOTES_FILE = path.join(os.tmpdir(), 'chat_mafia_talk_notes_test.jsonl');  // 말 돌아보기 메모도 시험용 파일에만
 try { fs.unlinkSync(process.env.CHAT_MAFIA_NOTES_FILE); } catch {}
 process.env.CHAT_MAFIA_HUMAN_FILE = path.join(os.tmpdir(), 'chat_mafia_human_test.jsonl');     // 사람 글 모음도 시험용 파일만
-fs.writeFileSync(process.env.CHAT_MAFIA_HUMAN_FILE, ['ㅇㅋ 답변 고마워', '뭐 서버 터짐?', '그래도 한글자막 붙여주면 본다'].map(t => JSON.stringify({g: 'x', t})).join('\n') + '\n');
+fs.writeFileSync(process.env.CHAT_MAFIA_HUMAN_FILE, ['시험 글 하나', '시험 글 둘?', '시험 글 셋'].map(t => JSON.stringify({g: 'x', t})).join('\n') + '\n');
 const {createHost, loadEngine} = require(path.join(repo, 'game', 'webengine', 'server', 'room_host.js'));
 const W = loadEngine(path.join(repo, 'game', 'webengine', 'runtime'));
 for (const f of fs.readdirSync(path.join(game, 'scripts')).filter(f => f.endsWith('.js')).sort())
@@ -200,9 +200,9 @@ const who = (S, r) => S.players.find(p => p.role === r);
 {
   // 사람 글 보여 주기(2026-11-26 사용자 선택): 물음에 사람 글 모음이 들어감, 없으면 안 들어감
   const R = globalThis.ChatMafiaRoom, S = base();
-  const withH = R.promptFor(S.players[1], {style: '반말', defeats: [], notes: [], human: ['뭐 서버 터짐?', 'ㅇㅋ 답변 고마워']}, '(화면)');
+  const withH = R.promptFor(S.players[1], {style: '반말', defeats: [], notes: [], human: ['시험 글 둘?', '시험 글 하나']}, '(화면)');
   const noH = R.promptFor(S.players[1], {style: '반말', defeats: [], notes: [], human: []}, '(화면)');
-  ok(withH.includes('사람들은 이렇게 친다') && withH.includes('· 뭐 서버 터짐?') && !noH.includes('사람들은 이렇게 친다'), '물음에 사람 글이 들어가고, 모음이 없으면 안 들어감');
+  ok(withH.includes('사람들은 이렇게 친다') && withH.includes('· 시험 글 둘?') && !noH.includes('사람들은 이렇게 친다'), '물음에 사람 글이 들어가고, 모음이 없으면 안 들어감');
   const room = {random: (() => { let k = 0; return () => (k++ * 0.37) % 1; })()};
   const picked = R.pickHuman(room, 40);
   ok(picked.length === 3 && new Set(picked).size === 3, '모음보다 많이 뽑으면 있는 만큼(겹치지 않게)');
