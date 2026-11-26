@@ -148,7 +148,7 @@
     const bundle = {game: 'chat-mafia', winner: S.result.winner, days: S.day, seconds: Math.round(now(room) - S.started),
       players: S.players.map(p => ({no: p.no, name: p.name, bot: p.bot, role: p.role, alive: p.alive, died: p.died})),
       log: S.log.map(l => ({d: l.day, s: l.stage, k: l.kind, f: l.from ? M.find(S, l.from)?.no : undefined, t: l.text})),
-      bots: Object.fromEntries(Object.entries(S.bots).map(([id, B]) => [M.find(S, id)?.no, {asks: B.asks, answered: B.answered, failed: B.failed, said: B.said, whispers: B.whispers, pressed: B.pressed, waited: B.waited, stale: B.stale}])),
+      bots: Object.fromEntries(Object.entries(S.bots).map(([id, B]) => [M.find(S, id)?.no, {asks: B.asks, answered: B.answered, failed: B.failed, said: B.said, whispers: B.whispers, pressed: B.pressed, waited: B.waited, stale: B.stale, skipped: B.skipped}])),
       ai: room.ai.stats};
     let ok = room.record(bundle);
     if (!ok) { bundle.log = bundle.log.slice(-250); ok = room.record(bundle); }
@@ -310,7 +310,7 @@
       for (const p of S.players.filter(q => q.bot)) {
         S.bots[p.id] = {style: STYLE[p.name] || '반말. 짧게 말한다.', defeats: room.ai.mode === 'on' ? loadDefeats(p.name) : [],
                         busy: false, typing: false, timer: null, timerAt: 0, nextOk: 0, dirty: false,
-                        asks: 0, answered: 0, failed: 0, said: 0, whispers: 0, pressed: 0, waited: 0, stale: 0};
+                        asks: 0, answered: 0, failed: 0, said: 0, whispers: 0, pressed: 0, waited: 0, stale: 0, skipped: 0};
       }
       if (room.ai.mode === 'fake') room.ai.fake(fakeAnswer(room));
     },
@@ -394,15 +394,24 @@
 
   const wants = v => !!(v.chat.channel || v.chat.whisper || v.buttons.some(b => !b.text));
 
+  // AI에게 얼마나 기다릴지(실제 초). null = 지금은 묻지 않는다: 실제 AI의 답이 단계가 끝나기 전에 올 수 없는 때
+  // (6초짜리 아침·처형, 다른 단계의 끝 무렵). 가짜 답은 바로 오므로 막지 않는다.
+  function askWait(S, gameNow, timeScale, mode) {
+    const left = (S.endsAt - gameNow) / (timeScale || 1) - 0.5;
+    if (mode === 'on' && left < S.cfg.AI.답최소기다림초) return null;
+    return Math.max(3, Math.min(S.cfg.AI.답기다림최대초, left));
+  }
+
   async function turn(room, id) {
     const S = room.state, B = S.bots && S.bots[id], p = B && M.find(S, id);
     if (!B || !p || room.ai.mode === 'off' || S.stage === 'over' || B.busy || B.typing) return;
     const v = M.view(S, id, now(room));
     if (!wants(v)) return;
+    const timeout = askWait(S, now(room), room.engine.timeScale, room.ai.mode);
+    if (timeout === null) { B.skipped++; return; }      // 다음 단계가 열리면 AI.stage가 다시 묻는다
     B.busy = true; B.dirty = false; B.asks++;
     room.refresh();                                    // 보는 사람의 화면에 "생각 중"(판에 낀 자리의 보기는 바뀌지 않는다)
     const epoch = S.epoch, seen = S.log.length;
-    const timeout = Math.max(3, Math.min(S.cfg.AI.답기다림최대초, (S.endsAt - now(room)) / (room.engine.timeScale || 1) - 0.5));
     let r = null;
     try { r = await room.ai.ask(promptFor(p, B, M.screenText(v)), {purpose: p.alive ? `참가자 ${M.stageName(S)}`.slice(0, 40) : '죽은 사람 대화', tag: 'chat-mafia', timeout}); }
     catch (e) { r = null; }
@@ -522,5 +531,5 @@
     presence(room, id, on) { /* 끊김은 화면의 자리 목록이 보인다. 판은 그대로 간다 */ }
   });
 
-  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer};
+  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer, askWait};
 })();

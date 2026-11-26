@@ -51,6 +51,14 @@ const base = () => {
   ok(M.view(S, cit.id, 0).buttons.every(b => b.act.type === 'will') && !M.view(S, cit.id, 0).chat.channel, '밤의 시민: 유언 고치기 말고 버튼 없음, 말할 수 없음');
   ok(M.view(S, maf.id, 0).chat.channel === 'mafia', '밤의 마피아: 마피아끼리 말할 수 있음');
 }
+{
+  // 짧은 단계에서는 실제 AI에게 묻지 않는다(답이 단계 안에 올 수 없다). 가짜 답은 막지 않는다.
+  const wait = globalThis.ChatMafiaRoom.askWait, S = {cfg, endsAt: 106};
+  ok(wait(S, 100, 1, 'on') === null, '실제 AI: 6초짜리 아침이 막 열렸을 때는 묻지 않음');
+  ok(wait(S, 99, 1, 'on') === 6.5, '실제 AI: 7초 남으면 6.5초 기다리며 물음');
+  ok(wait({cfg, endsAt: 160}, 100, 1, 'on') === 20, '실제 AI: 긴 단계는 20초까지 기다림');
+  ok(wait(S, 105, 1, 'fake') === 3, '가짜 답: 남은 시간이 짧아도 물음');
+}
 
 // ② 방 하나를 가짜 AI 답으로 끝까지
 (async () => {
