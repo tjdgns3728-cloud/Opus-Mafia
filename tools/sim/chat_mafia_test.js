@@ -236,6 +236,7 @@ const who = (S, r) => S.players.find(p => p.role === r);
   // 어색한 대화 고치기(2026-11-26 사용자 선택): ① 말투에 따라 쓸 표지가 없음 ③ 내 번호·나에게 온 글이면 곧, 아니면 조용할 때 간격으로 물음
   const R = globalThis.ChatMafiaRoom;
   ok(R.BOTS.every(b => !/[()]|\^\^|ㅋㅋ|자주/.test(b.style)), '말투 설명에 괄호 속 예시·^^·ㅋㅋ·"자주"가 없음');
+  ok(R.BOTS.filter(b => /존댓말/.test(b.style)).map(b => b.name).join() === '밤산책' && R.promptFor({name: '새벽두시'}, {style: '반말', defeats: [], notes: [], human: []}, '(화면)').includes('서로 모르는 사람들이 모인 인터넷 게임방'), '존댓말은 밤산책 한 자리, 물음에 "서로 모르는 사람들이 모인 인터넷 게임방"');
   const p3 = {no: 3, name: '치즈볼'}, p1 = {no: 1, name: '새벽두시'};
   ok(R.mentions('3번 해명 듣자', p3) && R.mentions('3이 4 붙잡았대', p3) && R.mentions('2·3 중 하나', p3) && R.mentions('치즈볼 말 맞음', p3), '번호·닉네임이 나오면 부른 것으로 봄');
   ok(!R.mentions('3밤에 조사함', p3) && !R.mentions('내 표 3표임', p3) && !R.mentions('13번 결과', p3) && !R.mentions('1일째', p1) && !R.mentions('11 보안관', p1), '"3밤"·"3표"·"13번"·"1일째"·"11"은 부른 것으로 보지 않음');
