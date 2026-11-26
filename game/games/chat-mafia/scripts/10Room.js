@@ -106,6 +106,7 @@
 
   function morning(room) {
     const S = room.state, N = S.night || {};
+    nightStory(room, N);
     let victim = null;
     if (N.mafia) { const t = M.find(S, N.mafia.target); if (t && t.alive) victim = t; }
     const doc = M.alive(S).find(q => q.role === 'doctor');
@@ -119,6 +120,22 @@
       sys(room,`${S.day}일째 아침입니다. 밤사이 ${L(victim)}님이 죽었습니다. 직업: ${M.ROLES[victim.role].name}. 유언: ${victim.will ? `"${victim.will}"` : '없음'}`);
     } else sys(room, `${S.day}일째 아침입니다. 밤사이 아무도 죽지 않았습니다.`);
     checkEnd(room);
+  }
+
+  // 밤에 일어난 일을 처리되는 차례대로 한 줄씩(2026-11-26 사용자: "밤에 능력들에 대한 과정을 순서대로 보여줘야"). 판에 낀 사람에게는 가지 않는다.
+  function nightStory(room, N) {
+    const S = room.state, holder = r => M.alive(S).find(q => q.role === r), who = id => { const q = id && M.find(S, id); return q ? L(q) : '?'; };
+    const steps = [], helper = holder('helper'), police = holder('police'), doc = holder('doctor');
+    if (helper) steps.push(N.helper ? `조력자 ${L(helper)} → ${who(N.helper)}님을 알아봄: ${M.ROLES[M.find(S, N.helper).role].name}${M.find(S, N.helper).role === 'mafia' ? ' · 마피아를 찾아 접선' : ''}` : `조력자 ${L(helper)}: 아무도 고르지 않음`);
+    if (police) steps.push(N.police ? `경찰 ${L(police)} → ${who(N.police)}님을 조사: ${M.find(S, N.police).role === 'mafia' ? '마피아' : '마피아 아님'}` : `경찰 ${L(police)}: 아무도 고르지 않음`);
+    if (doc) steps.push(N.doctor ? `의사 ${L(doc)} → ${who(N.doctor)}님을 치료` : `의사 ${L(doc)}: 아무도 고르지 않음`);
+    const t = N.mafia && M.find(S, N.mafia.target);
+    if (!t) steps.push('마피아: 습격할 사람을 고르지 않음 → 아무도 습격당하지 않음');
+    else {
+      steps.push(`마피아 → ${L(t)}님을 습격(마지막에 고른 사람: ${who(N.mafia.by)})`);
+      steps.push(!t.alive ? `${L(t)}님은 이미 죽어 있어 아무 일도 없음` : doc && N.doctor === t.id ? `의사가 치료한 사람이라 ${L(t)}님은 살았음` : `${L(t)}님이 죽음`);
+    }
+    steps.forEach((text, k) => add(room, {kind: 'story', to: [], text: `${k + 1}. ${text}`}));
   }
 
   function kill(room, p, how) {
@@ -474,12 +491,12 @@
     } else if (a['누름'] && a['누름'].length) B.stale++;
     const outs = [];                                   // [글, 귓속말 받는 사람 id 또는 null] — 차례로 친다
     const say = typeof a['말'] === 'string' ? a['말'].trim() : '';
-    if (say && a['지금 말하기'] !== false) outs.push([say, null]);
+    if (say && a['지금 말하기'] !== false && v.chat.channel) outs.push([say, null, v.chat.channel]);   // 물었을 때의 칸 — 보낼 때 칸이 바뀌었으면 버린다
     const w = a['귓속말'];
     if (w && typeof w === 'object' && String(w['누구'] || '').trim() && String(w['말'] || '').trim()) {
       const who = String(w['누구']).trim(), alive = M.alive(S).filter(q => q.id !== id);
       const q = alive.find(q => M.label(q) === who) || alive.find(q => norm(M.label(q)) === norm(who)) || alive.find(q => q.name === who) || alive.find(q => `${q.no}번` === who);
-      if (q) outs.push([String(w['말']).trim(), q.id]);
+      if (q) outs.push([String(w['말']).trim(), q.id, 'whisper']);
     }
     if (outs.length) { did = true; typeOut(room, id, outs); }
     if (!did) B.waited++;
@@ -491,15 +508,24 @@
   function later(room, id, B, seen) {
     const S = room.state, p = M.find(S, id);
     if (S.stage === 'over' || !p) return;
-    if (S.log.length > seen && B.dirty) return schedule(room, id, Math.max(0.3, B.nextOk - now(room)));
+    // 물은 뒤 새 글이 왔거나 단계가 바뀌었으면(치거나 생각하는 동안 단계 첫 물음을 놓친 때도) 다시 묻는다
+    if (B.dirty) return schedule(room, id, Math.max(0.3, B.nextOk - now(room)));
     if (p.alive && ['talk', 'vote', 'verdict'].includes(S.stage)) schedule(room, id, rand(room, S.cfg.AI.조용할때초));
   }
 
-  // 치는 시간 흉내: 글자 수에 비례(초당 3~5자, 1~8초), 한꺼번에 치는 AI는 둘까지. 보낼 때 그 채널에 말할 수 없으면 버린다.
+  // 치는 시간 흉내: 글자 수에 비례(초당 3~5자, 최소 1초, 상한 없음), 한꺼번에 치는 AI는 둘까지.
+  // 보낼 때 쓰려던 칸이 아니면(낮에 쓰던 글이 밤에, 변론이 죽은 뒤에 올라가는 일) 버린다.
+  const typeSecs = (text, perSec, A) => Math.max(A.입력최소초, [...String(text)].length / perSec);
+  // 보낼 때 아직 그 칸에 쓸 수 있나: 귓속말은 귓속말을 쓸 수 있는 단계인지, 나머지는 물었을 때의 칸(모두에게·마피아끼리·죽은 사람끼리)과 같은지
+  function fitsPlace(S, id, whisperTo, meant) {
+    const pl = M.chatPlace(S, M.find(S, id));
+    return whisperTo ? !!pl.whisper : !!pl.channel && pl.channel === meant;
+  }
+
   function typeOut(room, id, outs) {
     const S = room.state, B = S.bots[id], A = S.cfg.AI;
     if (!outs.length) { B.typing = false; return later(room, id, B, S.log.length); }
-    const [[text, whisperTo], ...rest] = outs, start = now(room);
+    const [[text, whisperTo, meant], ...rest] = outs, start = now(room);
     B.typing = true;
     const go = () => {
       if (room.state !== S || S.stage === 'over') { B.typing = false; return; }
@@ -509,7 +535,7 @@
         return void room.after(0.4, go);
       }
       S.aiTyping.push(id);
-      const secs = Math.min(A.입력최대초, Math.max(A.입력최소초, [...text].length / rand(room, A.초당글자)));
+      const secs = typeSecs(text, rand(room, A.초당글자), A);
       const place = M.chatPlace(S, M.find(S, id));
       const to = whisperTo ? [whisperTo] : place.channel === 'all' ? 'all' : place.channel ? M.recipients(S, place.channel, id) : null;
       if (to) S.typing[id] = {until: now(room) + secs + 0.5, to};
@@ -519,7 +545,7 @@
         delete S.typing[id];
         B.typing = false;
         if (room.state !== S || S.stage === 'over') return;
-        const sent = room.say(id, text, whisperTo ? [whisperTo] : 'all');
+        const sent = fitsPlace(S, id, whisperTo, meant) && room.say(id, text, whisperTo ? [whisperTo] : 'all');
         if (sent) { if (whisperTo) B.whispers++; else B.said++; } else B.stale++;
         room.refresh();
         if (rest.length) return typeOut(room, id, rest);
@@ -569,5 +595,5 @@
     presence(room, id, on) { /* 끊김은 화면의 자리 목록이 보인다. 판은 그대로 간다 */ }
   });
 
-  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer, askWait, review: room => AI.review(room), loadNotes};
+  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer, askWait, typeSecs, fitsPlace, review: room => AI.review(room), loadNotes};
 })();

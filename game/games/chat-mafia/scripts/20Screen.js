@@ -321,7 +321,7 @@
       this.drawWatchBanner(v, full);
       this.drawWatchLog(v, full);
       this.set(q('#cm-night'), !full ? '<span class="muted">시민 눈으로 볼 때는 숨깁니다.</span>'
-        : v.night.length ? v.night.map(n => `<div><b>${E(n.role)}</b> ${E(n.text)}</div>`).join('') : '<span class="muted">밤이 되면 여기에 AI들이 고른 것이 보입니다.</span>');
+        : v.night.length ? v.night.map(n => `<div><b>${E(n.role)}</b> ${E(n.text)}</div>`).join('') : '<span class="muted">밤이 되면 여기에 AI들이 고른 것이 보입니다. 밤이 끝나면 대화 기록에 밤에 일어난 일이 차례로 나옵니다.</span>');
       const ai = v.players.filter(p => p.ai);
       this.set(q('#cm-ai'), `<table class="ait"><tr class="h"><td></td><td>물음</td><td>말</td><td>귓말</td><td>누름</td><td>기다림</td><td>답없음</td></tr>${ai.map(p => `<tr class="${p.alive ? '' : 'dead'}"><td>${p.no} ${E(p.name)}</td>${['asks', 'said', 'whispers', 'pressed', 'waited', 'failed'].map(k => `<td>${p.ai[k]}</td>`).join('')}</tr>`).join('')}</table>`);
       q('#cm-rules').textContent = v.rules;
@@ -373,12 +373,14 @@
       const lines = full ? v.log : v.log.filter(l => l.pub);
       const fresh = lines.filter(l => !this.rendered.has(l.i));
       if (fresh.some(l => l.i < this.maxI)) { el.innerHTML = ''; el.dataset.key = ''; this.rendered.clear(); this.maxI = 0; return this.drawWatchLog(v, full); }
-      let key = el.dataset.key || '';
+      let key = el.dataset.key || '', step = 0;
+      const live = this.rendered.size > 0;   // 처음 그릴 때(들어오거나 다시 불러올 때)는 차례 없이 바로
       for (const l of fresh) {
         const k = `${l.day}|${l.stage === 'night' ? '밤' : l.stage === 'morning' ? '아침' : '낮'}`;
         if (k !== key) { key = k; const d = document.createElement('div'); d.className = 'sep'; d.textContent = `${l.day}일째 ${k.split('|')[1]}`; el.appendChild(d); }
         const d = document.createElement('div');
         d.className = `l ${l.kind}${!l.pub ? ' hidden-line' : ''}${l.place === '마피아끼리' ? ' mafia' : ''}`;
+        if (live && (l.kind === 'story' || step)) { step++; d.classList.add('later'); d.style.animationDelay = `${(step - 1) * 1.4}s`; }
         const tag = l.place ? `<i>${E(l.place)}</i> ` : '';
         if (l.kind === 'chat' || l.kind === 'mafia' || l.kind === 'dead') d.innerHTML = `${tag}<b>${E(l.name)}</b> ${E(l.text)}`;
         else if (l.kind === 'whisper') d.innerHTML = `${tag}${E(l.text)}`;

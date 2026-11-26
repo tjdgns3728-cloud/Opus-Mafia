@@ -93,3 +93,8 @@ details pre{white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.7;col
 .ait tr.h td{color:var(--muted);font-size:10px;padding:2px 2px;border-bottom:1px solid var(--line)}
 .log .l.hidden-line{background:#1a1b20}
 @media (max-width:900px){.cols{grid-template-columns:1fr}.players,.side{border:0;max-height:none}.center{min-height:70vh}}
+
+/* 관전: 밤에 일어난 일(차례로 나타남) */
+.l.story{border-left:3px solid #8a6cff;padding-left:8px;margin:2px 0;background:rgba(138,108,255,.08)}
+.l.later{opacity:0;animation:cm-in .35s ease forwards}
+@keyframes cm-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}

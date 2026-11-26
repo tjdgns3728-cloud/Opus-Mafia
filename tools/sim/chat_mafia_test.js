@@ -54,6 +54,31 @@ const base = () => {
   ok(M.view(S, maf.id, 0).chat.channel === 'mafia', '밤의 마피아: 마피아끼리 말할 수 있음');
 }
 {
+  // 치는 시간(2026-11-26 사용자 선택 "사람의 손과 눈 맞추기"): 글자 수만큼, 상한 없음
+  const R = globalThis.ChatMafiaRoom;
+  ok(R.typeSecs('가'.repeat(80), 4, cfg.AI) === 20 && R.typeSecs('ㅇㅇ', 4, cfg.AI) === cfg.AI.입력최소초, '치는 시간: 80자는 초당 4자로 20초(8초 상한 없음), 짧은 글은 최소 시간');
+  // 보낼 때 칸이 바뀌었으면 버린다(실제 판 RWLK: 찬반 때 쓰던 글이 밤의 마피아끼리로, 최후 변론이 죽은 사람끼리로 올라감)
+  const S = base(), maf = S.players.find(p => p.role === 'mafia'), cit = S.players.find(p => p.role === 'citizen');
+  S.stage = 'verdict';
+  ok(R.fitsPlace(S, maf.id, null, 'all'), '같은 낮(찬반)이면 모두에게 쓰던 글을 보냄');
+  S.stage = 'night';
+  ok(!R.fitsPlace(S, maf.id, null, 'all'), '낮에 쓰던 글은 밤이 되면 버림(마피아끼리로 가지 않음)');
+  ok(R.fitsPlace(S, maf.id, null, 'mafia') && !R.fitsPlace(S, cit.id, null, 'all'), '밤에 쓰던 마피아 글은 밤에만, 시민은 밤에 못 씀');
+  S.stage = 'morning';
+  ok(!R.fitsPlace(S, maf.id, null, 'mafia'), '밤에 쓰던 마피아 글이 아침에 모두에게 올라가지 않음');
+  S.stage = 'defense'; S.accused = cit.id; cit.alive = false;
+  ok(!R.fitsPlace(S, cit.id, null, 'all'), '변론 글은 처형된 뒤 죽은 사람끼리로 가지 않음');
+  S.stage = 'talk'; cit.alive = true;
+  ok(R.fitsPlace(S, cit.id, 's9', 'whisper') && (S.stage = 'night', !R.fitsPlace(S, cit.id, 's9', 'whisper')), '귓속말은 낮에만');
+  // 밤에 일어난 일(보는 사람·판이 끝난 화면에만)
+  S.stage = 'morning';
+  S.log.push({i: 1, day: 2, stage: 'night', kind: 'story', to: [], text: '1. 의사 → 치료'});
+  ok(S.players.every(p => !M.view(S, p.id, 0).log.some(l => l.kind === 'story')), '밤에 일어난 일은 판에 낀 누구의 보기에도 없음');
+  ok(M.watchView(S, 0).log.some(l => l.kind === 'story' && l.place === '밤에 일어난 일'), '보는 사람의 보기에는 "밤에 일어난 일"로 보임');
+  S.stage = 'over';
+  ok(M.screenText(M.view(S, cit.id, 0)).includes('(밤에 일어난 일) 1. 의사'), '판이 끝난 화면 글(말 돌아보기·패배기록)에는 들어감');
+}
+{
   // 짧은 단계에서는 실제 AI에게 묻지 않는다(답이 단계 안에 올 수 없다). 가짜 답은 막지 않는다.
   const wait = globalThis.ChatMafiaRoom.askWait, S = {cfg, endsAt: 106};
   ok(wait(S, 100, 1, 'on') === null, '실제 AI: 6초짜리 아침이 막 열렸을 때는 묻지 않음');
@@ -146,6 +171,11 @@ const base = () => {
   ok(wn.status === 'over' && WS.result, `관전 방의 판이 끝남: ${WS.result ? WS.result.text : '끝나지 않음'}, ${WS.day}일째`);
   ok(!WR.fault, '관전 방 규칙 오류 없음' + (WR.fault ? ': ' + WR.fault : ''));
   ok(WS.log.some(l => l.ch === 'mafia') ? wn.view.log.some(l => l.place === '마피아끼리') : true, '마피아에게만 간 알림은 "마피아끼리"로 보임');
+  const mornings = WS.log.filter(l => l.kind === 'sys' && /밤사이/.test(l.text));
+  const storyOk = mornings.every(m => { const before = WS.log.filter(l => l.kind === 'story' && l.i < m.i && l.day === m.day - 1);
+    const last = before[before.length - 1], died = m.text.match(/밤사이 (.+?)님이 죽었습니다/);
+    return last && (died ? last.text.includes(`${died[1]}님이 죽음`) : !/님이 죽음$/.test(last.text)); });
+  ok(mornings.length > 0 && storyOk, `아침 ${mornings.length}번 모두 앞에 밤에 일어난 일이 차례로 있고, 마지막 줄이 아침 발표와 맞음`);
   const again = await host.handle({op: 'reopen', room: w.room, key: w.key});
   const again2 = await host.handle({op: 'start', room: w.room, key: w.key});
   ok(again.ok && again2.ok, '관전 방: 한 판 더(다시 열고 바로 시작)');
