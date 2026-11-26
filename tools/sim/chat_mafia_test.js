@@ -166,11 +166,32 @@ const who = (S, r) => S.players.find(p => p.role === r);
   ok(n.S.players.find(p => p.startRole === 'framer').role === 'mafioso' || who(n.S, 'framer') === undefined, '대부가 죽어 죽일 사람이 없으면 남은 마피아가 조직원이 됨');
   { const S = make(R6); S.stage = 'night'; S.night = {acts: {}}; const bd = who(S, 'busdriver');
     const b1 = RR.nightButtons(S, bd); RR.chooseNight(S, bd, {target: who(S, 'sheriff').id}); const b2 = RR.nightButtons(S, bd);
-    ok(b1.every(b => /태우기$/.test(b.label)) && b2.some(b => /와 .* 자리 바꾸기$/.test(b.label)) && b2.some(b => b.label === '고른 것 취소'), '버스 기사: 첫째를 고른 뒤 둘째 버튼이 나옴(취소 가능)');
+    ok(b1.every(b => /태우기$/.test(b.label)) && b2.some(b => /^\d+번 \S+, \d+번 \S+ 자리 바꾸기$/.test(b.label)) && b2.some(b => b.label === '고른 것 취소'), '버스 기사: 첫째를 고른 뒤 둘째 버튼이 나옴(취소 가능)');
     who(S, 'vigilante').uses = 0;
     ok(RR.nightButtons(S, who(S, 'vigilante')).length === 0, '총알을 다 쓴 자경단은 버튼 없음'); }
   { const S = make(R6); S.silenced = {[who(S, 'mayor').id]: 2}; S.day = 2; S.stage = 'talk';
     ok(!M.chatPlace(S, who(S, 'mayor')).channel && /협박/.test(M.chatPlace(S, who(S, 'mayor')).why), '협박받은 사람은 다음 날 낮에 말할 수 없음'); }
+}
+{
+  // AI의 두 단계 능력(실제 판 2DJ5: AI 버스 기사가 밤마다 첫 사람만 고르고 둘째를 고르지 못함)
+  const R = globalThis.ChatMafiaRoom;
+  const aiRoom = presses => {
+    const S = make(['busdriver', 'sheriff', 'doctor', 'godfather']); S.stage = 'night'; S.night = {acts: {}}; S.epoch = 1; S.endsAt = 25; S.bots = {};
+    S.bots.s1 = {style: '반말', defeats: [], notes: [], busy: false, typing: false, dirty: false, nextOk: 0, timer: null, timerAt: 0, asks: 0, answered: 0, failed: 0, said: 0, whispers: 0, pressed: 0, waited: 0, stale: 0, skipped: 0};
+    const timers = [];
+    const room = {state: S, engine: {time: 0, timeScale: 1}, random: () => 0.5, refresh() {}, say() { return null; },
+      after(secs, fn) { timers.push({secs, fn}); return () => {}; },
+      ai: {mode: 'on', ask: async () => ({ok: true, text: JSON.stringify({'지금 말하기': false, '말': '', '귓속말': {'누구': '', '말': ''}, '누름': presses.map(b => ({'버튼': b, '적은 글': ''}))})})}};
+    return {S, room, timers};
+  };
+  (async () => {
+    let x = aiRoom(['2번 이름2 태우기']);
+    await R.turn(x.room, 's1');
+    ok(x.S.night.acts.s1 && x.S.night.acts.s1.target === 's2' && !x.S.night.acts.s1.target2 && x.timers.length >= 1, 'AI 버스 기사가 첫째만 고르면 "이제 둘째를 고릅니다" 글로 곧 다시 물음');
+    x = aiRoom(['2번 이름2 태우기', '2번 이름2, 3번 이름3 자리 바꾸기']);
+    await R.turn(x.room, 's1');
+    ok(x.S.night.acts.s1 && x.S.night.acts.s1.target2 === 's3', 'AI가 한 답에서 첫째와 둘째를 차례로 누를 수 있음(누를 때마다 바뀐 버튼을 다시 봄)');
+  })();
 }
 {
   // 짧은 단계에서는 실제 AI에게 묻지 않는다(답이 단계 안에 올 수 없다). 가짜 답은 막지 않는다.
@@ -267,9 +288,9 @@ const who = (S, r) => S.players.find(p => p.role === r);
   ok(WS.log.some(l => l.ch === 'mafia') ? wn.view.log.some(l => l.place === '마피아끼리') : true, '마피아에게만 간 알림은 "마피아끼리"로 보임');
   const mornings = WS.log.filter(l => l.kind === 'sys' && /밤사이/.test(l.text));
   const storyOk = mornings.every(m => { const before = WS.log.filter(l => l.kind === 'story' && l.i < m.i && l.day === m.day - 1);
-    const last = before[before.length - 1], died = m.text.match(/밤사이 (.+?)님이 죽었습니다/);
-    return last && (died ? last.text.includes(`${died[1]}님이 죽음`) : !/님이 죽음$/.test(last.text)); });
-  ok(mornings.length > 0 && storyOk, `아침 ${mornings.length}번 모두 앞에 밤에 일어난 일이 차례로 있고, 마지막 줄이 아침 발표와 맞음`);
+    const died = [...m.text.matchAll(/(\d+번 \S+)님\(/g)].map(x => x[1]);
+    return before.length && (died.length ? died.every(d => before.some(l => l.text.includes(`결과: ${d}님이 죽음`))) : before.some(l => /결과: 아무도 죽지 않음/.test(l.text))); });
+  ok(mornings.length > 0 && storyOk, `아침 ${mornings.length}번 모두 앞에 밤에 일어난 일이 차례로 있고, 죽은 사람마다 "결과" 줄이 아침 발표와 맞음`);
   const again = await host.handle({op: 'reopen', room: w.room, key: w.key});
   const again2 = await host.handle({op: 'start', room: w.room, key: w.key});
   ok(again.ok && again2.ok, '관전 방: 한 판 더(다시 열고 바로 시작)');

@@ -164,7 +164,7 @@
       const first = mine && mine.target && !mine.target2 ? find(S, mine.target) : null;
       if (!first) for (const q of others) b(`${label(q)} ${k === 'swap' ? '태우기' : '조종하기'}`, {target: q.id}, q.id);
       else for (const q of live.filter(q => k === 'control' || (q.id !== first.id && q.id !== me.id)))
-        b(k === 'swap' ? `${label(first)}와 ${label(q)} 자리 바꾸기` : `${label(first)}가 ${label(q)}에게 능력을 쓰게 하기`, {target: first.id, target2: q.id}, q.id);
+        b(k === 'swap' ? `${label(first)}, ${label(q)} 자리 바꾸기` : `${label(first)}의 능력을 ${label(q)}에게 쓰게 하기`, {target: first.id, target2: q.id}, q.id);
     }
     if (mine) b('고른 것 취소', {mode: 'cancel'}, 'self');
     return out;
@@ -240,7 +240,7 @@
       for (const a of acts) if (a !== bd && a.kind !== 'control') { if (a.t) a.t = sw(a.t); if (a.t2) a.t2 = sw(a.t2); }
       visits.push({by: bd.by, to: x}, {by: bd.by, to: y});
       crime(P(bd.by), ROLES.busdriver.crimes);
-      out.story.push(`버스 기사 ${L(bd.by)} → ${L(x)}와 ${L(y)}의 자리를 바꿈`);
+      out.story.push(`버스 기사 ${L(bd.by)} → ${L(x)}, ${L(y)}의 자리를 바꿈`);
     }
     // 4. 붙잡아 두기(말동무·마담): 막힌 사람은 아무 데도 가지 않은 것이 된다
     const blocked = new Set();
@@ -311,7 +311,7 @@
     const die = (id, how) => { if (dead.has(id)) return; dead.add(id); out.deaths.push({id, how}); };
     const tryHeal = (id, how) => {
       const h = heals.find(h => h.t === id && !usedHeal.has(h) && !dead.has(h.by));
-      if (h && canHeal(P(id))) { usedHeal.add(h); tell(h.by, `치료한 ${L(id)}님이 밤에 공격당했지만 살렸습니다.`); out.story.push(`의사 ${L(h.by)}가 치료해 ${L(id)}님이 살았음`); return true; }
+      if (h && canHeal(P(id))) { usedHeal.add(h); tell(h.by, `치료한 ${L(id)}님이 밤에 공격당했지만 살렸습니다.`); out.story.push(`의사 ${L(h.by)}의 치료로 ${L(id)}님이 살았음`); return true; }
       return false;
     };
     for (const at of attacks) {
@@ -325,7 +325,7 @@
         const g = at.visit && guards.find(g => g.t === q.id && !usedGuard.has(g) && !dead.has(g.by));
         if (g) {
           usedGuard.add(g); crime(P(g.by), ['murder']);
-          out.story.push(`경호원 ${L(g.by)}가 ${L(q.id)}님을 지키다 ${L(at.by)}와 싸움`);
+          out.story.push(`경호원 ${L(g.by)}: ${L(q.id)}님을 지키다 ${L(at.by)}님과 싸움`);
           die(g.by, '경호하다 죽음');
           if (!tryHeal(at.by, '')) die(at.by, '경호원과 싸우다 죽음');
           continue;
@@ -334,10 +334,12 @@
       }
       die(q.id, at.how);
     }
+    for (const d of out.deaths) out.story.push(`결과: ${L(d.id)}님이 죽음(${d.how})`);
+    if (!out.deaths.length) out.story.push('결과: 아무도 죽지 않음');
     // 7. 청소: 청소한 사람이 그날 밤 죽으면 직업과 유언을 숨긴다
     for (const a of acts.filter(a => a.kind === 'clean')) {
       const p = P(a.by); p.uses--; crime(p, ROLES.janitor.crimes);
-      if (dead.has(a.t)) { out.cleaned[a.t] = true; tell(a.by, `청소한 ${L(a.t)}님의 유언: ${P(a.t).will ? `"${P(a.t).will}"` : '없음'} (직업은 모릅니다)`); out.story.push(`청소부 ${L(a.by)}가 ${L(a.t)}님을 청소함(직업·유언 숨김)`); }
+      if (dead.has(a.t)) { out.cleaned[a.t] = true; tell(a.by, `청소한 ${L(a.t)}님의 유언: ${P(a.t).will ? `"${P(a.t).will}"` : '없음'} (직업은 모릅니다)`); out.story.push(`청소부 ${L(a.by)} → ${L(a.t)}님을 청소함(직업·유언 숨김)`); }
       else out.story.push(`청소부 ${L(a.by)} → ${L(a.t)}님을 청소하러 갔지만 그 사람은 죽지 않음`);
     }
     // 8. 조사(죽이기 뒤): 보안관·조사관·고문·형사·망꾼, 스파이

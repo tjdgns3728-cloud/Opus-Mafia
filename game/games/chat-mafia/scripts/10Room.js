@@ -457,8 +457,8 @@
     B.answered++;
     let did = false;
     if (S.epoch === epoch) {
-      const fresh = M.view(S, id, now(room));
       for (const x of (Array.isArray(a['누름']) ? a['누름'] : a['누름'] ? [a['누름']] : []).slice(0, 4)) {
+        const fresh = M.view(S, id, now(room));        // 누를 때마다 바뀐 버튼을 다시 본다(사람 화면처럼)
         const want = typeof x === 'string' ? x : x && x['버튼'];
         const b = fresh.buttons.find(b => b.label === String(want ?? '').trim()) || fresh.buttons.find(b => norm(b.label) === norm(want));
         if (!b) continue;
@@ -572,5 +572,5 @@
     presence(room, id, on) { /* 끊김은 화면의 자리 목록이 보인다. 판은 그대로 간다 */ }
   });
 
-  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer, askWait, typeSecs, fitsPlace, review: room => AI.review(room), loadNotes};
+  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer, askWait, typeSecs, fitsPlace, turn, review: room => AI.review(room), loadNotes};
 })();
