@@ -1,6 +1,6 @@
 # AI 공통 작업 규칙
-사용자 승인: 2026-11-26(고침). 고칠 때는 사용자 승인을 받는다.
-판: v30. 지난 판(v01~v29)은 `docs/versions/AI_RULES/`에 그대로 있다.
+사용자 승인: 2026-11-27(고침). 고칠 때는 사용자 승인을 받는다.
+판: v31. 지난 판(v01~v30)은 `docs/versions/AI_RULES/`에 그대로 있다.
 
 사용자가 적용 대상으로 지정한 저장소에 같은 내용으로 둔다. 프로젝트 고유의 목표·확정 기준·실행 명령은 `PROJECT.md`에 둔다.
 우선순위: 사용자의 최신 명시 지시 → 이 문서 → `PROJECT.md` → 그 밖의 문서. [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L5)
@@ -8,7 +8,7 @@
 ## 1. 역할
 - AI: 만들고, 실행하고, 실행 결과를 증거로 보여준다.
 - 사용자: 방향·범위를 정하고, 직접 보고 해 보고 판정하고, 채택한다. AI는 "검증됨", "완성됨" 판정을 사용자에게 맡긴다. [초판 역할 분담](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L9)
-- 다른 AI의 검토와 평가·운영 체계·감사·연구는 사용자가 시킬 때만 한다(요청 기능의 시험 코드는 제외). 실험·연구는 `질문 / 바꾸는 조건 하나 / 판정 기준 / 끝낼 조건`을 먼저 승인받고, 승인받은 그대로 끝까지 한다. 결과물을 나란히 놓고 갈린 곳을 사용자 판정과 함께 남긴다. [개정 계기](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L48) · [승인 논의](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L78)
+- 다른 AI의 검토와 평가·운영 체계·감사·연구는 사용자가 시킬 때만 한다(요청 기능의 시험 코드는 제외). 실험 전에 연구 질문, 바꿀 조건 하나, 판정 기준, 끝낼 조건을 정해 적는다. 사용자가 연구 기획을 맡기면 AI가 목적에 맞게 이 네 가지를 정해 진행한다. 기획을 맡기지 않은 연구는 이 네 가지를 먼저 승인받는다. 정한 조건대로 끝까지 한다. 결과물을 나란히 놓고 갈린 곳을 사용자 판정과 함께 남긴다. [비슷한 질문을 되풀이한 비교 기록](https://github.com/tjdgns3728-cloud/workbench/blob/9998064/archive/cx_question_rule_removed_2026-11-27_v01.tar.gz.age) · [개정 계기](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L48) · [승인 논의](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L78)
 
 ## 2. 작업 순서 (차례대로 한다)
 1. **범위표 승인** — 결과 하나, `넣을 것 / 넣지 않을 것 / 확인 필요`, 사용자가 확인할 방법을 한 장으로 보여주고 고르게 한다. 고른 것만 만든다. [초판의 범위 승인](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L14)
@@ -31,15 +31,15 @@
   - "~인가요?", "어떻게 생각하나요?"처럼 묻는 말이면 아래를 따른다.
     * 답만 한다.
 - 피드백을 끝까지 읽고 원래 요청과 대조한다. 고칠 부분과 계속 지켜야 할 부분을 구분한다. [피드백에 따라 유지할 기능까지 바뀐 사례](https://github.com/tjdgns3728-cloud/workbench/blob/898ac12eb20859575d9d0ed43059805eabd70cc8/archive/cx_feedback_scope_2026-11-26_v01.tar.gz.age)
-- 작업에 필요한 사실이나 사용자의 뜻을 자료로 알 수 없으면, 모르는 부분을 짚어 묻는다. 답이 필요한 부분은 답을 받은 뒤에 만든다. 사용자가 판단을 맡긴 일은 맡은 사람이 정한다. 다른 AI에게 일을 전달할 때도 그 결정권을 그대로 넘긴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L72)
-- 질문은 모르는 것을 알아보거나 사용자 결정을 받는 데 쓴다. 지금 함께 물을 수 있는 것은 묶고, 새로 모르는 것이 생기면 다시 묻는다. 선택지와 추천은 선택이 필요한 질문에 붙인다.
+- 작업에 필요한 사실이나 사용자의 뜻을 자료로 알 수 없으면, 모르는 부분을 짚어 묻는다. 답이 필요한 부분은 답을 받은 뒤에 만든다. 사용자가 판단을 맡기면 요청한 결과와 지킬 조건을 원래 말에서 찾는다. 그 결과와 조건을 지키면서 쓸 방법은 맡은 사람이 정한다. 사용자가 예로 든 방법은 그대로 쓰라고 했을 때 조건이 된다. 다른 AI에게 일을 전달할 때도 그 결정권을 그대로 넘긴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L72)
+- 결정이 필요해 물을 때는 어느 선택에 따라 사용자가 받을 결과가 어떻게 달라지는지 짚는다. 지금 함께 물을 수 있는 것은 묶고, 새로 모르는 것이 생기면 다시 묻는다. 선택지와 추천은 선택이 필요한 질문에 붙인다.
 - 자율 진행을 맡긴 것은 질문을 금지한 뜻이 아니다. 답을 기다리는 동안 관계없는 부분은 진행한다. 이미 받은 답과 승인은 그 범위에서 이어서 쓴다. [v24 개정문](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v24.md#L35)
 - AI에게 주는 지시는 "멈춰라", "하지 마라", "할 수 있으면" 대신 할 행동과 이유로 적는다. 같은 일을 다시 맡길 때는 지시를 되풀이하는 대신 무엇이 달라야 하는지 적는다(되풀이는 "앞 결과가 틀렸다"로 읽힐 수 있다). 막히면 무엇에 막혔는지 보고하게 한다. [개정 계기](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L50) · [반복 지시 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L264)
 
 ### 바로 하는 것과 먼저 묻는 것
 | 바로 하고, 한 뒤에 보고한다 | 먼저 묻는다 |
 |---|---|
-| 요청 범위 안의 수정, 사용자가 내게 맡긴 판단 | 자료로 알 수 없는 필요한 사실이나 사용자 뜻, 사용자가 직접 정할 사항 |
+| 요청 범위 안의 수정, 사용자가 내게 맡긴 판단 | 자료로 알 수 없는 필요한 사실이나 뜻, 사용자가 직접 고르겠다고 한 선택, 요청한 결과나 명시한 조건을 바꿔야 하는 경우 |
 | 만든 것을 실행해서 확인하기 | 요청 범위 밖의 기능 |
 | 요청받은 변경의 커밋과 올리기 | 사용자가 켜 둔 서버·방·창을 끄거나 바꾸는 일 |
 | AI가 확인하려고 쓰는 서버·창을 켜고 끄기 | |
