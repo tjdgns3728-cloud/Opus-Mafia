@@ -314,6 +314,7 @@
       if (h && canHeal(P(id))) { usedHeal.add(h); tell(h.by, `치료한 ${L(id)}님이 밤에 공격당했지만 살렸습니다.`); out.story.push(`의사 ${L(h.by)}의 치료로 ${L(id)}님이 살았음`); return true; }
       return false;
     };
+    attacks.sort((x, y) => (y.pierce ? 1 : 0) - (x.pierce ? 1 : 0));     // 막을 수 없는 공격 먼저(동시에 일어나는 일이라 결과는 같고, 치료가 헛되이 쓰였다고 알리지 않는다)
     for (const at of attacks) {
       const q = P(at.t);
       if (!q || dead.has(q.id)) continue;

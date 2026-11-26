@@ -148,6 +148,8 @@ const who = (S, r) => S.players.find(p => p.role === r);
     ok(may.cleaned && M.view(n.S, who(n.S, 'sheriff').id, 0).players.find(p => p.id === may.id).role === '알 수 없음' && n.told('janitor', /유언/), '청소부가 청소한 사람이 죽으면 직업이 "알 수 없음", 청소부는 유언을 봄'); }
   n = night(R6, [['arsonist', {mode: 'ignite'}], ['doctor', {target: 'mayor'}]], S => { who(S, 'mayor').doused = true; who(S, 'sheriff').doused = true; });
   ok(n.dead('mayor') && n.dead('sheriff'), '방화범이 불태우면 기름 부은 사람이 모두 죽음(치료해도)');
+  n = night(R6, [['arsonist', {mode: 'ignite'}], ['godfather', {target: 'sheriff'}], ['doctor', {target: 'sheriff'}]], S => { who(S, 'sheriff').doused = true; });
+  ok(n.dead('sheriff') && !n.told('doctor', /살렸습니다/) && n.res.deaths.find(d => d.id === who(n.S, 'sheriff').id).how === '불에 타 죽음', '불과 대부의 공격을 같이 받으면 불에 타 죽고, 의사에게 살렸다고 알리지 않음');
   n = night(R6, [['arsonist', {target: 'mayor'}], ['escort', {target: 'arsonist'}]]);
   ok(!who(n.S, 'mayor').doused && who(n.S, 'escort').doused, '방화범을 붙잡아 두면 기름은 못 붓고, 붙잡은 사람에게 기름이 묻음');
   n = night(R6, [['massmurderer', {target: 'mayor'}], ['sheriff', {target: 'mayor'}], ['investigator', {target: 'citizen'}]]);
