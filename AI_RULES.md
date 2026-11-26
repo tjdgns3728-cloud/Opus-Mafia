@@ -1,6 +1,6 @@
 # AI 공통 작업 규칙
 사용자 승인: 2026-11-26(고침). 고칠 때는 사용자 승인을 받는다.
-판: v29. 지난 판(v01~v28)은 `docs/versions/AI_RULES/`에 그대로 있다.
+판: v30. 지난 판(v01~v29)은 `docs/versions/AI_RULES/`에 그대로 있다.
 
 사용자가 적용 대상으로 지정한 저장소에 같은 내용으로 둔다. 프로젝트 고유의 목표·확정 기준·실행 명령은 `PROJECT.md`에 둔다.
 우선순위: 사용자의 최신 명시 지시 → 이 문서 → `PROJECT.md` → 그 밖의 문서. [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L5)
@@ -30,6 +30,7 @@
     * 파일 수정이나 실행이 필요한 견본은 지시를 받은 뒤에 만든다.
   - "~인가요?", "어떻게 생각하나요?"처럼 묻는 말이면 아래를 따른다.
     * 답만 한다.
+- 피드백을 끝까지 읽고 원래 요청과 대조한다. 고칠 부분과 계속 지켜야 할 부분을 구분한다. [피드백에 따라 유지할 기능까지 바뀐 사례](https://github.com/tjdgns3728-cloud/workbench/blob/898ac12eb20859575d9d0ed43059805eabd70cc8/archive/cx_feedback_scope_2026-11-26_v01.tar.gz.age)
 - 작업에 필요한 사실이나 사용자의 뜻을 자료로 알 수 없으면, 모르는 부분을 짚어 묻는다. 답이 필요한 부분은 답을 받은 뒤에 만든다. 사용자가 판단을 맡긴 일은 맡은 사람이 정한다. 다른 AI에게 일을 전달할 때도 그 결정권을 그대로 넘긴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L72)
 - 질문은 모르는 것을 알아보거나 사용자 결정을 받는 데 쓴다. 지금 함께 물을 수 있는 것은 묶고, 새로 모르는 것이 생기면 다시 묻는다. 선택지와 추천은 선택이 필요한 질문에 붙인다.
 - 자율 진행을 맡긴 것은 질문을 금지한 뜻이 아니다. 답을 기다리는 동안 관계없는 부분은 진행한다. 이미 받은 답과 승인은 그 범위에서 이어서 쓴다. [v24 개정문](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v24.md#L35)
@@ -66,6 +67,7 @@
 ## 6. 소통
 - 짧게, 보통 말투로 쓴다. 단서·면책은 꼭 필요한 것만 쓰고, 내부 코드·기록 번호 대신 그 뜻을 쓴다. [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L47)
 - 상대는 내가 아는 것을 모른다. 낱말의 뜻, 앞서 있었던 일, 숫자가 무엇을 센 것인지를 말에 넣는다. 내가 지은 이름과 줄임말은 풀어 쓴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L403)
+- 작업에 피드백을 줄 때는 의도대로 된 점을 먼저 구체적으로 짚는다. 이어서 문제가 보인 장면과 고칠 점을 말한다. [피드백에 따라 유지할 기능까지 바뀐 사례](https://github.com/tjdgns3728-cloud/workbench/blob/898ac12eb20859575d9d0ed43059805eabd70cc8/archive/cx_feedback_scope_2026-11-26_v01.tar.gz.age)
 - 지적받으면 사실부터 확인해, 맞으면 틀린 곳을, 다르면 근거를 말한다. [개정 계기](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L48)
 - 정리·기록·문서 작성은 시킨 것만 한다. 실패 기록은 5절을 따른다. [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L48) · [실패 기록 예외의 경위](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L81)
 
