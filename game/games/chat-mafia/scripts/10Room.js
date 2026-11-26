@@ -8,19 +8,20 @@
   const M = globalThis.ChatMafia, RR = globalThis.ChatMafiaRoles;
 
   // AI 자리 이름과 말투. 말투는 말하는 방식만 정한다(전략은 넣지 않는다). 2026-11-26 사용자 승인 제안 B.
+  // 같은 날 밤 사용자 선택 "말투 표지 빼기": 괄호 속 예시(^^, 맞아요, ㄷㄷ, ~데이)와 "자주"를 AI가 매 줄 따라 써서 성격 설명만 남겼다.
   const BOTS = [
     {name: '새벽두시', style: '반말. 말수가 적고 짧게 끊어 말한다. 마침표를 거의 안 찍는다.'},
-    {name: '감자튀김', style: '반말. 가볍고 급하다. ㅋㅋ를 자주 쓰고 가끔 오타가 난다.'},
-    {name: '치즈볼', style: '존댓말. 차분하다. 가끔 지금까지 나온 말을 한 줄로 정리한다.'},
-    {name: '고양이집사', style: '반말. 궁금한 게 많아 물음표를 자주 쓴다.'},
+    {name: '감자튀김', style: '반말. 가볍고 급하다. 가끔 오타가 난다.'},
+    {name: '치즈볼', style: '존댓말. 차분하다.'},
+    {name: '고양이집사', style: '반말. 궁금한 게 많다.'},
     {name: '밤산책', style: '존댓말. 짧고 건조하다.'},
-    {name: '빵빵이', style: '반말. 장난스럽고 감정 표현이 크다(ㅠㅠ, ??, ㄷㄷ).'},
-    {name: '초코우유', style: '반말과 존댓말을 섞는다. 느긋하고 말끝을 흐린다(…).'},
-    {name: '귤까는중', style: '존댓말. 친절하고 맞장구를 잘 친다(맞아요, 그쵸).'},     // 2026-11-26 관전(AI 여덟)용으로 하나 더
+    {name: '빵빵이', style: '반말. 장난스럽고 감정 표현이 크다.'},
+    {name: '초코우유', style: '반말과 존댓말을 섞는다. 느긋하다.'},
+    {name: '귤까는중', style: '존댓말. 친절하다.'},     // 2026-11-26 관전(AI 여덟)용으로 하나 더
     // 2026-11-26 11명 판(스타2 마피아 직업)으로 셋 더
     {name: '라면사리', style: '반말. 무뚝뚝하고 단답이 많다.'},
-    {name: '구름빵', style: '존댓말. 상냥하고 가끔 ^^를 쓴다.'},
-    {name: '눈사람', style: '반말. 말끝에 사투리를 조금 섞는다(~나, ~데이).'}
+    {name: '구름빵', style: '존댓말. 상냥하다.'},
+    {name: '눈사람', style: '반말. 사투리를 조금 쓴다.'}
   ];
   const STYLE = Object.fromEntries(BOTS.map(b => [b.name, b.style]));
   const rand = (room, [a, b]) => a + room.random() * Math.max(0, b - a);
@@ -325,6 +326,12 @@
     try { const o = JSON.parse(s.slice(a, b + 1)); return o && typeof o === 'object' ? o : null; } catch (e) { return null; }
   }
   const norm = x => String(x ?? '').replace(/["'“”‘’\s]/g, '');
+  // 글에 그 자리의 번호("3번", "3이", "3·5", "3 ")나 닉네임이 나오나. "3밤", "3일째", "3표", "3명"은 빼고 본다
+  function mentions(text, p) {
+    const t = String(text || '');
+    if (p.name && t.includes(p.name)) return true;
+    return new RegExp(`(?<![0-9])${p.no}(?![0-9]|밤|일|표|명|초|칸|차|째|개|시|분|살)`).test(t);
+  }
   const MAX_LINES = 5;      // 한 번 답에 보낼 수 있는 채팅 수(2026-11-26 "여러 줄로 나눠 치기")
 
   const AI = {
@@ -347,7 +354,7 @@
         const p = M.find(S, id);
         if (!p || S.stage === 'over') continue;
         if (!p.alive && S.stage !== 'talk') continue;
-        B.dirty = true;
+        B.dirty = true; B.called = true;
         schedule(room, id, rand(room, S.cfg.AI.단계첫물음초));
       }
     },
@@ -358,9 +365,12 @@
         const p = M.find(S, id);
         if (!p || line.from === id || !M.canSee(S, p, line)) continue;
         if (!p.alive && line.kind !== 'dead') continue;
-        B.dirty = true;
+        // 나에게 온 글(귓속말·나에게만·마피아끼리·죽은 사람끼리)이나 내 번호·이름이 나온 글이면 곧 묻고, 아니면 조용할 때 간격으로 묻는다
+        // (2026-11-26 사용자 선택 "내 번호면 곧 묻기": 새 글마다 열하나 모두에게 물어 같은 일에 여럿이 같은 말을 되풀이했다)
+        const mine = (Array.isArray(line.to) && line.to.includes(id)) || line.kind === 'dead' || mentions(line.text, p);
+        B.dirty = true; if (mine) B.called = true;
         if (B.busy || B.typing) continue;
-        const wait = Math.max(0.3, B.nextOk - now(room)) + room.random() * 0.8;
+        const wait = mine ? Math.max(0.3, B.nextOk - now(room)) + room.random() * 0.8 : rand(room, S.cfg.AI.조용할때초);
         if (!B.timer || B.timerAt > now(room) + wait) schedule(room, id, wait);
       }
     },
@@ -469,7 +479,7 @@
     if (!wants(v)) return;
     const timeout = askWait(S, now(room), room.engine.timeScale, room.ai.mode);
     if (timeout === null) { B.skipped++; return; }      // 다음 단계가 열리면 AI.stage가 다시 묻는다
-    B.busy = true; B.dirty = false; B.asks++;
+    B.busy = true; B.dirty = false; B.called = false; B.asks++;
     room.refresh();                                    // 보는 사람의 화면에 "생각 중"(판에 낀 자리의 보기는 바뀌지 않는다)
     const epoch = S.epoch, seen = S.log.length;
     const rec = room.ai.mode === 'on' ? {time: new Date().toISOString(), room: room.code, day: S.day, stage: S.stage, no: p.no, role: p.role, alive: p.alive,
@@ -520,8 +530,8 @@
   function later(room, id, B, seen) {
     const S = room.state, p = M.find(S, id);
     if (S.stage === 'over' || !p) return;
-    // 물은 뒤 새 글이 왔거나 단계가 바뀌었으면(치거나 생각하는 동안 단계 첫 물음을 놓친 때도) 다시 묻는다
-    if (B.dirty) return schedule(room, id, Math.max(0.3, B.nextOk - now(room)));
+    // 물은 뒤 나를 부른 글이 왔거나 단계가 바뀌었으면(치거나 생각하는 동안 단계 첫 물음을 놓친 때도) 곧 다시 묻고, 아니면 조용할 때 간격으로
+    if (B.called) return schedule(room, id, Math.max(0.3, B.nextOk - now(room)));
     if (p.alive && ['talk', 'vote', 'verdict'].includes(S.stage)) schedule(room, id, rand(room, S.cfg.AI.조용할때초));
   }
 
@@ -607,5 +617,5 @@
     presence(room, id, on) { /* 끊김은 화면의 자리 목록이 보인다. 판은 그대로 간다 */ }
   });
 
-  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer, askWait, typeSecs, fitsPlace, turn, pickHuman, review: room => AI.review(room), loadNotes};
+  globalThis.ChatMafiaRoom = {BOTS, promptFor, parseAnswer, askWait, typeSecs, fitsPlace, turn, pickHuman, mentions, heard: (room, line) => AI.heard(room, line), review: room => AI.review(room), loadNotes};
 })();

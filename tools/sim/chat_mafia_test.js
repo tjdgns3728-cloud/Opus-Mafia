@@ -193,7 +193,7 @@ const who = (S, r) => S.players.find(p => p.role === r);
   (async () => {
     let x = aiRoom(['2번 이름2 태우기']);
     await R.turn(x.room, 's1');
-    ok(x.S.night.acts.s1 && x.S.night.acts.s1.target === 's2' && !x.S.night.acts.s1.target2 && x.timers.length >= 1, 'AI 버스 기사가 첫째만 고르면 "이제 둘째를 고릅니다" 글로 곧 다시 물음');
+    ok(x.S.night.acts.s1 && x.S.night.acts.s1.target === 's2' && !x.S.night.acts.s1.target2 && x.timers.length >= 1, 'AI 버스 기사가 첫째만 고르면 "태울 첫 사람" 글로 곧 다시 물음');
     x = aiRoom(['2번 이름2 태우기', '3번 이름3 태우기']);
     await R.turn(x.room, 's1');
     ok(x.S.night.acts.s1 && x.S.night.acts.s1.target === 's2' && x.S.night.acts.s1.target2 === 's3', 'AI가 한 답에서 두 사람을 차례로 "태우기" 하면 둘이 자리를 바꿈(실제 판 XMM7의 AI가 누른 그대로)');
@@ -231,6 +231,21 @@ const who = (S, r) => S.players.find(p => p.role === r);
     ok(last && last.stage === 'talk' && last.no === 2 && last.role === 'doctor' && /나 의사/.test(last.text) && last.says === 5 && last.sameStage === true, 'AI 답 기록: 단계·자리·직업·답 원문·보낸 줄 수가 남음(시험용 파일)');
     ok(R.promptFor(S.players[1], S.bots.s2, '(화면)').includes('한 칸이 채팅 한 번'), '물음에 "말"이 글 목록이라는 것이 적힘');
   })();
+}
+{
+  // 어색한 대화 고치기(2026-11-26 사용자 선택): ① 말투에 따라 쓸 표지가 없음 ③ 내 번호·나에게 온 글이면 곧, 아니면 조용할 때 간격으로 물음
+  const R = globalThis.ChatMafiaRoom;
+  ok(R.BOTS.every(b => !/[()]|\^\^|ㅋㅋ|자주/.test(b.style)), '말투 설명에 괄호 속 예시·^^·ㅋㅋ·"자주"가 없음');
+  const p3 = {no: 3, name: '치즈볼'}, p1 = {no: 1, name: '새벽두시'};
+  ok(R.mentions('3번 해명 듣자', p3) && R.mentions('3이 4 붙잡았대', p3) && R.mentions('2·3 중 하나', p3) && R.mentions('치즈볼 말 맞음', p3), '번호·닉네임이 나오면 부른 것으로 봄');
+  ok(!R.mentions('3밤에 조사함', p3) && !R.mentions('내 표 3표임', p3) && !R.mentions('13번 결과', p3) && !R.mentions('1일째', p1) && !R.mentions('11 보안관', p1), '"3밤"·"3표"·"13번"·"1일째"·"11"은 부른 것으로 보지 않음');
+  const S = make(['sheriff', 'doctor', 'godfather', 'citizen']); S.stage = 'talk'; S.bots = {};
+  for (const p of S.players) S.bots[p.id] = {busy: false, typing: false, dirty: false, called: false, nextOk: 0, timer: null, timerAt: 0};
+  const order = [];      // heard는 자리 차례(s2·s3·s4)로 다음 물음을 잡는다 — 잡은 간격을 차례대로 남긴다
+  const room = {state: S, engine: {time: 0}, random: () => 0.5, ai: {mode: 'on'}, after(secs) { order.push(secs); return () => {}; }};
+  R.heard(room, {kind: 'chat', to: 'all', from: 's1', text: '3번 해명 듣자'});
+  // s2·s3·s4 차례: s3만 부름(곧, 1초 아래), s2·s4는 조용할 때 간격(14초 이상)
+  ok(order.length === 3 && order[1] < 2 && order[0] >= 14 && order[2] >= 14 && S.bots.s3.called && !S.bots.s2.called, '공개 글에 3번이 나오면 3번만 곧 묻고 나머지는 조용할 때 간격으로');
 }
 {
   // 짧은 단계에서는 실제 AI에게 묻지 않는다(답이 단계 안에 올 수 없다). 가짜 답은 막지 않는다.
