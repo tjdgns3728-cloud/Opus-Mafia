@@ -322,6 +322,7 @@
     try { const o = JSON.parse(s.slice(a, b + 1)); return o && typeof o === 'object' ? o : null; } catch (e) { return null; }
   }
   const norm = x => String(x ?? '').replace(/["'“”‘’\s]/g, '');
+  const MAX_LINES = 5;      // 한 번 답에 보낼 수 있는 채팅 수(2026-11-26 "여러 줄로 나눠 치기")
 
   const AI = {
     init(room) {
@@ -440,8 +441,9 @@
       defeatsText(B),
       notesText(B),
       '아래는 지금 네 화면이다. 할 수 있는 것은 화면의 "할 수 있는 것" 칸에 있다.',
-      '답은 JSON 하나만: {"지금 말하기": true 또는 false, "말": "", "귓속말": {"누구": "", "말": ""}, "누름": [{"버튼": "", "적은 글": ""}]}',
-      '말하지 않으면 "말"은 빈 글, 귓속말하지 않으면 "누구"는 빈 글, 누르지 않으면 "누름"은 빈 목록. 버튼은 화면에 적힌 이름 그대로 쓴다.',
+      '답은 JSON 하나만: {"지금 말하기": true 또는 false, "말": [""], "귓속말": {"누구": "", "말": ""}, "누름": [{"버튼": "", "적은 글": ""}]}',
+      `"말"은 채팅창에 보낼 글의 목록이다. 한 칸이 채팅 한 번(엔터 한 번)이고, 여러 칸이면 적은 차례대로 하나씩 친다(${MAX_LINES}칸까지). 치는 데는 글자 수만큼 시간이 걸린다.`,
+      '말하지 않으면 "말"은 빈 목록, 귓속말하지 않으면 "누구"는 빈 글, 누르지 않으면 "누름"은 빈 목록. 버튼은 화면에 적힌 이름 그대로 쓴다.',
       '화면:',
       screen
     ].filter(Boolean).join('\n');
@@ -490,8 +492,9 @@
       }
     } else if (a['누름'] && a['누름'].length) B.stale++;
     const outs = [];                                   // [글, 귓속말 받는 사람 id 또는 null] — 차례로 친다
-    const say = typeof a['말'] === 'string' ? a['말'].trim() : '';
-    if (say && a['지금 말하기'] !== false && v.chat.channel) outs.push([say, null, v.chat.channel]);   // 물었을 때의 칸 — 보낼 때 칸이 바뀌었으면 버린다
+    // "말": 글 목록(한 칸 = 채팅 한 번). 예전처럼 글 하나여도 받는다. 물었을 때의 칸 — 보낼 때 칸이 바뀌었으면 버린다
+    const says = (Array.isArray(a['말']) ? a['말'] : [a['말']]).filter(x => typeof x === 'string').map(x => x.trim()).filter(Boolean).slice(0, MAX_LINES);
+    if (a['지금 말하기'] !== false && v.chat.channel) for (const say of says) outs.push([say, null, v.chat.channel]);
     const w = a['귓속말'];
     if (w && typeof w === 'object' && String(w['누구'] || '').trim() && String(w['말'] || '').trim()) {
       const who = String(w['누구']).trim(), alive = M.alive(S).filter(q => q.id !== id);

@@ -208,6 +208,22 @@ const who = (S, r) => S.players.find(p => p.role === r);
   ok(picked.length === 3 && new Set(picked).size === 3, '모음보다 많이 뽑으면 있는 만큼(겹치지 않게)');
 }
 {
+  // 여러 줄로 나눠 치기(2026-11-26 사용자 선택): "말" 목록의 칸마다 채팅 한 번, 차례대로
+  const R = globalThis.ChatMafiaRoom;
+  const S = make(['sheriff', 'doctor', 'godfather', 'citizen']); S.stage = 'talk'; S.epoch = 1; S.endsAt = 90; S.bots = {}; S.aiTyping = []; S.typing = {};
+  S.bots.s2 = {style: '반말', defeats: [], notes: [], human: [], busy: false, typing: false, dirty: false, nextOk: 0, timer: null, timerAt: 0, asks: 0, answered: 0, failed: 0, said: 0, whispers: 0, pressed: 0, waited: 0, stale: 0, skipped: 0};
+  const sent = [], timers = [];
+  const room = {state: S, engine: {time: 0, timeScale: 1}, random: () => 0.5, refresh() {}, say(id, text) { sent.push(text); return true; },
+    after(secs, fn) { timers.push(fn); return () => {}; },
+    ai: {mode: 'on', ask: async () => ({ok: true, text: JSON.stringify({'지금 말하기': true, '말': ['나 의사', '3번 수상', '', '4', '5', '6', '7'], '귓속말': {'누구': '', '말': ''}, '누름': []})})}};
+  (async () => {
+    await R.turn(room, 's2');
+    for (let k = 0; k < 40 && timers.length; k++) timers.shift()();
+    ok(sent.join('|') === '나 의사|3번 수상|4|5|6', '"말" 목록을 칸마다 한 번씩 차례로 보냄(빈 칸 빼고 다섯 칸까지)');
+    ok(R.promptFor(S.players[1], S.bots.s2, '(화면)').includes('한 칸이 채팅 한 번'), '물음에 "말"이 글 목록이라는 것이 적힘');
+  })();
+}
+{
   // 짧은 단계에서는 실제 AI에게 묻지 않는다(답이 단계 안에 올 수 없다). 가짜 답은 막지 않는다.
   const wait = globalThis.ChatMafiaRoom.askWait, S = {cfg, endsAt: 106};
   ok(wait(S, 100, 1, 'on') === null, '실제 AI: 6초짜리 아침이 막 열렸을 때는 묻지 않음');
