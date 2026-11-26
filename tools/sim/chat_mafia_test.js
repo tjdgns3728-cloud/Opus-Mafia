@@ -4,6 +4,8 @@ const path = require('path'), fs = require('fs'), os = require('os');
 const repo = path.resolve(process.argv[2] || '.');
 const game = path.join(repo, 'game', 'games', 'chat-mafia');
 process.env.CHAT_MAFIA_DEFEAT_FILE = path.join(os.tmpdir(), 'chat_mafia_defeats_test.jsonl');   // 시험은 패배기록 파일을 건드리지 않는다(가짜 답 판은 어차피 쓰지 않음)
+process.env.CHAT_MAFIA_NOTES_FILE = path.join(os.tmpdir(), 'chat_mafia_talk_notes_test.jsonl');  // 말 돌아보기 메모도 시험용 파일에만
+try { fs.unlinkSync(process.env.CHAT_MAFIA_NOTES_FILE); } catch {}
 const {createHost, loadEngine} = require(path.join(repo, 'game', 'webengine', 'server', 'room_host.js'));
 const W = loadEngine(path.join(repo, 'game', 'webengine', 'runtime'));
 for (const f of fs.readdirSync(path.join(game, 'scripts')).filter(f => f.endsWith('.js')).sort())
@@ -62,6 +64,26 @@ const base = () => {
 
 // ② 방 하나를 가짜 AI 답으로 끝까지
 (async () => {
+  // 판 뒤 내 말 돌아보기: AI 자리 모두가 끝난 화면을 보고 다음 판의 자기에게 메모를 남긴다(이긴 쪽도). 실제 AI 대신 정해진 답.
+  {
+    const S = base(), R = globalThis.ChatMafiaRoom, asks = [];
+    S.stage = 'over'; S.result = {winner: 'town', text: '시민 편 승리', day: 2, roles: []}; S.bots = {};
+    for (const p of S.players.filter(q => q.bot)) S.bots[p.id] = {};
+    S.log.push({i: 1, day: 2, stage: 'talk', kind: 'chat', to: 'all', from: 's2', name: M.label(S.players[1]), text: '난 의무실에 있었어'});
+    const room = {state: S, engine: {time: 0}, ai: {mode: 'on', ask: async (prompt, info) => {
+      asks.push({prompt, info});
+      return {ok: true, text: JSON.stringify({'받아들여진 말': '이름3이 내 말에 대답함', '안 받아들여진 말': '없음', '왜 그랬나': '구체적이었다', '다음 판에 말할 때': '본 것을 먼저 말한다'})};
+    }}};
+    await R.review(room);
+    const rows = fs.readFileSync(process.env.CHAT_MAFIA_NOTES_FILE, 'utf8').split('\n').filter(Boolean).map(JSON.parse);
+    ok(asks.length === 7 && asks.every(a => a.info.purpose === '말 돌아보기'), '말 돌아보기: AI 자리 일곱 모두에게 물음(이긴 쪽 포함)');
+    ok(asks[1].prompt.includes('난 의무실에 있었어') && asks[1].prompt.includes('알아듣고 받아들였는지'), '말 돌아보기 물음에 끝난 화면의 대화가 들어감');
+    ok(rows.length === 7 && rows.every(r => r.next === '본 것을 먼저 말한다'), '메모가 자리마다 한 줄씩 남음');
+    ok(rows.filter(r => r.name !== '이름3').every(r => !r.landed.includes('이름3') && /사람[A-Z]/.test(r.landed)), '메모 속 다른 사람 닉네임은 사람A·사람B로 바뀜');
+    const B = {style: '반말', defeats: [], notes: R.loadNotes('이름2')};
+    ok(B.notes.length === 1 && R.promptFor(S.players[1], B, '(화면)').includes('네 말을 돌아보고 직접 남긴 메모') && R.promptFor(S.players[1], B, '(화면)').includes('본 것을 먼저 말한다'), '다음 판 물음에 그 자리의 메모가 들어감');
+    try { fs.unlinkSync(process.env.CHAT_MAFIA_NOTES_FILE); } catch {}
+  }
   const logs = [];
   const host = createHost({WebEngine: W, rules, data, log: m => logs.push(m), opts: {name: '시험', timeScale: 60, aiMode: 'fake', away: 9999, hold: 0, seed: 1234}});
   const c = await host.handle({op: 'create', name: '사람'});
