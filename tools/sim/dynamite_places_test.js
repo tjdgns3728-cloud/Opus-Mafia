@@ -14,8 +14,8 @@ const armOpt = (s, m) => S.choices(s, m, 'big').find(a => a.sceneKey === 'arm');
 { const s = game(21), m = s.players.find(p => p.team === 'mafia'); s.day = 2; s.turn = 0;
   const can = {}; for (const place of ['hall', 'tavern', 'clinic', 'chapel', 'office', 'union', 'warehouse', 'rail', 'bridge', 'home', 'hideout']) { armed(s, m, place); if (place === 'home') m.houseId = m.id; can[place] = !!armOpt(s, m); }
   ok(['hall', 'tavern', 'clinic', 'chapel', 'office', 'union', 'warehouse', 'rail', 'bridge'].every(k => can[k]) && !can.home && !can.hideout, '집·본거지를 뺀 모든 장소에서 "폭약 설치하기" — ' + JSON.stringify(can));
-  armed(s, m, 'hall'); ok(armOpt(s, m).label === '마을 회관에 폭약 설치하기', '단추 이름에 장소: ' + armOpt(s, m).label);
-  armed(s, m, 'warehouse'); ok(armOpt(s, m).label === '갱도에 폭약 설치하기', '갱도는 예전 이름 그대로'); }
+  armed(s, m, 'hall'); ok(armOpt(s, m).label === '마을 회관에 폭약 설치하기 · 다음 때가 끝나면 이곳 사람 모두 죽음', '단추 이름에 장소와 그 뒤 일(2026-11-28): ' + armOpt(s, m).label);
+  armed(s, m, 'warehouse'); ok(armOpt(s, m).label === '갱도에 폭약 설치하기 · 다음 때가 끝나면 이곳 사람 모두 죽음', '갱도는 예전 이름 그대로'); }
 // 2. 회관에 설치 → 현장 수색으로 도화선을 찾고, 그곳에서만 끊을 수 있음
 { const s = game(23), m = s.players.find(p => p.team === 'mafia'), t = s.players.find(p => p.team === 'town'), u = s.players.find(p => p.team === 'town' && p.id !== t.id);
   s.day = 2; s.turn = 2; for (const p of s.players) if (p.team === 'town') { p.location = 'home'; p.houseId = p.id; } armed(s, m, 'hall');

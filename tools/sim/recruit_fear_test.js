@@ -98,7 +98,7 @@ function settle(s,r){/* 2026-11-25: 폭약을 꺼내다 들킨 사람은 이번 
 const PLACE={chapel:'chapel',cart:'warehouse','spot:barrel':'tavern','spot:medbox':'clinic'};
 const atBomb=s=>{s.scenario.continuation&&(s.scenario.continuation.discoveredBy=s.scenario.continuation.discoveredBy||{});const b=s.scenario.bombs.find(b=>PLACE[b.where]);const maf=s.players.find(p=>p.team==='mafia'&&p.role!=='godfather')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */;maf.location=PLACE[b.where];const q=s.scenario;for(const n of [q.doyle,...Object.values(q.continuation?.npcs||{})].filter(Boolean))n.location='office';q.doyle.location=maf.location;q.doyle.cowed=false;q.doyle.hp=10;return {maf,q};};
 {const s=fresh(),{maf,q}=atBomb(s);q.doyle.fear=10;const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);settle(s,rng);
- ok(take&&!s.cases.some(c=>c.target===maf.id)&&got(s,maf,/겁에 질린 얼굴로 눈을 돌립니다/),'공포가 10이면 도일이 폭약을 꺼내는 것을 보고도 눈을 돌림');}
+ ok(take&&!got(s,maf,/눈을 돌립니다/)&&(s.scenario.confronts||[]).some(c=>c.pid===maf.id),'2026-11-28 사용자(초안 A): 겁먹은 NPC가 확률로 눈을 돌리는 것은 뺌 — 공포가 10이어도 도일이 막아섬');}
 {const s=fresh(),{maf}=atBomb(s);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,rng);settle(s,rng);
  const c=s.cases.find(c=>c.target===maf.id&&c.caughtKind==='npc');ok(c&&c.npcKind==='dynamite','공포 0이면 지금처럼 고발(npcKind dynamite)');}
 for(const flee of [true,false]){const s=fresh(),{maf}=atBomb(s);veil(s,maf);const take=S.choices(s,maf,'big').find(a=>a.sceneKey==='take');S.resolve(s,maf,take,flee?hi:lo);settle(s,flee?hi:lo);

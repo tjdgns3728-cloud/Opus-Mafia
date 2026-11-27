@@ -87,7 +87,7 @@ const lastRoll=(s,p,re)=>s.feed.filter(e=>e.to?.includes(p.id)&&e.roll&&re.test(
 // 10. 대부가 NPC 앞에서 폭약을 꺼내도 15초 대치·고발이 없음(대행자는 대치)
 {const setup=role=>{const {s,st,mf,gf}=game();const m=role==='godfather'?gf:mf;s.day=2;s.scenario.spots=['cart','barrel'];s.scenario.bombs=[{id:'d0',where:'cart'},{id:'d1',where:'spot:barrel'}];m.storyKnown=[...(m.storyKnown||[]),'cache:barrel'];
   const n=st.npcs.barkeep;n.location='tavern';n.fear=0;m.location='tavern';m.faceCover=null;return {s,m};};
- {const {s,m}=setup('godfather');const opt=big(s,m).find(a=>a.sceneKey==='take');ok(!opt||/대부를 고발하지 않습니다/.test(opt.warn||'')&&!/고발당할 수 있습니다/.test(opt.warn||''),'대부 화면의 폭약 꺼내기 경고는 "고발하지 않습니다": '+(opt?.warn||'(선택지 없음)'));
+ {const {s,m}=setup('godfather');const opt=big(s,m).find(a=>a.sceneKey==='take');ok(!opt||/대부를 못 본 척/.test(opt.warn||'')&&!/막아섭니다/.test(opt.warn||''),'대부 화면의 폭약 꺼내기 경고는 "NPC는 대부를 못 본 척"(2026-11-28 단어): '+(opt?.warn||'(선택지 없음)'));
   S.resolve(s,m,{type:'scene',sceneKey:'take'},lo);ok(!(s.scenario.confronts||[]).some(c=>c.pid===m.id)&&!s.cases.some(c=>c.target===m.id),'대부가 술집 주인 앞에서 폭약을 꺼내도 대치·고발 없음');
   ok(s.scenario.bombs.some(b=>b.where==='carry:'+m.id),'폭약은 대부 품에 있음');}
  {const {s,m}=setup('mafioso');S.resolve(s,m,{type:'scene',sceneKey:'take'},lo);ok((s.scenario.confronts||[]).some(c=>c.pid===m.id),'같은 조건에서 대행자는 술집 주인이 막아서 대치');}}

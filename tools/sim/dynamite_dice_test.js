@@ -48,8 +48,8 @@ const search=(s,p,k,r)=>{S.resolve(s,p,opt(s,p,k),r);return lastRoll(s,p);};
 const setup=(masked=false)=>{const s=game();s.scenario.spots=['cart','barrel'];s.scenario.bombs=[{id:'d0',where:'cart'},{id:'d1',where:'spot:barrel'}];const bk=ST.npc(s,'barkeep');bk.location='tavern';bk.hp=10;bk.recruited=false;const m=s.players.find(o=>o.team==='mafia'&&o.role!=='godfather')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */;m.location='tavern';if(masked){s.aliases??={};s.aliases[m.id]=(s.aliasSeq=(s.aliasSeq||0)+1);m.faceCover=true;}S.resolve(s,m,{type:'scene',sceneKey:'take'},rng);return {s,m};};
 {const {s,m}=setup();const v=S.hazardView(s,m);
  ok(s.scenario.bombs.find(b=>b.id==='d1').where==='carry:'+m.id&&!s.cases.some(c=>c.target===m.id),'꺼낸 직후: 폭약은 품에 있고 아직 고발 없음');
- ok(/앞을 막아섭니다/.test(mine(s,m))&&/15초 안에 폭약을 술집 주인에게 돌려줄지, 그대로 가져갈지/.test(mine(s,m)),'술집 주인이 막아서고, 때가 끝날 때 고른다고 알려 줌');
- ok(v?.kind==='confront'&&v.choices.map(c=>c.label).join('|')==='폭약을 돌려준다|그대로 가져간다','대응 화면: [폭약을 돌려준다] [그대로 가져간다]');
+ ok(/앞을 막아섭니다/.test(mine(s,m))&&/15초 안에 폭약을 술집 주인에게 돌려줄지, 들고 달아날지/.test(mine(s,m)),'술집 주인이 막아서고, 때가 끝날 때 고른다고 알려 줌');
+ ok(v?.kind==='confront'&&v.choices.map(c=>c.label).join('|')==='폭약 돌려주기 · 고발 없음|폭약 들고 달아나기 · 붙잡히면 빼앗김','대응 화면: [폭약 돌려주기 · 고발 없음] [폭약 들고 달아나기 · 붙잡히면 빼앗김](2026-11-28 단어)');
  ok(S.hazardAction(s,m,'return',rng)==='지금 선택할 수 없는 대응입니다.','대응 시간 전에는 고를 수 없음');
  s.stage='hazard';ok(S.hazardAction(s,m,'escape',rng)==='지금 선택할 수 없는 대응입니다.','들킨 자리에서는 도화선 대응(대피)을 누를 수 없음');
  ok(S.hazardAction(s,m,'return',rng)===null&&S.hazardAction(s,m,'keep',rng)==='지금 선택할 수 없는 대응입니다.','한 번 고르면 바꿀 수 없음');
@@ -64,8 +64,8 @@ const setup=(masked=false)=>{const s=game();s.scenario.spots=['cart','barrel'];s
  s.stage='hazard';S.hazardAction(s,m,'return',rng);S.resolveHazard(s,rng);ok(!s.cases.some(c=>c.target===m.id)&&!!m.faceCover&&s.scenario.bombs.find(b=>b.id==='d1').where==='secured','변장한 채 돌려주면 고발 없이 폭약만 회관으로');}
 
 // 6. AI도 사람과 같은 화면 글과 버튼으로 고른다(지시문에 조언 없음)
-(async()=>{const {s,m}=setup();s.stage='hazard';const prompts=[];const r={state:s,random:rng,engine:{time:100},ai:{mode:'on',async ask(p,info){prompts.push({p,purpose:info?.purpose});return {ok:true,text:JSON.stringify({누름:[{버튼:'폭약을 돌려준다'}]})};}},record(){return true;},refresh(){},closePhase(){},phase(){},after(){},seat(){return {on:true};}};
+(async()=>{const {s,m}=setup();s.stage='hazard';const prompts=[];const r={state:s,random:rng,engine:{time:100},ai:{mode:'on',async ask(p,info){prompts.push({p,purpose:info?.purpose});return {ok:true,text:JSON.stringify({누름:[{버튼:'폭약 돌려주기 · 고발 없음'}]})};}},record(){return true;},refresh(){},closePhase(){},phase(){},after(){},seat(){return {on:true};}};
  await A.aiHazard(r,m);const pr=prompts[0]?.p||'';
- ok(/폭약을 돌려준다/.test(pr)&&/그대로 가져간다/.test(pr)&&/폭약을 꺼내다 들켜/.test(pr)&&!/돌려주는 편이|가져가는 편이|유리|추천/.test(pr),'AI 물음에 같은 화면의 두 버튼이 있고 조언 문장은 없음');
- ok(S.confrontPending(s,m)?.choice==='return','AI가 "폭약을 돌려준다"를 누르면 그 선택이 들어감');
+ ok(/폭약 돌려주기/.test(pr)&&/폭약 들고 달아나기/.test(pr)&&/폭약을 꺼내다 들켜/.test(pr)&&!/돌려주는 편이|가져가는 편이|유리|추천/.test(pr),'AI 물음에 같은 화면의 두 버튼이 있고 조언 문장은 없음');
+ ok(S.confrontPending(s,m)?.choice==='return','AI가 "폭약 돌려주기"를 누르면 그 선택이 들어감');
  try{fs.unlinkSync(tmp);}catch{}})();

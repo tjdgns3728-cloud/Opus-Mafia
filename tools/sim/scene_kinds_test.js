@@ -23,20 +23,20 @@ const winOf=(scr,re)=>scr.buttons.find(b=>re.test(b.name)&&b.data['data-slot']==
  ok(rec.length>=2&&raw.some(a=>a.sceneKey==='take'),'준비: 장면 행동에 끌어들이기 '+rec.length+'개(대상마다)와 발견한 폭약 가져가기가 있음 — '+raw.map(a=>a.label).join(' / '));
  const v=C.view(s,m.id),scr=NS.read(v),b=winOf(scr,/^인물·현장/);ok(!!b&&b.win?.kind==='group','큰 행동에 인물·현장 묶음 창');
  const kinds=b?.win?.kinds||[];const names2=kinds.map(k=>k.name);
- ok(names2.includes('발견한 폭약 가져가기'),'인물·현장 창에 [발견한 폭약 가져가기]가 보임: '+names2.join(' / '));
+ ok(names2.includes('맨얼굴로 폭약 훔치기'),'인물·현장 창에 [맨얼굴로 폭약 훔치기]가 보임(2026-11-28: 마피아 단어는 보는 사람·복면에 따라): '+names2.join(' / '));
  ok(names2.filter(n=>n==='끌어들이기').length===1&&!names2.some(n=>/ 끌어들이기$/.test(n)),'끌어들이기는 한 번만, 대상 이름이 붙은 끌어들이기 종류는 없음');
  const K=kinds.find(k=>k.name==='끌어들이기'),nf=K?.fields?.find(f=>f.key==='npc');
  ok(!!nf&&nf.options.some(o=>o.name===bk.name)&&nf.options.some(o=>o.name===other.name),'끌어들이기를 고르면 "누구에게" 칸에 '+bk.name+'·'+other.name+': '+(nf?.options||[]).map(o=>o.name).join(', '));
  // AI 화면 글도 같게
  const w=scr.text.slice(scr.text.indexOf('■ 창 · ['+b.name+']'));const w1=w.slice(0,(w.indexOf('\n■ ',3)+1||w.length+1)-1);
- ok(/- 발견한 폭약 가져가기/.test(w1)&&(w1.match(/- 끌어들이기/g)||[]).length===1,'AI 화면 글: 종류 목록에 발견한 폭약 가져가기, 끌어들이기 한 줄');
+ ok(/- 맨얼굴로 폭약 훔치기/.test(w1)&&(w1.match(/- 끌어들이기/g)||[]).length===1,'AI 화면 글: 종류 목록에 발견한 폭약 가져가기, 끌어들이기 한 줄');
  ok(/「끌어들이기」를 고르면:/.test(w1)||w1.indexOf('누구에게 합니까?')>=0,'AI 화면 글: 끌어들이기 다음에 고를 대상 칸');
  ok(w1.includes(bk.name+' 끌어들이기')&&w1.includes(other.name+' 끌어들이기'),'AI 화면 글: 대상을 고르면 사람 화면에 나오는 행동 글이 대상마다');
  // 누르기: 끌어들이기 → 두 번째 NPC
  const r=NS.press(v,scr,{'버튼':b.name,'고른 것':['끌어들이기',other.name]});
  ok(r.req?.action?.verb==='recruitNpc'&&r.req.action.npc===other.id&&r.req.slot==='big'&&!r.req.action._kind,'누르기: 인물·현장 → 끌어들이기 → '+other.name+' 이면 그 NPC에게 감('+JSON.stringify(r.req?.action?.npc||r.error)+')');
  const r2=NS.press(v,scr,{'버튼':b.name,'고른 것':['끌어들이기',bk.name]});ok(r2.req?.action?.npc===bk.id,'누르기: 끌어들이기 → '+bk.name);
- const r3=NS.press(v,scr,{'버튼':b.name,'고른 것':['발견한 폭약 가져가기']});ok(r3.req?.action?.sceneKey==='take','누르기: 발견한 폭약 가져가기');
+ const r3=NS.press(v,scr,{'버튼':b.name,'고른 것':['맨얼굴로 폭약 훔치기']});ok(r3.req?.action?.sceneKey==='take','누르기: 맨얼굴로 폭약 훔치기');
  // 협박(쪽지·겁주기·협박하기) 쪽도 대상 이름이 붙은 종류가 없음
  ok(!names2.some(n=>/에게 협박 쪽지 전달$| 협박하기$/.test(n)),'협박 행동도 대상 이름이 붙은 종류로 나뉘지 않음');}
 // 해먼드와 도일이 있는 회관: 협박 쪽지(또는 협박하기)는 한 종류, 대상 칸에 둘
