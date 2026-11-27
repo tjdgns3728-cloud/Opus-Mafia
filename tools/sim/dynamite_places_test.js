@@ -56,3 +56,7 @@ const armOpt = (s, m) => S.choices(s, m, 'big').find(a => a.sceneKey === 'arm');
 { const s = game(27), m = s.players.find(p => p.team === 'mafia'); s.day = 2; s.turn = 0; armed(s, m, 'warehouse');
   S.resolve(s, m, {type: 'scene', sceneKey: 'arm'}, s.rng); C.nextTurn(s); S.nextChapter(s); m.location = 'hall'; ST.beforeAdvance(s);
   ok(s.scenario.exploded === true && s.scenario.fuse.place === 'warehouse', '갱도 폭발은 예전처럼 갱도가 무너짐'); }
+// 5. 모두의 화면 규칙 글·물건 설명도 새 규칙(2026-11-27 AI 판 7V3Z 물음에 "폭약을 갱도에 설치하면"이 61번 보임)
+{ const ui = require('fs').readFileSync(path.join(dir, '20Interface.js'), 'utf8');
+  ok(!/폭약을 갱도에 설치하면|dynamite:'갱도에 설치하면/.test(ui), '화면 규칙 글·물건 설명에 "갱도에 설치하면"이 남지 않음');
+  ok(ui.includes('폭약은 집과 본거지를 뺀 어느 장소에나 설치할 수 있습니다') && ui.includes('그 장소에서 현장 수색으로 도화선을 찾아 끊으면'), '규칙 글: 설치 장소와 현장 수색으로 끊기'); }
