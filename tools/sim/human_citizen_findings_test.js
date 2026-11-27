@@ -33,7 +33,9 @@ ok(typeof V?.dropNarratorMeta==='function','진행 묘사 거르기 함수가 �
  ok(!mine.some(t=>/아무도 오지 않았습니다/.test(t)),'습격이 있었으면 "아무도 오지 않았습니다"가 없음 · '+mine.slice(0,3).join(' / ').slice(0,120));}
 
 // 3. 잠 글: 피곤함이 풀리면 줄었던 체력이 두 배로(최대 10)
-ok(world.includes("label:'잠자기 · 피곤했으면 피곤함이 풀려 줄었던 체력이 두 배로(최대 10), 아니면 습격·출혈이 없을 때 체력 1 회복'"),'잠자기 버튼 글');
+/* 2026-11-27 사용자 선택 "대가를 숫자로": 잠자기 글은 지금 체력으로 숫자를 보인다(피곤하면 줄었던 체력이 두 배로·최대 10) */
+{const s=fresh();s.turn=2;const P=s.players.find(p=>p.team==='town');for(const p of s.players){p.location=p.team==='mafia'?'hideout':'home';p.houseId=p.team==='mafia'?null:p.id;}P.tired=true;P.hp=4;
+ const lab=(C.choices(s,P.id,'big').find(a=>a.type==='sleep')||{}).label||'';ok(/^잠자기 · 이 밤이 끝나면 피곤함이 풀려 체력 4 → 8, 최대 체력 10/.test(lab),'잠자기 버튼 글: 피곤하면 줄었던 체력이 두 배로(숫자) · '+lab);}
 ok(ui.includes('잠: 피곤했으면 피곤함이 풀리고 줄었던 체력이 두 배로(최대 10) 돌아옵니다.')&&ui.includes('시민은 잠자기(피곤했으면 줄었던 체력이 두 배로·최대 10,'),'잠 설명 글 두 곳');
 ok(!ui.includes('잠: 피곤함이 풀리고, 습격받지 않으면 체력 1 회복.')&&!ui.includes('시민은 잠자기(습격받지 않으면 체력 1 회복,')&&!world.includes('잠자기 · 피곤함이 풀리고, 습격받지 않으면 체력 1 회복'),'옛 잠 설명 없음');
 {const s=fresh();s.turn=2;const P=s.players.find(p=>p.team==='town');for(const p of s.players){p.location=p.team==='mafia'?'hideout':'home';p.houseId=p.team==='mafia'?null:p.id;}P.tired=true;P.hp=5;
