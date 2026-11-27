@@ -1,5 +1,6 @@
 // 채팅 마피아 — 사람의 화면(브라우저마다 돈다). 서버가 보낸 내 자리의 보기(ChatMafia.view)만 그린다.
-// AI 자리는 같은 보기를 ChatMafia.screenText로 글로 받는다: 여기 보이는 칸(사람들·대화·버튼·유언·규칙)이 그 글에도 같은 차례로 있다.
+// AI 자리는 같은 보기를 ChatMafia.screenText로 글로 받는다: 여기 보이는 칸(사람들·대화·기록판·버튼·유언·규칙)이 그 글에도 있다.
+// 기록판(2026-11-27)은 ChatMafia.boardLines의 줄을 그대로 보여 준다(AI 화면 글과 같은 글).
 (function () {
   'use strict';
   if (typeof WebEngine === 'undefined') return;
@@ -114,6 +115,8 @@
           </div>
           <aside class="side">
             <h3>내 직업</h3><div id="cm-me" class="card"></div>
+            <h3>기록판</h3><div id="cm-board" class="card board"></div>
+            <form id="cm-claim" class="claim" autocomplete="off"><select id="cm-claim-role"></select><input id="cm-claim-text" placeholder="한 줄 결과"><button>직업 주장하기</button></form>
             <h3>유언</h3><textarea id="cm-will" rows="3"></textarea><button id="cm-will-save">유언 저장</button><p id="cm-will-note" class="muted"></p>
             <details><summary>규칙 보기</summary><pre id="cm-rules"></pre></details>
           </aside>
@@ -135,6 +138,11 @@
         this.lastTyping = t;
         room.act({type: 'typing', to: q('#cm-to').value || undefined});
       });
+      q('#cm-claim').onsubmit = async e => {
+        e.preventDefault();
+        const r = await room.act({type: 'claim', role: q('#cm-claim-role').value, text: q('#cm-claim-text').value});
+        if (r && r.ok) q('#cm-claim-text').value = ''; else this.note((r && r.error) || '주장하지 못했습니다.');
+      };
       q('#cm-will-save').onclick = async () => {
         const r = await room.act({type: 'will', text: q('#cm-will').value});
         q('#cm-will-note').textContent = r && r.ok ? '저장했습니다.' : (r && r.error) || '저장하지 못했습니다.';
@@ -187,6 +195,11 @@
       this.drawLog(v);
       this.drawSay(v);
       q('#cm-me').innerHTML = `<b>${E(v.me.role)}</b> <span class="muted">${E(v.me.team)}</span><p>${E(v.me.roleDesc)}</p>${(v.me.notes || []).map(n => `<p class="note">${E(n)}</p>`).join('')}`;
+      this.drawBoard(v);
+      const claim = v.buttons.find(b => b.at === 'claim'), roleSel = q('#cm-claim-role'), roleKey = (v.claimRoles || []).join('|');
+      if (roleSel.dataset.key !== roleKey) { roleSel.innerHTML = (v.claimRoles || []).map(n => `<option>${E(n)}</option>`).join(''); roleSel.dataset.key = roleKey; }
+      q('#cm-claim-text').maxLength = 60;
+      q('#cm-claim').style.display = claim ? '' : 'none';
       const will = q('#cm-will');
       if (document.activeElement !== will && will.dataset.saved !== v.me.will) { will.value = v.me.will; will.dataset.saved = v.me.will; }
       will.disabled = !v.me.alive || v.stage === 'over'; q('#cm-will-save').disabled = will.disabled;
@@ -196,6 +209,12 @@
 
     // 바뀐 칸만 다시 그린다: 소식(입력 중 표시 등)이 올 때마다 통째로 다시 그리면 누르는 사이 버튼이 바뀌어 클릭이 빠진다
     set(el, html) { if (el && el.__html !== html) { el.innerHTML = html; el.__html = html; } }
+
+    // 기록판: 보기의 줄을 그대로(두 칸 들여 쓴 줄은 위 줄에 딸린 줄)
+    drawBoard(v) {
+      const el = this.root.querySelector('#cm-board');
+      this.set(el, (v.board || []).map(l => /^ {2}/.test(l) ? `<div class="sub">${E(l.trim())}</div>` : `<div>${E(l)}</div>`).join(''));
+    }
 
     drawPlayers(v) {
       const byAt = {};
@@ -297,6 +316,7 @@
             <div id="cm-log" class="log"></div>
           </div>
           <aside class="side">
+            <h3>기록판</h3><div id="cm-board" class="card board"></div>
             <h3>밤 행동</h3><div id="cm-night" class="card"></div>
             <h3>AI 활동 <span class="muted small">(AI에게 물은 수 · 그 답으로 한 일)</span></h3><div id="cm-ai" class="card"></div>
             <details><summary>규칙 보기</summary><pre id="cm-rules"></pre></details>
@@ -323,6 +343,7 @@
       this.drawWatchPlayers(v, full);
       this.drawWatchBanner(v, full);
       this.drawWatchLog(v, full);
+      this.drawBoard(v);
       this.set(q('#cm-night'), !full ? '<span class="muted">시민 눈으로 볼 때는 숨깁니다.</span>'
         : v.night.length ? v.night.map(n => `<div><b>${E(n.role)}</b> ${E(n.text)}</div>`).join('') : '<span class="muted">밤이 되면 여기에 AI들이 고른 것이 보입니다. 밤이 끝나면 대화 기록에 밤에 일어난 일이 차례로 나옵니다.</span>');
       const ai = v.players.filter(p => p.ai);
