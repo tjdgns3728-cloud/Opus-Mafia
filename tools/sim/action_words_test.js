@@ -34,3 +34,10 @@ const take=(s,p)=>S.choices(s,p,'big').find(a=>a.sceneKey==='take');
 {const src=fs.readFileSync(path.join(dir,'05Scenarios.js'),'utf8'),ui=fs.readFileSync(path.join(dir,'20Interface.js'),'utf8');ok(!/꺼내는 순간 모두가/.test(src)&&/사람들 앞에서 쏘다 붙잡히면 리스의 총인 것이 드러남/.test(src),'권총 안내: "사람들 앞에서 쏘다 붙잡히면 리스의 총인 것이 드러남"');ok(/숨은 채 권총을 쏘면 드러나지 않습니다/.test(ui),'규칙 글: 숨은 채 권총을 쏘면 정체가 드러나지 않음');}
 // 5. NPC가 막아섰을 때 고르는 단어
 {const {s,m,bk}=atTavern(41);bk.location='tavern';bk.hp=10;bk.recruited=false;S.resolve(s,m,take(s,m),()=>0.5);s.stage='hazard';const v=S.hazardView(s,m);ok(v?.choices?.map(c=>c.label).join(' | ')==='폭약 돌려주기 · 고발 없음 | 폭약 들고 달아나기 · 붙잡히면 빼앗김','막아섰을 때: '+v?.choices?.map(c=>c.label).join(' | '));}
+// 6. 이동 창: 폭약이 있는 줄 아는 곳 옆에 짧게(마피아는 "숨겨 둔 폭약", 찾지 못한 시민은 없음) — 사람 화면을 읽는 AI 화면에도 같음
+{const {s,m,t}=atTavern(43);m.location='hall';t.location='hall';const mv=p=>{const v=C.view(s,p.id),txt=NS.read(v).text;return {v,txt};};
+ const a=mv(m);ok(a.v.bombPlaces.includes('tavern')&&a.v.bombPlaces.includes('warehouse')&&/광부 술집[^\n]{0,4}\n?[^\n]{0,3}숨겨 둔 폭약|광부 술집 · 숨겨 둔 폭약/.test(a.txt),'마피아 이동 창: 광부 술집·갱도 옆에 "숨겨 둔 폭약" — '+a.v.bombPlaces.join(','));
+ const b=mv(t);ok(!b.v.bombPlaces.length&&!/숨겨 둔 폭약|찾은 폭약/.test(b.txt),'찾지 못한 시민 이동 창에는 없음');
+ t.storyKnown=[...(t.storyKnown||[]),'spot:barrel:1'];const c=mv(t);ok(c.v.bombPlaces.join()==='tavern'&&/찾은 폭약/.test(c.txt),'술통에서 찾은 시민: 광부 술집 옆에 "찾은 폭약"');}
+{const {s,m}=atTavern(45);m.location='hall';s.stage='move';const v=C.view(s,m.id),scr=NS.read(v);ok(/\[광부 술집 · 숨겨 둔 폭약\]/.test(scr.text),'이동 단계 단추: [광부 술집 · 숨겨 둔 폭약]');
+ const r=NS.press(v,scr,{'버튼':'광부 술집'});ok(!r.error&&JSON.stringify(r.req||{}).includes('tavern'),'AI가 "광부 술집"만 눌러도 그 단추로 받음: '+JSON.stringify(r.req||r.error).slice(0,120));}
