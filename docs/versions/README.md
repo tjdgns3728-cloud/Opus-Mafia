@@ -8,8 +8,8 @@
 | 문서 | 지금 파일 | 사본 수 |
 |---|---|---|
 | [공통 규칙](AI_RULES/README.md) | `AI_RULES.md` | 31 |
-| [실패 기록](AI_LESSONS/README.md) | `docs/AI_LESSONS.md` | 123 |
-| [제작 기록](GAME_MAKING_RECORD/README.md) | `docs/GAME_MAKING_RECORD.md` | 247 |
+| [실패 기록](AI_LESSONS/README.md) | `docs/AI_LESSONS.md` | 124 |
+| [제작 기록](GAME_MAKING_RECORD/README.md) | `docs/GAME_MAKING_RECORD.md` | 248 |
 | [인계 문서](HANDOFF/README.md) | `HANDOFF.md` | 118 |
 | [이야기 설정](SETTING/README.md) | `story/SETTING.md` | 14 |
 | [Codex 안내](AGENTS/README.md) | `AGENTS.md` | 5 |
