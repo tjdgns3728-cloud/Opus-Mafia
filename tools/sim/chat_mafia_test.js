@@ -167,7 +167,7 @@ const who = (S, r) => S.players.find(p => p.role === r);
   n = night(R6, [['godfather', {target: 'sheriff'}]], S => { who(S, 'executioner').target = who(S, 'sheriff').id; });
   ok(who(n.S, 'executioner') === undefined && n.S.players.find(p => p.startRole === 'executioner').role === 'jester', '처형인의 목표가 밤에 죽으면 처형인은 광대가 됨');
   n = night(R6, [['amnesiac', {target: 'sheriff'}]], S => { who(S, 'sheriff').alive = false; });
-  ok(n.S.players.find(p => p.startRole === 'amnesiac').role === 'sheriff' && n.after.msgs.some(m => /보안관/.test(m)), '기억상실자가 죽은 보안관을 기억하면 보안관이 되고 모두에게 알려짐');
+  ok(n.S.players.find(p => p.startRole === 'amnesiac').role === 'sheriff' && n.after.msgs.some(m => /보안관/.test(m)) && !n.after.msgs.some(m => /이\(가\)/.test(m)), '기억상실자가 죽은 보안관을 기억하면 보안관이 되고 모두에게 알려짐("이(가)" 없이)');
   n = night(R6, [['vigilante', {target: 'mayor'}]], S => { who(S, 'godfather').alive = false; });
   ok(n.S.players.find(p => p.startRole === 'framer').role === 'mafioso' || who(n.S, 'framer') === undefined, '대부가 죽어 죽일 사람이 없으면 남은 마피아가 조직원이 됨');
   { const S = make(R6); S.stage = 'night'; S.night = {acts: {}}; const bd = who(S, 'busdriver');

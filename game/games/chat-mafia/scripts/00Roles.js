@@ -385,7 +385,7 @@
     for (const r of res.remember || []) {
       const p = P(r.id); if (!p || !p.alive) continue;
       fresh(p, r.role);
-      msgs.push(`${label(p)}님이 기억을 되찾아 ${ROLES[r.role].name}이(가) 되었습니다.`);
+      msgs.push(`${label(p)}님이 기억을 되찾아 이제 ${ROLES[r.role].name}입니다.`);
       tells.push({id: p.id, text: `나는 이제 ${ROLES[r.role].name}입니다. ${ROLES[r.role].desc}`});
     }
     for (const p of S.players.filter(p => p.alive && p.role === 'executioner')) {
