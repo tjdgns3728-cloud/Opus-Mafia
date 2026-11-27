@@ -13,8 +13,6 @@
     낮_한사람당초: 15, 투표초: 30, 변론초: 15, 찬반초: 10, 처형초: 6, 밤초: 25, 아침초: 6,
     재투표_최소초: 5,
     유언_최대글자: 120,
-    // 2026-11-27 사용자 선택 "A 공개 기록판부터", 기록판 칸 "투표·찬반 기록, 죽음 기록", 주장 버튼 "직업 + 한 줄 결과"
-    주장_최대글자: 60,
     AI: {단계첫물음초: [0.5, 2.5], 다시묻기초: [4, 8], 조용할때초: [14, 20], 죽은뒤다시묻기초: [15, 25],
          // 치는 시간: 글자 수 ÷ 초당글자. 2026-11-26 사용자 선택 "사람의 손과 눈 맞추기"로 8초 상한을 없앴다(사람은 긴 글을 빨리 칠 수 없다). 읽기는 그대로(AI는 다 읽는다).
          초당글자: [3, 5], 입력최소초: 1, 동시입력: 2, 입력대기최대초: 8, 답기다림최대초: 20,
@@ -47,8 +45,7 @@
       '- 밤: 산 사람은 공개 대화를 할 수 없다. 마피아는 마피아끼리 대화한다(스파이는 누가 했는지 모른 채 듣는다). 밤에 고른 능력은 밤이 끝날 때 한꺼번에 처리되고, 결과는 아침이 되기 전에 각자에게만 알려진다.',
       RR.rolesText(cfg.칸),
       `- 유언: 살아 있는 동안 언제든 ${cfg.유언_최대글자}자까지 고칠 수 있다. 죽으면 공개된다.`,
-      '- 기록판: 날마다 투표(투표 시간이 끝날 때 누가 누구에게 표를 줬는지)·찬반·죽음과 직업 주장을 한 칸에 모아 보여 준다. 모두에게 같은 기록판이 보인다.',
-      `- 직업 주장: 산 사람은 공개 대화를 할 수 있을 때 "직업 주장하기"로 직업 하나와 한 줄 결과(${cfg.주장_최대글자}자까지)를 남길 수 있다. 모두에게 알리고 기록판에 남는다. 게임은 주장이 참인지 확인하지 않는다. 다시 주장하면 앞의 주장도 기록판에 남는다.`,
+      '- 기록판: 날마다 투표(투표 시간이 끝날 때 누가 누구에게 표를 줬는지)·찬반·죽음을 한 칸에 모아 보여 준다. 모두에게 같은 기록판이 보인다.',
       '- 죽은 사람: 죽은 사람끼리만 대화한다. 산 사람의 공개 대화는 계속 볼 수 있다.',
       '- 입력 중 표시: 누군가 글을 치고 있으면 그 글을 받을 사람들에게 "입력 중"이 보인다.'
     ].join('\n');
@@ -101,26 +98,15 @@
              execution: `${d} 낮 · 처형`, night: `${d} 밤`, morning: `${d} 아침`, over: '판 끝'})[S.stage] || '준비';
   }
 
-  // 직업 주장에 고를 수 있는 직업: 이 판의 칸에서 나올 수 있는 직업(규칙의 직업 목록과 같음)
-  const claimRoles = cfg => [...new Set(cfg.칸.flatMap(s => RR.POOLS[s] || [s]).concat('mafioso'))].map(k => ROLES[k].name);
-
-  // 공개 기록판(2026-11-27 사용자 선택). 이미 모두에게 공개된 것(투표 줄·찬반 결과·아침 발표·처형 발표·직업 주장)만 모은다.
+  // 공개 기록판(2026-11-27 사용자 선택 "A 공개 기록판부터", 칸 "투표·찬반 기록, 죽음 기록"). 이미 모두에게 공개된 것(투표 줄·찬반 결과·아침 발표·처형 발표)만 모은다.
+  // 직업 주장 버튼은 같은 날 사용자 "직업 주장하기는 넣지 말아주시겠어요?", "그건 사람의 말로도 충분히 가능하그든요"로 뺐다.
   // 모두에게 같은 글 줄이고, 사람 화면·AI 화면 글·관전 화면이 이 줄을 그대로 쓴다. 두 칸 들여 쓴 줄은 바로 위 줄에 딸린 줄.
-  const NO_RECORDS = {rounds: [], nights: [], claims: []};
+  const NO_RECORDS = {rounds: [], nights: []};
   function boardLines(S) {
     const R = S.records || NO_RECORDS, out = [];
     const P = id => find(S, id), nos = ids => ids.map(id => P(id)).filter(Boolean).map(q => q.no).sort((a, b) => a - b);
     const list = ids => ids.length ? `${nos(ids).join('·')}번` : '없음';
     const shown = q => q.cleaned ? '직업·유언 알 수 없음(청소됨)' : `직업 ${ROLES[q.role].name} · 유언 ${q.will ? `"${q.will}"` : '없음'}`;
-    const when = c => `${c.day}일째 ${({morning: '아침', execution: '낮', talk: '낮', vote: '낮', defense: '낮', verdict: '낮'})[c.stage] || '낮'}`;
-    const claimers = [...new Set(R.claims.map(c => c.id))];
-    out.push(claimers.length ? '직업 주장:' : '직업 주장: 아직 없음');
-    for (const id of claimers) {
-      const q = P(id), mine = R.claims.filter(c => c.id === id).reverse(), say = c => `${c.role}${c.text ? ` "${c.text}"` : ''} (${when(c)})`;
-      if (!q) continue;
-      const dead = q.alive ? '' : `(죽음 · 실제 ${q.cleaned ? '알 수 없음' : ROLES[q.role].name})`;
-      out.push(`  ${label(q)}${dead}: ${say(mine[0])}${mine.length > 1 ? ` · 앞서 ${mine.slice(1).map(say).join(' · ')}` : ''}`);
-    }
     let any = false;
     for (let d = 1; d <= S.day; d++) {
       const rounds = R.rounds.filter(r => r.day === d);
@@ -161,8 +147,6 @@
       }
       if (S.stage === 'night') out.push(...RR.nightButtons(S, me));
       if (me.role === 'mayor' && !me.revealed && ['talk', 'vote', 'verdict'].includes(S.stage)) out.push({label: '시장임을 밝히기', act: {type: 'reveal'}, at: 'self'});
-      if (chatPlace(S, me).channel === 'all')
-        out.push({label: '직업 주장하기', act: {type: 'claim'}, text: true, at: 'claim', hint: `맨 앞에 직업 이름 하나(${claimRoles(S.cfg).join('·')} 가운데), 그 뒤에 한 줄 결과`});
       out.push({label: '유언 고치기', act: {type: 'will'}, text: true, at: 'will'});
     }
     return out;
@@ -212,7 +196,7 @@
       buttons: buttonsFor(S, me),
       chat: {channel: place.channel, label: place.label || '', whisper: !!place.whisper, why: place.why || '',
              whisperTo: place.whisper ? alive(S).filter(q => q.id !== id).map(q => ({id: q.id, label: label(q)})) : []},
-      board: boardLines(S), claimRoles: claimRoles(S.cfg),
+      board: boardLines(S),
       result: S.result || null,
       rules: rulesText(S.cfg)
     };
@@ -320,7 +304,7 @@
     L.push('할 수 있는 것:');
     L.push(v.chat.channel ? `  채팅: 지금 쓸 수 있음 (${v.chat.label})` : `  채팅: ${v.chat.why || '지금은 쓸 수 없음'}`);
     if (v.chat.whisper) L.push(`  귓속말: 산 사람 한 명에게 보낼 수 있음 (${v.chat.whisperTo.map(x => x.label).join(', ')})`);
-    if (v.buttons.length) L.push('  버튼: ' + v.buttons.map(b => `"${b.label}"${b.text ? `(글을 함께 적는다${b.hint ? `: ${b.hint}` : ''})` : ''}`).join(', '));
+    if (v.buttons.length) L.push('  버튼: ' + v.buttons.map(b => `"${b.label}"${b.text ? '(글을 함께 적는다)' : ''}`).join(', '));
     else L.push('  버튼: 없음');
     if (v.result) L.push(`판 결과: ${v.result.text}`);
     L.push('규칙:');
@@ -334,5 +318,5 @@
   const winner = S => RR.winner(S);
 
   globalThis.ChatMafia = {DEFAULTS, ROLES, RR, config, rulesText, find, alive, mafiaSide, label, needVotes, mafiaRoom,
-                          chatPlace, recipients, canSee, stageName, buttonsFor, view, watchView, placeOf, screenText, lineText, deal, winner, claimRoles, boardLines};
+                          chatPlace, recipients, canSee, stageName, buttonsFor, view, watchView, placeOf, screenText, lineText, deal, winner, boardLines};
 })();

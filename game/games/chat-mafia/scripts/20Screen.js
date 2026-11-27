@@ -116,7 +116,6 @@
           <aside class="side">
             <h3>내 직업</h3><div id="cm-me" class="card"></div>
             <h3>기록판</h3><div id="cm-board" class="card board"></div>
-            <form id="cm-claim" class="claim" autocomplete="off"><select id="cm-claim-role"></select><input id="cm-claim-text" placeholder="한 줄 결과"><button>직업 주장하기</button></form>
             <h3>유언</h3><textarea id="cm-will" rows="3"></textarea><button id="cm-will-save">유언 저장</button><p id="cm-will-note" class="muted"></p>
             <details><summary>규칙 보기</summary><pre id="cm-rules"></pre></details>
           </aside>
@@ -138,11 +137,6 @@
         this.lastTyping = t;
         room.act({type: 'typing', to: q('#cm-to').value || undefined});
       });
-      q('#cm-claim').onsubmit = async e => {
-        e.preventDefault();
-        const r = await room.act({type: 'claim', role: q('#cm-claim-role').value, text: q('#cm-claim-text').value});
-        if (r && r.ok) q('#cm-claim-text').value = ''; else this.note((r && r.error) || '주장하지 못했습니다.');
-      };
       q('#cm-will-save').onclick = async () => {
         const r = await room.act({type: 'will', text: q('#cm-will').value});
         q('#cm-will-note').textContent = r && r.ok ? '저장했습니다.' : (r && r.error) || '저장하지 못했습니다.';
@@ -196,10 +190,6 @@
       this.drawSay(v);
       q('#cm-me').innerHTML = `<b>${E(v.me.role)}</b> <span class="muted">${E(v.me.team)}</span><p>${E(v.me.roleDesc)}</p>${(v.me.notes || []).map(n => `<p class="note">${E(n)}</p>`).join('')}`;
       this.drawBoard(v);
-      const claim = v.buttons.find(b => b.at === 'claim'), roleSel = q('#cm-claim-role'), roleKey = (v.claimRoles || []).join('|');
-      if (roleSel.dataset.key !== roleKey) { roleSel.innerHTML = (v.claimRoles || []).map(n => `<option>${E(n)}</option>`).join(''); roleSel.dataset.key = roleKey; }
-      q('#cm-claim-text').maxLength = 60;
-      q('#cm-claim').style.display = claim ? '' : 'none';
       const will = q('#cm-will');
       if (document.activeElement !== will && will.dataset.saved !== v.me.will) { will.value = v.me.will; will.dataset.saved = v.me.will; }
       will.disabled = !v.me.alive || v.stage === 'over'; q('#cm-will-save').disabled = will.disabled;

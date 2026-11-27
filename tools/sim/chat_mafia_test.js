@@ -179,42 +179,35 @@ const who = (S, r) => S.players.find(p => p.role === r);
     ok(!M.chatPlace(S, who(S, 'mayor')).channel && /협박/.test(M.chatPlace(S, who(S, 'mayor')).why), '협박받은 사람은 다음 날 낮에 말할 수 없음'); }
 }
 {
-  // 공개 기록판·직업 주장(2026-11-27 사용자 선택 "A 공개 기록판부터", 칸 "투표·찬반 기록, 죽음 기록", 주장 "직업 + 한 줄 결과")
+  // 공개 기록판(2026-11-27 사용자 선택 "A 공개 기록판부터", 칸 "투표·찬반 기록, 죽음 기록"). 직업 주장 버튼은 같은 날 사용자 말로 뺌
   const S = base(); S.day = 3; S.stage = 'talk';
   const [p1, p2, p3, p4] = S.players, mayor = who(S, 'mayor');
-  ok(M.boardLines(S).join('|') === '직업 주장: 아직 없음|투표·죽음: 아직 없음', '기록판: 기록이 없으면 "아직 없음" 두 줄');
+  ok(M.boardLines(S).join('|') === '투표·죽음: 아직 없음', '기록판: 기록이 없으면 "아직 없음" 한 줄');
   p4.alive = false; p4.died = {day: 1, how: '마피아에게 죽음'}; p4.will = '나 의사';
   S.records = {nights: [{day: 1, deaths: [p4.id]}, {day: 2, deaths: []}],
     rounds: [{day: 2, alive: S.players.filter(q => q.alive).map(q => q.id), votes: [[p1.id, p2.id, 1], [p3.id, p2.id, 1], [mayor.id, p3.id, 3]], trial: p2.id,
-              verdict: {yes: [p1.id, p3.id], no: [mayor.id], none: [], executed: false}}],
-    claims: [{id: p1.id, day: 2, stage: 'talk', role: '시민', text: ''}, {id: p4.id, day: 1, stage: 'talk', role: '의사', text: ''}, {id: p1.id, day: 3, stage: 'vote', role: '보안관', text: '2일 밤 5번: 수상함'}]};
+              verdict: {yes: [p1.id, p3.id], no: [mayor.id], none: [], executed: false}}]};
   const b = M.boardLines(S);
-  ok(b[1] === '  1번 이름1: 보안관 "2일 밤 5번: 수상함" (3일째 낮) · 앞서 시민 (2일째 낮)', '기록판 주장: 마지막 주장이 먼저, 앞의 주장도 남음 — ' + b[1]);
-  ok(b[2] === '  4번 이름4(죽음 · 실제 경호원): 의사 (1일째 낮)', '기록판 주장: 죽은 사람 옆에 공개된 실제 직업 — ' + b[2]);
+  ok(b[0] === '1일째 밤: 4번 이름4 죽음(마피아에게 죽음) · 직업 경호원 · 유언 "나 의사"' && !b.some(l => /주장/.test(l)), '기록판: 첫 줄부터 일어난 일, 직업 주장 칸 없음 — ' + b[0]);
   ok(b.includes('1일째 밤: 4번 이름4 죽음(마피아에게 죽음) · 직업 경호원 · 유언 "나 의사"') && b.includes('2일째 밤: 아무도 죽지 않음'), '기록판 죽음: 아침 발표와 같은 직업·유언, 아무도 안 죽은 밤');
   ok(b.includes('2일째 투표: 3번 이름3 ← 7(3표)번 / 2번 이름2 ← 1·3번 / 안 줌 2·5·6·8·9·10·11번'), '기록판 투표: 받은 사람마다 준 사람 번호, 밝힌 시장은 3표, 안 준 사람 — ' + b.find(l => /투표/.test(l)));
   ok(b.indexOf('  → 2번 이름2 재판: 찬성 1·3번 / 반대 7번 / 안 누름 없음 → 풀려남') === b.indexOf('2일째 투표: 3번 이름3 ← 7(3표)번 / 2번 이름2 ← 1·3번 / 안 줌 2·5·6·8·9·10·11번') + 1, '기록판 재판: 그 투표 바로 밑에 찬반과 결과');
   { const S2 = base(); S2.day = 2; const [a1, a2, a3, a4, a5] = S2.players, m = who(S2, 'mayor');
-    S2.records = {nights: [], claims: [], rounds: [{day: 2, alive: S2.players.map(q => q.id), votes: [[a1.id, a2.id, 1], [a3.id, a2.id, 1], [m.id, a4.id, 3], [a5.id, a4.id, 1]], trial: null, verdict: null}]};
+    S2.records = {nights: [], rounds: [{day: 2, alive: S2.players.map(q => q.id), votes: [[a1.id, a2.id, 1], [a3.id, a2.id, 1], [m.id, a4.id, 3], [a5.id, a4.id, 1]], trial: null, verdict: null}]};
     const line = M.boardLines(S2).find(l => /^2일째 투표/.test(l));
     ok(/^2일째 투표: 4번 이름4 ← 5·7\(3표\)번 \/ 2번 이름2 ← 1·3번/.test(line), '기록판 투표: 받은 표(시장 3표 포함)가 많은 사람부터 — ' + line); }
   ok(b.findIndex(l => /^1일째 밤/.test(l)) < b.findIndex(l => /^2일째 투표/.test(l)) && b.findIndex(l => /^2일째 투표/.test(l)) < b.findIndex(l => /^2일째 밤/.test(l)), '기록판: 일어난 차례(1일째 밤 → 2일째 투표 → 2일째 밤)');
   S.records.rounds[0].verdict.executed = true; p2.alive = false; p2.died = {day: 2, how: '처형'};
   ok(M.boardLines(S).some(l => l.endsWith('→ 처형(직업 의사 · 유언 없음)')), '기록판 재판: 처형되면 공개된 직업·유언');
   p4.cleaned = true;
-  ok(M.boardLines(S).includes('1일째 밤: 4번 이름4 죽음(마피아에게 죽음) · 직업·유언 알 수 없음(청소됨)') && M.boardLines(S)[2].includes('(죽음 · 실제 알 수 없음)'), '청소된 사람은 기록판에도 직업·유언이 안 나옴');
+  ok(M.boardLines(S).includes('1일째 밤: 4번 이름4 죽음(마피아에게 죽음) · 직업·유언 알 수 없음(청소됨)') && !M.boardLines(S).some(l => /경호원/.test(l)), '청소된 사람은 기록판에도 직업·유언이 안 나옴');
   const v = M.view(S, p1.id, 0), text = M.screenText(v);
-  ok(v.board.join('\n') === M.boardLines(S).join('\n') && text.includes('기록판:\n  직업 주장:\n    1번 이름1: 보안관'), '사람 보기와 AI 화면 글에 같은 기록판 줄');
+  ok(v.board.join('\n') === M.boardLines(S).join('\n') && text.includes('기록판:\n  1일째 밤: 4번 이름4'), '사람 보기와 AI 화면 글에 같은 기록판 줄');
   ok(M.watchView(S, 0).board.join('\n') === v.board.join('\n') && M.view(S, p3.id, 0).board.join('\n') === v.board.join('\n'), '관전 보기·다른 자리의 보기에도 같은 기록판');
   ok(text.indexOf('기록판:') > text.indexOf('대화 기록(위가 먼저):') && text.indexOf('기록판:') < text.indexOf('할 수 있는 것:'), 'AI 화면 글: 기록판은 대화 기록 다음, 할 수 있는 것 앞');
-  ok(/"직업 주장하기"\(글을 함께 적는다: 맨 앞에 직업 이름 하나\([^)]*보안관[^)]*\), 그 뒤에 한 줄 결과\)/.test(text) && v.claimRoles.join() === M.claimRoles(cfg).join(), 'AI 화면 글의 주장 버튼에 직업 목록, 사람 화면에는 같은 목록의 고르기');
-  ok(M.claimRoles(cfg).includes('보안관') && M.claimRoles(cfg).includes('마피아 조직원') && M.claimRoles(cfg).length === new Set(M.claimRoles(cfg)).size, '주장할 수 있는 직업: 이 판에 나올 수 있는 직업(겹침 없음)');
-  ok(/직업 주장: 산 사람은 공개 대화를 할 수 있을 때/.test(v.rules) && /참인지 확인하지 않는다/.test(v.rules), '규칙에 기록판과 직업 주장이 적힘');
-  const can = (st, id, extra = {}) => { Object.assign(S, {stage: st, accused: null, silenced: {}}, extra); return M.view(S, id, 0).buttons.some(x => x.label === '직업 주장하기'); };
-  ok(can('talk', p1.id) && can('vote', p1.id) && can('verdict', p1.id) && !can('night', p1.id) && !can('talk', p4.id), '주장 버튼: 낮에 산 사람만(밤·죽은 사람 없음)');
-  ok(can('defense', p3.id, {accused: p3.id}) && !can('defense', p1.id, {accused: p3.id}), '주장 버튼: 최후 변론에는 재판에 선 사람만');
-  ok(!can('talk', p1.id, {silenced: {[p1.id]: 3}}), '주장 버튼: 협박받은 사람은 없음');
-  S.stage = 'talk'; S.silenced = {};
+  ok(/- 기록판: 날마다 투표/.test(v.rules) && !/주장/.test(v.rules), '규칙에 기록판이 적히고, 직업 주장은 없음');
+  ok(['talk', 'vote', 'verdict', 'morning'].every(st => { S.stage = st; return !M.view(S, p1.id, 0).buttons.some(x => /주장/.test(x.label)); }), '어느 때에도 직업 주장 버튼이 없음');
+  S.stage = 'talk';
 }
 {
   // AI의 두 단계 능력(실제 판 2DJ5: AI 버스 기사가 밤마다 첫 사람만 고르고 둘째를 고르지 못함)
@@ -325,31 +318,20 @@ const who = (S, r) => S.players.find(p => p.role === r);
   const s = await host.handle({op: 'start', room: c.room, key: c.key});
   ok(s.ok, '열한 자리(사람 1 + AI 10)로 시작');
   const t0 = Date.now();
-  let now, claimBad = null, claimHuman = null, claimText = null, humanId = null, nightClaim = null;
+  let now, claim = null;
   while (Date.now() - t0 < 90000) {
     now = await host.handle({op: 'news', room: c.room, key: c.key, since: 0});
     if (now.status === 'over') break;
     // 사람 자리도 투표 시간에는 아무에게나 표를 준다(시험용)
     const v = now.view;
     if (v && v.me.alive) { const b = v.buttons.find(b => b.act.type === 'vote' || b.act.type === 'verdict'); if (b && Math.random() < 0.2) await host.handle({op: 'act', room: c.room, key: c.key, action: b.act}); }
-    // 직업 주장: 사람 화면처럼 직업과 글을 따로, AI 화면 글처럼 글 하나로, 없는 직업, 밤
-    if (v && v.me.alive && !claimHuman && v.buttons.some(b => b.at === 'claim')) {
-      humanId = v.me.id;
-      claimBad = await host.handle({op: 'act', room: c.room, key: c.key, action: {type: 'claim', role: '없는직업', text: 'x'}});
-      claimHuman = await host.handle({op: 'act', room: c.room, key: c.key, action: {type: 'claim', role: '의사', text: '  1일 밤   3번 지킴  '}});
-      claimText = await host.handle({op: 'act', room: c.room, key: c.key, action: {type: 'claim', text: '보안관: 2일 밤 5번 수상함'}});
-    }
-    if (v && v.me.alive && !nightClaim && v.stage === 'night') nightClaim = await host.handle({op: 'act', room: c.room, key: c.key, action: {type: 'claim', role: '시민', text: ''}});
+    if (v && v.me.alive && !claim && v.stage === 'talk') claim = await host.handle({op: 'act', room: c.room, key: c.key, action: {type: 'claim', role: '의사', text: '시험'}});
     await new Promise(r => setTimeout(r, 100));
   }
   const R = host.rooms.get(c.room), S = R.api.state;
-  ok(claimBad && !claimBad.ok && /직업 이름을 맨 앞에/.test(JSON.stringify(claimBad)), '직업 주장: 없는 직업은 받지 않음');
-  ok(claimHuman && claimHuman.ok && claimText && claimText.ok && S.records.claims.filter(x => x.id === humanId).map(x => `${x.role}|${x.text}`).join('/') === '의사|1일 밤 3번 지킴/보안관|2일 밤 5번 수상함',
-     '직업 주장: 사람 화면처럼 직업·글 따로, AI처럼 "직업: 글" 하나로 — 둘 다 기록에 남음(빈칸 정리)');
-  ok(S.log.some(l => l.kind === 'claim' && l.to === 'all' && /직업을 주장했습니다: 보안관 "2일 밤 5번 수상함"$/.test(l.text)), '직업 주장이 모두에게 알림으로 감');
-  ok(nightClaim && !nightClaim.ok, '밤에는 직업 주장을 받지 않음(1일째 밤의 사람 자리)');
+  ok(claim && !claim.ok && !S.log.some(l => /주장했습니다/.test(l.text)), '직업 주장 행동은 받지 않음(뺌)');
   ok(S.records.rounds.length > 0 && S.records.rounds.every(r => Array.isArray(r.votes) && (!r.trial || r.verdict || S.result)) && S.records.nights.length > 0, `기록판 기록: 투표 시간 ${S.records.rounds.length}번, 밤 ${S.records.nights.length}번`);
-  ok(now.view && now.view.board.some(l => /일째 투표/.test(l)) && now.view.board.some(l => /일째 밤:/.test(l)) && now.view.board.some(l => /보안관 "2일 밤 5번 수상함"/.test(l)), '판 끝 화면의 기록판에 투표·밤·주장이 있음');
+  ok(now.view && now.view.board.some(l => /일째 투표/.test(l)) && now.view.board.some(l => /일째 밤:/.test(l)), '판 끝 화면의 기록판에 투표·밤이 있음');
   ok(now.status === 'over' && S.result && S.result.winner && Array.isArray(S.result.winners), `판이 끝남: ${S.result ? S.result.text : '끝나지 않음'}, ${S.day}일째`);
   ok(!R.fault, '규칙 오류 없음' + (R.fault ? ': ' + R.fault : ''));
   const kinds = k => S.log.filter(l => l.kind === k).length;

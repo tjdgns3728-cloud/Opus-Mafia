@@ -39,8 +39,8 @@
   const sys = (room, text, to = 'all') => add(room, {kind: 'sys', to, text});
   const tellMe = (room, id, text) => add(room, {kind: 'me', to: [id], text});
   const L = p => M.label(p);
-  // 기록판의 바탕(투표 시간마다의 표·찬반, 밤마다의 죽음, 직업 주장). 보이는 글은 ChatMafia.boardLines가 만든다.
-  const records = S => S.records || (S.records = {rounds: [], nights: [], claims: []});
+  // 기록판의 바탕(투표 시간마다의 표·찬반, 밤마다의 죽음). 보이는 글은 ChatMafia.boardLines가 만든다.
+  const records = S => S.records || (S.records = {rounds: [], nights: []});
 
   // ── 단계 ──────────────────────────────────────────────────
   function open(room, stage, seconds, next) {
@@ -242,23 +242,6 @@
         if (!r.ok) return no(r.error);
         if (r.tell) tellMe(room, id, r.tell);
         if (r.mafia) add(room, {kind: 'sys', to: M.mafiaRoom(S), ch: 'mafia', text: r.mafia});
-        return {ok: true};
-      }
-      case 'claim': {
-        // 직업 주장(2026-11-27 사용자 선택 "직업 + 한 줄 결과"): 공개 대화를 할 수 있는 산 사람만. 참인지는 확인하지 않는다.
-        // 사람 화면은 직업(목록에서 고름)과 글을 따로 보내고, AI는 화면 글대로 "맨 앞에 직업 이름, 그 뒤에 한 줄 결과"를 글 하나로 보낸다.
-        if (!p.alive) return no('죽은 사람은 직업을 주장할 수 없습니다.');
-        const place = M.chatPlace(S, p);
-        if (S.stage === 'over' || place.channel !== 'all') return no(place.why || '지금은 직업을 주장할 수 없습니다.');
-        const names = M.claimRoles(S.cfg);
-        let role = String(a.role ?? '').trim(), text = String(a.text ?? '').trim();
-        if (!role) { const hit = [...names].sort((x, y) => y.length - x.length).find(n => text.startsWith(n)); if (hit) { role = hit; text = text.slice(hit.length); } }
-        if (!names.includes(role)) return no(`직업 이름을 맨 앞에 적어 주세요(${names.join('·')} 가운데 하나).`);
-        text = text.replace(/\s+/g, ' ').replace(/^[\s:：—–\-·,.]+/, '').trim().slice(0, S.cfg.주장_최대글자);
-        const mine = records(S).claims.filter(c => c.id === id), last = mine[mine.length - 1];
-        if (last && last.role === role && last.text === text) return {ok: true};
-        records(S).claims.push({id, day: S.day, stage: S.stage, role, text});
-        add(room, {kind: 'claim', to: 'all', from: id, text: `${L(p)}님이 직업을 주장했습니다: ${role}${text ? ` "${text}"` : ''}`});
         return {ok: true};
       }
       case 'reveal': {
@@ -609,7 +592,7 @@
       const m = prompt.match(/ {2}버튼: (.*)/);
       const list = m && m[1] !== '없음' ? [...m[1].matchAll(/"([^"]+)"/g)].map(x => x[1]).filter(x => x !== '유언 고치기') : [];
       const r = room.random();
-      const press = list.length && r < 0.7 ? (pick => [{'버튼': pick, '적은 글': pick === '직업 주장하기' ? '시민 시험 주장' : ''}])(list[Math.floor(room.random() * list.length)]) : [];
+      const press = list.length && r < 0.7 ? [{'버튼': list[Math.floor(room.random() * list.length)], '적은 글': ''}] : [];
       const can = /채팅: 지금 쓸 수 있음/.test(prompt);
       return JSON.stringify({'지금 말하기': can && r > 0.5, '말': can && r > 0.5 ? ['ㅇㅇ', '누구임', '나 시민', '모르겠다'][Math.floor(room.random() * 4)] : '', '귓속말': {'누구': '', '말': ''}, '누름': press});
     };
@@ -625,7 +608,7 @@
     start(room) {
       const S = room.state, cfg = read(room.data);
       Object.assign(S, {cfg, day: 1, stage: 'ready', epoch: 0, endsAt: 0, log: [], votes: {}, acquitted: [], accused: null, trial: null, verdict: {},
-                        night: null, typing: {}, result: null, voteLeft: 0, bots: {}, aiTyping: [], started: now(room), records: {rounds: [], nights: [], claims: []}});
+                        night: null, typing: {}, result: null, voteLeft: 0, bots: {}, aiTyping: [], started: now(room), records: {rounds: [], nights: []}});
       S.players = M.deal(room.seats().map(s => ({id: s.id, name: s.name, bot: !!s.bot})), cfg, () => room.random());
       AI.init(room);
       sys(room, `판을 시작합니다. ${S.players.length}명. 칸: ${cfg.칸.map(RR.slotName).join(', ')}. 내 직업은 나만 압니다.`);

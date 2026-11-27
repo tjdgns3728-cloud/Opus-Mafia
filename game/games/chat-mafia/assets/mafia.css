@@ -104,11 +104,6 @@ details pre{white-space:pre-wrap;font:inherit;font-size:13px;line-height:1.7;col
 .p.t-neutral{border-left:3px solid #c9a23a}
 .card .note{margin:4px 0 0;color:#e0b850;font-size:.9em}
 
-/* 공개 기록판·직업 주장(2026-11-27) */
+/* 공개 기록판(2026-11-27) */
 .board{font-size:13px;line-height:1.6;max-height:40vh;overflow:auto;overflow-wrap:anywhere}
 .board .sub{padding-left:12px;color:#c9c7c0}
-.claim{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-.claim select{flex:0 0 auto;max-width:110px;padding:5px}
-.claim input{flex:1;min-width:0;padding:5px}
-.side .claim button{margin-top:0;width:100%}
-.log .l.claim{color:#e0c98f}
