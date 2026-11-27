@@ -85,5 +85,5 @@ const feedOf=(s,p)=>s.feed.filter(e=>e.to.includes(p.id)).map(e=>String(e.text))
 {const s=fresh(),maf=s.players.find(p=>p.team==='mafia'),q=s.scenario;const b=q.bombs[0];b.where=b.spot;maf.location=b.spot==='cart'?'warehouse':b.spot;maf.npcHeard=['lead:'+b.spot];q.discovered=true;
  const near=[q.doyle,...Object.values(q.continuation?.npcs||{})].filter(n=>n&&n.hp>0);for(const n of near)n.location='nowhere';
  const S2=globalThis.NoirScenarios,take0=S2.choices(s,maf,'big').find(o=>o.sceneKey==='take');
- if(take0){ok(!take0.warn,'NPC가 없으면 폭약 꺼내기에 경고 없음');const n=near.find(n=>n.name!=='도일')||near[0];n.location=maf.location;const take1=S2.choices(s,maf,'big').find(o=>o.sceneKey==='take');ok(take1&&take1.warn&&take1.warn.includes(n.name)&&take1.warn.includes('막아섭니다'),'NPC가 보는 앞이면 폭약 꺼내기에 경고(2026-11-28: 누가 보는지와 막아섬)');}
+ if(take0){ok(!take0.warn,'NPC가 없으면 폭약 꺼내기에 경고 없음');const n=near.find(n=>n.name!=='도일')||near[0];n.location=maf.location;const take1=S2.choices(s,maf,'big').find(o=>o.sceneKey==='take');ok(take1&&take1.warn&&take1.warn.includes(n.name)&&take1.warn.includes('막아섬'),'NPC가 보는 앞이면 폭약 꺼내기에 경고(2026-11-28: 누가 보는지와 막아섬)');}
  else ok(false,'폭약 꺼내기 선택지를 만들지 못함(시험 준비 확인)');}

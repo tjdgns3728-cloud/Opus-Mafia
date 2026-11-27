@@ -17,10 +17,10 @@ function atTavern(seed){const s=game(seed);s.day=2;s.turn=0;s.stage='plan';s.sce
 const take=(s,p)=>S.choices(s,p,'big').find(a=>a.sceneKey==='take');
 // 1. 폭약: 보는 사람이 없으면 "몰래 꺼내기", NPC가 있으면 "맨얼굴로 훔치기"와 누가 막아서는지, 복면이면 "복면 쓴 채 훔치기"
 {const {s,m,bk}=atTavern(31);const a=take(s,m);ok(a?.label==='폭약 몰래 꺼내기'&&!a.warn,'아무도 없으면 [폭약 몰래 꺼내기] · 경고 없음: '+a?.label);
- bk.location='tavern';bk.hp=10;bk.recruited=false;const b=take(s,m);ok(b?.label==='맨얼굴로 폭약 훔치기'&&/보는 사람: 술집 주인/.test(b.warn)&&/막아섭니다/.test(b.warn)&&/붙잡히면 빼앗김/.test(b.warn),'술집 주인이 있으면 [맨얼굴로 폭약 훔치기] · '+b?.warn);
+ bk.location='tavern';bk.hp=10;bk.recruited=false;const b=take(s,m);ok(b?.label==='맨얼굴로 폭약 훔치기'&&/보는 사람: 술집 주인/.test(b.warn)&&/술집 주인이 막아섬/.test(b.warn)&&/붙잡히면 빼앗김/.test(b.warn),'술집 주인이 있으면 [맨얼굴로 폭약 훔치기] · '+b?.warn);
  s.aliasSeq=1;m.faceCover=true;C.ensureAlias?.(s,m);const c=take(s,m);ok(c?.label==='복면 쓴 채 폭약 훔치기','복면을 썼으면 [복면 쓴 채 폭약 훔치기]: '+c?.label);
  m.faceCover=null;bk.recruited=true;const d=take(s,m);ok(d?.label==='폭약 몰래 꺼내기'&&!d.warn,'술집 주인이 우리 편이면 보는 사람에서 빠져 [폭약 몰래 꺼내기]: '+d?.label);}
-{const {s,m,t}=atTavern(33);t.location='tavern';const a=take(s,m);ok(a?.label==='맨얼굴로 폭약 훔치기'&&a.warn.includes(t.name)&&/수첩에 남습니다/.test(a.warn),'시민 플레이어만 보면 [맨얼굴로 폭약 훔치기] · '+a?.warn);
+{const {s,m,t}=atTavern(33);t.location='tavern';const a=take(s,m);ok(a?.label==='맨얼굴로 폭약 훔치기'&&a.warn.includes(t.name)&&/수첩에 남음/.test(a.warn),'시민 플레이어만 보면 [맨얼굴로 폭약 훔치기] · '+a?.warn);
  const ally=s.players.find(o=>o.team==='mafia'&&o.id!==m.id);t.location='hall';ally.location='tavern';const b=take(s,m);ok(b?.label==='폭약 몰래 꺼내기','같은 편만 있으면 [폭약 몰래 꺼내기]');}
 {const {s,t}=atTavern(35);t.location='tavern';t.storyKnown=[...(t.storyKnown||[]),'spot:barrel:1'];const a=take(s,t);ok(a?.label==='발견한 폭약 가져가기','시민은 찾은 폭약을 [발견한 폭약 가져가기] 그대로: '+a?.label);}
 // 2. 설치 단어에 그 뒤 일
