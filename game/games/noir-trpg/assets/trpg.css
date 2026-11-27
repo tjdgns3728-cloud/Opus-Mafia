@@ -286,3 +286,6 @@ nav button{min-height:40px;font-size:12px}
    창(overlay 안의 div)은 화면 높이에 맞춰 스크롤하고, 버튼 줄(.picker-footer)은 창 아래에 붙여 늘 보이게 한다. 내용은 그 뒤로 스크롤된다. */
 .overlay>div{max-height:min(88vh,calc(100dvh - 32px))}
 .overlay>div:has(>.picker-footer){padding-bottom:0}.overlay>div .picker-footer{position:sticky;bottom:0;z-index:2;background:#151417;box-shadow:0 -14px 14px -4px #151417;padding-bottom:20px}
+/* 2026-11-27 창에 남은 시간: 모든 행동 창의 시계(재판 신청 창과 같은 자리), 10초 이하면 붉게 */
+.win-clock{margin:2px 0 10px;font:500 14px 'Malgun Gothic',sans-serif;color:#c1b8a8}
+.win-clock.urgent{color:#f0a094}
