@@ -290,3 +290,5 @@ nav button{min-height:40px;font-size:12px}
 /* 2026-11-27 창에 남은 시간: 모든 행동 창의 시계(재판 신청 창과 같은 자리), 10초 이하면 붉게 */
 .win-clock{margin:2px 0 10px;font:500 14px 'Malgun Gothic',sans-serif;color:#c1b8a8}
 .win-clock.urgent{color:#f0a094}
+/* 2026-11-28 이름칸 같은 높이: 사용자 "왼쪽에 이름칸은 크기가 균일했으면 좋겠어요", "크기는 이정도로"(내 칸) */
+@media(min-width:801px){.people .person{height:110px;min-height:110px;max-height:110px;overflow:hidden;box-sizing:border-box}.people .person .person-body{overflow:hidden}.people .person .status-row{display:flex;flex-wrap:nowrap;gap:4px;overflow:hidden;white-space:nowrap}.people .person .status-row .st{flex:none}.people .person .my-acts{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
