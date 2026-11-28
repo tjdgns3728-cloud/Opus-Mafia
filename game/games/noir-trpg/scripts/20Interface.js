@@ -149,7 +149,7 @@ class UI extends WebEngine.Component{
   if(me.location==='home'&&!night)out.push(card('아이','주택가의 아이','in-sight','','',''));
   return out.join('')||'<p class="people-empty">이 장소에 NPC가 없습니다.</p>';}
  /* 왼쪽 목록(2026-11-19 사용자 "아예 왼쪽 플레이어 시스템을 뜯어 고쳐야겠네요"): 플레이어는 지금 이 장소에 보이는 사람만(숨은 사람은 안 보이고, 변장한 사람은 "변장한 사람 n"으로 체력은 늘 가득), 쓰러진 사람은 남고, 죽은 사람은 죽음 목록에 */
- herePlayers(v){const me=v.me,mine=v.people.find(p=>p.id===me.id);if(this.watchAll)/* 2026-11-28 관전: 모든 플레이어를 눌러 넘어갈 수 있게 */return [...(mine?[mine]:[]),...v.people.filter(p=>p.id!==me.id&&(this.live(p)||p.downed))];return [...(mine?[mine]:[]),...v.people.filter(p=>p.id!==me.id&&(p.here||p.downed&&p.location)),...(v.strangers||[])];}
+ herePlayers(v){const me=v.me,mine=v.people.find(p=>p.id===me.id);if(this.watchAll){/* 2026-11-28 관전: 모든 플레이어를 자리 순서로 고정(사용자 "왼쪽에 플레이어 위치가 고정되지 않아서"), 죽은 사람도 제자리 */const by=new Map(v.people.map(p=>[p.id,p]));return (this.watchAll.order||[]).map(o=>by.get(o.id)).filter(Boolean);}return [...(mine?[mine]:[]),...v.people.filter(p=>p.id!==me.id&&(p.here||p.downed&&p.location)),...(v.strangers||[])];}
  npcsHere(v){return (v.story?.cast||[]).filter(n=>!n.dead&&n.here).length+(v.me.location==='home'&&v.turn!==2?1:0);}
  /* 2026-11-23: 화면 정보에는 남의 체력 숫자가 없다(alive만) */live(p){return typeof p?.hp==='number'?p.hp>0:!!p?.alive;}
  deadPeople(v){return v.people.filter(p=>!this.live(p)&&!p.downed);}

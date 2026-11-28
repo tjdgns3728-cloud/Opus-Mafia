@@ -64,6 +64,12 @@ const btns=h=>[...h.matchAll(/<button([^>]*data-do="action-group"[^>]*)>([\s\S]*
 {const s=fresh();s.day=1;s.turn=1;C.nextTurn(s);S.nextChapter?.(s);s.stage='plan';const w=T.ROOM.watch({state:s}),u=ui(null);const m=u.watchPick({watching:true,status:'play',room:'K7QM',watchers:1,view:w});u.now=m;const h=u.play(m.view);
  const ids=[...new Set([...h.matchAll(/data-do="person"[^>]*data-id="([^"]+)"|data-id="([^"]+)"[^>]*data-do="person"/g)].map(x=>x[1]||x[2]))].filter(id=>w.views[id]);ok(ids.length===8,'밤 관전: 왼쪽 이름 단추 '+ids.length+'개가 플레이어 화면으로 이어짐');
  const plain=ui(m.view);const ph=plain.play(m.view);const pids=[...new Set([...ph.matchAll(/data-do="person"[^>]*data-id="([^"]+)"|data-id="([^"]+)"[^>]*data-do="person"/g)].map(x=>x[1]||x[2]))];ok(pids.length<8,'판을 하는 사람 화면은 그대로(밤엔 보이는 사람만, '+pids.length+'명)');}
+// 5-2. 왼쪽 목록은 누구를 보든 자리 순서로 고정, 죽은 사람도 제자리(2026-11-28 사용자 "왼쪽에 플레이어 위치가 고정되지 않아서")
+{const s=fresh();const dead=s.players[2];dead.hp=0;dead.deathCause='시험';const w=T.ROOM.watch({state:s}),order=w.order.map(o=>o.id);
+ const list=id=>{const u=ui(null);u.watchId=id;const m=u.watchPick({watching:true,status:'play',room:'K7QM',watchers:1,view:w});u.now=m;const h=u.play(m.view);const side=(h.split('<div class="people-list">')[1]||'').split('</div>')[0]||h;return [...side.matchAll(/data-do="person" data-id="([^"]+)"/g)].map(x=>x[1]);};
+ const a1=list(order[0]),a2=list(order[5]),a3=list(order[2]);
+ ok(a1.join()===order.join()&&a2.join()===order.join(),'누구를 보든 왼쪽 순서가 자리 순서 그대로: '+w.order.map(o=>o.name).join(' '));
+ ok(a3.join()===order.join(),'죽은 사람('+dead.name+')도 제자리에 있고, 그 사람을 볼 때도 순서가 같음');}
 // 6. 시작 화면과 대기실
 {const u=ui(null);ok(/data-do="watch-ai"[^>]*>AI끼리 하는 판 보기</.test(u.home()),'시작 화면에 [AI끼리 하는 판 보기]');
  ok(/data-do="solo"[^>]*>혼자 하기 · AI 자리 채우기</.test(u.home()),'[혼자 하기 · AI 자리 채우기]는 그대로');
