@@ -292,3 +292,6 @@ nav button{min-height:40px;font-size:12px}
 .win-clock.urgent{color:#f0a094}
 /* 2026-11-28 이름칸 같은 높이: 사용자 "왼쪽에 이름칸은 크기가 균일했으면 좋겠어요", "크기는 이정도로"(내 칸) */
 @media(min-width:801px){.people .person{height:110px;min-height:110px;max-height:110px;overflow:hidden;box-sizing:border-box}.people .person .person-body{overflow:hidden}.people .person .status-row{display:flex;flex-wrap:nowrap;gap:4px;overflow:hidden;white-space:nowrap}.people .person .status-row .st{flex:none}.people .person .my-acts{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
+/* 2026-11-28 고른 단추 강조: 사용자 "누르면 색깔이나 강조 표시를 바꿔서 어떤 행동을 선택했는지 직관적으로" */
+#noir button.picked,#noir button.picked:disabled,#noir button[aria-pressed="true"],.night-move button.picked,.night-move button.picked:disabled,.action-deck .choice-row button.picked,.action-deck .choice-row button.picked:disabled{background:linear-gradient(#e6c870,#b98f32);color:#1d1508;border-color:#f5dc8e;opacity:1;font-weight:700;box-shadow:0 0 0 2px rgba(245,220,142,.5),0 0 12px rgba(245,220,142,.35)}
+.watch-label{color:#e6c870}.watch-label b{color:#fff}
