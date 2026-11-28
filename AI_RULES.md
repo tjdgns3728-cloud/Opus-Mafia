@@ -1,6 +1,6 @@
 # AI 공통 작업 규칙
-사용자 승인: 2026-11-27(고침). 고칠 때는 사용자 승인을 받는다.
-판: v31. 지난 판(v01~v30)은 `docs/versions/AI_RULES/`에 그대로 있다.
+사용자 승인: 2026-11-28(고침). 고칠 때는 사용자 승인을 받는다.
+판: v32. 지난 판(v01~v31)은 `docs/versions/AI_RULES/`에 그대로 있다.
 
 사용자가 적용 대상으로 지정한 저장소에 같은 내용으로 둔다. 프로젝트 고유의 목표·확정 기준·실행 명령은 `PROJECT.md`에 둔다.
 우선순위: 사용자의 최신 명시 지시 → 이 문서 → `PROJECT.md` → 그 밖의 문서. [초판](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v01.md#L5)
@@ -31,7 +31,7 @@
   - "~인가요?", "어떻게 생각하나요?"처럼 묻는 말이면 아래를 따른다.
     * 답만 한다.
 - 피드백을 끝까지 읽고 원래 요청과 대조한다. 고칠 부분과 계속 지켜야 할 부분을 구분한다. [피드백에 따라 유지할 기능까지 바뀐 사례](https://github.com/tjdgns3728-cloud/workbench/blob/898ac12eb20859575d9d0ed43059805eabd70cc8/archive/cx_feedback_scope_2026-11-26_v01.tar.gz.age)
-- 작업에 필요한 사실이나 사용자의 뜻을 자료로 알 수 없으면, 모르는 부분을 짚어 묻는다. 답이 필요한 부분은 답을 받은 뒤에 만든다. 사용자가 판단을 맡기면 요청한 결과와 지킬 조건을 원래 말에서 찾는다. 그 결과와 조건을 지키면서 쓸 방법은 맡은 사람이 정한다. 사용자가 예로 든 방법은 그대로 쓰라고 했을 때 조건이 된다. 다른 AI에게 일을 전달할 때도 그 결정권을 그대로 넘긴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L72)
+- 같은 말을 다르게 이해하면 결과가 달라지는 경우, 사용자가 확인한 뜻과 AI가 짐작한 부분을 구분해 말한다. 앞선 대화와 자료를 살펴도 뜻이 둘 이상 남으면, 어느 쪽인지 사용자가 알아볼 수 있는 장면이나 행동으로 짧게 묻는다. 답이 필요한 부분은 답을 받은 뒤에 만든다. 사용자가 판단을 맡기면 요청한 결과와 지킬 조건을 원래 말에서 찾는다. 그 결과와 조건을 지키면서 쓸 방법은 맡은 사람이 정한다. 사용자가 예로 든 방법은 그대로 쓰라고 했을 때 조건이 된다. 다른 AI에게 일을 전달할 때도 그 결정권을 그대로 넘긴다. [관련 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L72)
 - 결정이 필요해 물을 때는 어느 선택에 따라 사용자가 받을 결과가 어떻게 달라지는지 짚는다. 지금 함께 물을 수 있는 것은 묶고, 새로 모르는 것이 생기면 다시 묻는다. 선택지와 추천은 선택이 필요한 질문에 붙인다.
 - 자율 진행을 맡긴 것은 질문을 금지한 뜻이 아니다. 답을 기다리는 동안 관계없는 부분은 진행한다. 이미 받은 답과 승인은 그 범위에서 이어서 쓴다. [v24 개정문](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/versions/AI_RULES/v24.md#L35)
 - AI에게 주는 지시는 "멈춰라", "하지 마라", "할 수 있으면" 대신 할 행동과 이유로 적는다. 같은 일을 다시 맡길 때는 지시를 되풀이하는 대신 무엇이 달라야 하는지 적는다(되풀이는 "앞 결과가 틀렸다"로 읽힐 수 있다). 막히면 무엇에 막혔는지 보고하게 한다. [개정 계기](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/GAME_MAKING_RECORD.md#L50) · [반복 지시 사례](https://github.com/tjdgns3728-cloud/Opus-Mafia/blob/246d16871b6806a26b3dc07b6edee2434fb0f5ae/docs/AI_LESSONS.md#L264)
