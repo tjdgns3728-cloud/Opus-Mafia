@@ -1413,3 +1413,4 @@ AI가 비슷한 일을 시작할 때와 관련 파일을 고치기 직전에, `t
 - 이 경험이 보여 주는 것: 규칙을 넓히면(설치할 수 있는 곳, 터지는 때) 그 규칙을 말하는 글을 낱말의 여러 꼴("터지·터짐·터질·터뜨", "죽·사망", "집과 본거지·집·본거지")로 찾고, 상대적인 때를 말하는 글("다음", "오늘")은 그 글이 보이는 때에 읽어 봐야 했다.
 - 대화: CM 대화 원문 2026-11-28. 이 컴퓨터의 `~/.claude/projects/C--AI-Sourcing-opus-mafia-lab/800e41e3-533c-4dbf-a57d-59b667398691.jsonl`(30일 뒤 지워짐).
 - 결과물: 저장소 `game/games/noir-trpg/scripts/05Scenarios.js`, `game/games/noir-trpg/scripts/08StoryFlow.js`, `game/games/noir-trpg/scripts/20Interface.js`, `tools/sim/bomb_nextday_test.js`.
+- 지시 예시(제안): 규칙이 바뀐 뒤, 플레이어가 보는 장소 안내와 남은 시간 안내를 맞춰 주세요. 오늘 보는 화면과 다음 날 다시 보는 화면을 각각 보여 주세요.
