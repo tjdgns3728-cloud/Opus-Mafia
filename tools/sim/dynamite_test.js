@@ -1,4 +1,4 @@
-// 폭약: 판마다 다른 두 곳에 하나씩(본거지 없음), 단서가 있어야 찾음, 모두 맡기면 갱도 재개, NPC 앞에서 꺼내면 고발·달아나기, 설치하면 다음 때가 끝날 때 터짐(NPC 포함). 사용: node dynamite_test.js <저장소 경로>
+// 폭약: 판마다 다른 두 곳에 하나씩(본거지 없음), 단서가 있어야 찾음, 모두 맡기면 갱도 재개, NPC 앞에서 꺼내면 고발·달아나기, 설치하면 장소는 다음 날 낮이 끝날 때 터짐(NPC 포함, 2026-11-28). 사용: node dynamite_test.js <저장소 경로>
 const path=require('path');const dir=path.join(path.resolve(process.argv[2]||'.'),'game','games','noir-trpg','scripts');
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow'])require(path.join(dir,f+'.js'));
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,ST=globalThis.NoirStory;
@@ -21,12 +21,12 @@ const where=s=>s.scenario.bombs.map(b=>b.where);
 {const s=game(9);s.scenario.spots=['barrel','medbox'];/* 소문도 이 상황에 맞춘다(아이는 처음 숨긴 곳을, 간호사는 약상자를 말하는 판) */s.scenario.rumor={...s.scenario.rumor,barrel:true,medbox:true,chapel:false,child:'barrel'};s.scenario.discovered=true;const p=s.players.find(p=>p.team==='town');s.turn=1;p.location='home';S.arrival(s,p);/* 2026-11-23: NPC 말은 묻는 작은 행동 때만 */S.askNpc(s,p,'child');ok(p.npcHeard?.includes('lead:barrel:child')&&s.feed.some(e=>e.to.includes(p.id)&&/술집 뒷마당으로 갔다/.test(e.text)),'아이에게 물으면 첫 번째 숨긴 곳(술집 뒷마당)을 가리킴');p.location='clinic';S.arrival(s,p);S.askNpc(s,p,'nurse');ok(p.npcHeard?.includes('lead:medbox'),'간호사에게 물으면 약상자 이야기를 함');ok(!s.feed.some(e=>e.to.includes(p.id)&&/교회 쪽으로 가는|교회 쪽으로 갔다|교회 종탑 밑에서/.test(e.text)),'교회가 숨긴 곳이 아니면 아이가 교회 이야기를 하지 않음');}
 // 5. 네 개를 회관에 맡기면 갱도가 다시 열린다
 {const s=game(11);const p=s.players.find(p=>p.team==='town');s.scenario.bombs.forEach((b,i)=>b.where=i<4?'carry:'+p.id:'hideout');C.find(s,p.id).items.dynamite=4;p.location='hall';s.turn=0;S.resolve(s,p,{type:'scene',sceneKey:'secure'},s.rng);ok(s.scenario.secured===true,'네 개를 맡기면 회수한 것으로 침');}
-// 6. 설치하면 다음 때가 끝날 때 터지고, 그 자리의 사람과 NPC가 죽는다. 불 붙이기 단추는 없다
+// 6. 설치하면 다음 날 낮이 끝날 때 터지고(2026-11-28 사용자 "가안으로"), 그 자리의 사람과 NPC가 죽는다. 불 붙이기 단추는 없다
 {const s=game(13);const m=s.players.find(p=>p.team==='mafia'),t=s.players.find(p=>p.team==='town');s.day=2;s.turn=0;m.location='warehouse';s.scenario.bombs.forEach((b,i)=>b.where=i<2?'carry:'+m.id:'hideout');m.items.dynamite=2;
  ok(S.choices(s,m,'big').some(a=>a.sceneKey==='arm')&&!S.choices(s,m,'big').some(a=>a.sceneKey==='ignite'),'설치하기는 있고 따로 불 붙이기는 없음');S.resolve(s,m,{type:'scene',sceneKey:'arm'},s.rng);ok(s.scenario.fuse?.status==='armed','설치하면 도화선이 타기 시작');
- ST.beforeAdvance(s);ok(!s.scenario.exploded,'설치한 그 때가 끝날 때는 아직 터지지 않음');C.nextTurn(s);S.nextChapter(s);
+ ST.beforeAdvance(s);ok(!s.scenario.exploded,'설치한 그 때가 끝날 때는 아직 터지지 않음');C.nextTurn(s);S.nextChapter(s);ST.beforeAdvance(s);ok(!s.scenario.exploded,'그날 밤이 끝날 때도 아직 터지지 않음');C.nextTurn(s);S.nextChapter(s);
  m.location='hall';t.location='warehouse';const doyle=s.scenario.doyle;doyle.location='warehouse';doyle.hp=10;const mn=Object.values(s.scenario.continuation.npcs).find(n=>n.id==='miner');mn.location='warehouse';mn.hp=10;
- ST.beforeAdvance(s);ok(s.scenario.exploded,'다음 때가 끝날 때 터짐');ok(t.hp===0&&m.hp>0,'그때 갱도에 있던 사람은 죽고, 떠난 사람은 살아남음');ok(doyle.hp===0&&mn.hp===0,'갱도에 있던 NPC(도일, 젊은 광부)도 죽음');}
+ ST.beforeAdvance(s);ok(s.scenario.exploded,'다음 날 낮이 끝날 때 터짐');ok(t.hp===0&&m.hp>0,'그때 갱도에 있던 사람은 죽고, 떠난 사람은 살아남음');ok(doyle.hp===0&&mn.hp===0,'갱도에 있던 NPC(도일, 젊은 광부)도 죽음');}
 // 6. 숨긴 폭약을 꺼낼 때(2026-11-16 사용자 결정, 2026-11-24 바뀜): 본 사람이 하나면 예전처럼 마피아 편이 아닌 NPC가 보고 고발하고 꺼낸 사람은 달아나기 판정. 볼 수 있는 시민 편이 둘 이상이면 몰래 꺼내기 판정(12, 한 명마다 +3) → 2026-11-28 사용자(초안 A): 몰래 꺼내기 판정을 빼고, 보는 사람이 있으면 NPC가 막아섬(붙잡히는 판정은 들고 달아나기의 달아나기)
 {const setup=(withW=false)=>{const s=game(11);s.day=2;s.turn=0;s.stage='plan';s.scenario.spots=['cart','barrel'];s.scenario.bombs=[{id:'d0',where:'cart'},{id:'d1',where:'spot:barrel'}];s.scenario.discovered=true;const bk=ST.npc(s,'barkeep');bk.location='tavern';bk.hp=10;bk.recruited=false;const m=s.players.find(o=>o.team==='mafia'&&o.role!=='godfather')/* 2026-11-25: NPC는 대부를 고발하지 않으므로 고발을 보는 시험은 대부가 아닌 마피아로 */,w=s.players.find(o=>o.team==='town');for(const o of s.players){o.location='hall';o.used={big:false,small:false};o.hidden=false;}m.location='tavern';if(withW)w.location='tavern';return {s,m,w};};
  const seq=list=>{let i=0;return ()=>list[Math.min(i++,list.length-1)];};

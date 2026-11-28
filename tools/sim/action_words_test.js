@@ -24,7 +24,7 @@ const take=(s,p)=>S.choices(s,p,'big').find(a=>a.sceneKey==='take');
  const ally=s.players.find(o=>o.team==='mafia'&&o.id!==m.id);t.location='hall';ally.location='tavern';const b=take(s,m);ok(b?.label==='폭약 몰래 꺼내기','같은 편만 있으면 [폭약 몰래 꺼내기]');}
 {const {s,t}=atTavern(35);t.location='tavern';t.storyKnown=[...(t.storyKnown||[]),'spot:barrel:1'];const a=take(s,t);ok(a?.label==='발견한 폭약 가져가기','시민은 찾은 폭약을 [발견한 폭약 가져가기] 그대로: '+a?.label);}
 // 2. 설치 단어에 그 뒤 일
-{const {s,m}=atTavern(37);m.items.dynamite=1;s.scenario.bombs[1].where='carry:'+m.id;m.location='hall';const a=S.choices(s,m,'big').find(o=>o.sceneKey==='arm');ok(a?.label==='마을 회관에 폭약 설치하기 · 다음 때가 끝나면 이곳 사람 모두 죽음','설치: '+a?.label);}
+{const {s,m}=atTavern(37);m.items.dynamite=1;s.scenario.bombs[1].where='carry:'+m.id;m.location='hall';const a=S.choices(s,m,'big').find(o=>o.sceneKey==='arm');ok(a?.label==='마을 회관에 폭약 설치하기 · 다음 날 낮이 끝나면 이곳 사람 모두 죽음','설치: '+a?.label);}
 // 3. 권총: 숨어 있으면 [숨은 채 권총 쏘기], 아니면 [권총 쏘기] — 사람 화면을 그대로 읽는 AI 화면에도 같은 단어
 {const {s,m,t}=atTavern(39);t.location='tavern';m.items.pistol=1;m.items.ammo=3;m.items.knife=1;
  const read=()=>NS.read(C.view(s,m.id)).text;let w=read();ok(/- 권총 쏘기 · 피해 9~10 맞으면 출혈/.test(w)&&/- 단검으로 찌르기 · 피해 3~5 맞으면 출혈/.test(w)&&!/숨은 채 권총 쏘기/.test(w),'숨지 않았으면 공격 창에 [권총 쏘기] [단검으로 찌르기]');
