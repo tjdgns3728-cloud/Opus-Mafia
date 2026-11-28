@@ -23,7 +23,7 @@ ok(ui.includes('<small>유죄 표가 무죄 표보다 많고 투표한 사람(�
 // 3
 ok(ui.includes('<p>동의가 필요한 수만큼 모이면 바로 열리고, 아니면 모두 응답하거나 1분이 끝나면 집계합니다.</p>')&&/st\.yes>=st\.needed\)r\.closePhase\(\)/.test(ses),'동의 창 안내가 실제(필요 수가 모이면 바로 열림)와 같음');
 // 4
-ok(ui.includes('밤에는 집에서 잠자기·불침번 서기·집 안에 숨기·남의 집 지키기 중 하나를 고릅니다(다른 장소로는 옮길 수 없음).')&&!ui.includes('밤에는 행동하지 않습니다'),'시민 직업 카드: 실제 밤 큰 행동 넷');
+ok(ui.includes('밤에는 잠자기·불침번 서기·집 안에 숨기·집 밖으로 나가기·남의 집 지키기 중 하나를 고릅니다(주택가 밖으로는 옮길 수 없음).')&&!ui.includes('밤에는 행동하지 않습니다'),'시민 직업 카드: 실제 밤 큰 행동 다섯(2026-11-28 집 밖으로 나가기)');
 {const s=fresh();s.turn=2;s.stage='plan';const me=s.players.find(p=>p.team==='town');const big=C.choices(s,me.id,'big').map(a=>a.type);ok(['sleep','watch','shelter','guardHouse'].every(t=>big.includes(t)),'시민 밤 큰 행동이 카드 글과 같음 · '+[...new Set(big)].join(','));}
 // 5
 ok(ses.includes("s.readingKind='turn';reading(r,'result',()=>{s.readingKind=null;resume();});"),'때가 바뀔 때의 읽기만 표시하고, 끝나면 지움(시간은 그대로)');

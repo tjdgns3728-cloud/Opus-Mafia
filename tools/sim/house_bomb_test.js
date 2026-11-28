@@ -32,6 +32,12 @@ function setup(seed){const s=game(seed),m=s.players.find(p=>p.role==='godfather'
  if(visitor)ok(visitor.hp===0,'그 집 안에 있던 다른 사람도 죽음');
  ok(n.hp>0&&out.hp>0&&m.hp>0,'이웃(자기 집)·집 밖·본거지 사람은 삶');
  ok(Object.values(s.scenario.continuation?.npcs||{}).every(x=>x.location!=='home'||x.hp>0)&&s.scenario.doyle.hp>0,'NPC는 죽지 않음');}
+// 3-1. 실제 밤 처리 순서로(밤 행동 처리 → 밤 끝 폭발): 집주인 잠·지킴이·집 밖으로 나간 이웃
+{const {s,m,t,town}=setup(37);S.resolve(s,m,{type:'scene',sceneKey:'arm'},s.rng);s.day=1;s.turn=1;C.nextTurn(s);S.nextChapter(s);s.stage='plan';
+ for(const p of s.players){p.location=p.team==='town'?'home':'hideout';p.houseId=null;p.alley=null;}const g=town[1],out=town[2];
+ s.plans={[t.id]:{type:'sleep'},[g.id]:{type:'guardHouse',target:t.id},[out.id]:{type:'goOut'}};for(const p of s.players)if(!s.plans[p.id])s.plans[p.id]=p.team==='mafia'?{type:'wait'}:{type:'sleep'};
+ C.announceClashes(s);s.stage='plan';C.resolveBig(s,s.rng);ST.beforeAdvance(s);
+ ok(s.scenario.fuse.status==='exploded'&&t.hp===0&&g.hp===0,'실제 밤 순서: 잠든 집주인과 집 앞 지킴이 죽음');ok(out.hp>0&&town.slice(3).every(p=>p.hp>0),'실제 밤 순서: 집 밖으로 나간 사람·다른 집 사람은 삶');}
 // 4. 도화선 찾기·끊기는 그 집 안에서만
 {const {s,m,t,town}=setup(35);S.resolve(s,m,{type:'scene',sceneKey:'arm'},s.rng);const u=town[1],hi=()=>0.99;
  u.location='home';u.houseId=null;S.investigate(s,u,hi);ok(!u.storyKnown.some(k=>k.startsWith('fuse:')),'자기 집에서 수색하면 남의 집 도화선을 못 찾음');

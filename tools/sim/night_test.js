@@ -10,7 +10,7 @@ const mafia=s.players.filter(p=>p.team==='mafia'),town=s.players.filter(p=>p.tea
 ok(mafia.every(p=>p.location==='hideout'),'밤: 마피아는 본거지('+C.places.hideout.name+')');
 ok(town.every(p=>p.location==='home'),'밤: 시민은 집');
 ok(!s.feed.some(e=>String(e.text).includes('undefined')),'밤 시작 글에 빈 값 없음');
-const tOpts=C.choices(s,town[0].id,'big').map(a=>a.type);/* 2026-11-24 사용자: 밤에 시민 누구나 남의 집 지키기 */ok(JSON.stringify([...new Set(tOpts)])==='["sleep","watch","shelter","guardHouse"]'&&tOpts.filter(t=>t==='guardHouse').length===s.players.filter(p=>p.hp>0&&p.id!==town[0].id&&!p.masked).length,'시민 밤 큰 행동: 잠·불침번·숨기·다른 사람마다 집 지키기 ('+[...new Set(tOpts)].join(',')+')');
+const tOpts=C.choices(s,town[0].id,'big').map(a=>a.type);/* 2026-11-24 사용자: 밤에 시민 누구나 남의 집 지키기 *//* 2026-11-28 사용자 "시민도 자기 집에 나가기": goOut */ok(JSON.stringify([...new Set(tOpts)])==='["sleep","watch","shelter","goOut","guardHouse"]'&&tOpts.filter(t=>t==='guardHouse').length===s.players.filter(p=>p.hp>0&&p.id!==town[0].id&&!p.masked).length,'시민 밤 큰 행동: 잠·불침번·숨기·집 밖으로 나가기·다른 사람마다 집 지키기 ('+[...new Set(tOpts)].join(',')+')');
 ok(C.choices(s,town[0].id,'small').length===0,'시민 밤 작은 행동 없음');
 ok(!!C.validate(s,town[0].id,{type:'move',place:'hall'},'big'),'시민은 밤에 이동 불가');
 const mOpts=[...C.choices(s,mafia[0].id,'big'),...S.choices(s,mafia[0],'big')];
