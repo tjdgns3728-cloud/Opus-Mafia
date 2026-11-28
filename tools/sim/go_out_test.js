@@ -15,6 +15,7 @@ const run=(s,plans)=>{s.plans={...plans};for(const p of s.players)if(!s.plans[p.
 {const s=fresh();toNight(s);const t=s.players.find(p=>p.team==='town'),m=s.players.find(p=>p.team==='mafia');const o=C.choices(s,t.id,'big').find(a=>a.type==='goOut');
  ok(!!o&&/^집 밖으로 나가기 · 밤새 집을 비움 · 다음 날 피곤함/.test(o.label),'밤 시민 선택지: '+(o?.label||'(없음)'));
  ok(/집 밖으로 나가기/.test(NS.read(C.view(s,t.id)).text),'시민 화면 능력 칸의 밤 안내 글에 들어감');
+ {const tx=NS.read(C.view(s,t.id)).text;ok(/\[집 밖으로 나가기\] — 나가기: 밤새 집을 비웁니다/.test(tx),'시민 화면에 [집 밖으로 나가기] 단추와 설명(2026-11-28 G443: 단추가 [goOut]으로 나옴)');ok(!/goOut/.test(tx),'화면에 영어 이름 goOut이 없음');}
  ok(!C.choices(s,m.id,'big').some(a=>a.type==='goOut'),'마피아 선택지에는 없음');}
 {const s=fresh();s.day=2;s.turn=0;s.stage='plan';const t=s.players.find(p=>p.team==='town');ok(!C.choices(s,t.id,'big').some(a=>a.type==='goOut'),'낮에는 없음');}
 // 2. 집을 비우면 습격자는 빈 집을 만남, 다음 날 피곤함
@@ -25,6 +26,8 @@ const run=(s,plans)=>{s.plans={...plans};for(const p of s.players)if(!s.plans[p.
  const fm=to(s,n0,m),ft=to(s,n0,t);ok(/닿을 수 없었/.test(fm),'습격자는 빈 집을 만남: '+((fm.match(/[^/]*닿을 수 없었[^/]*/)||[''])[0]).trim().slice(0,60));
  ok(!/문을 밀고 들어옴|습격자/.test(ft),'집을 비운 사람은 습격을 모름');
  ok(t.tired===true&&t.hp===5,'다음 날 피곤함(불침번·숨기와 같음): 체력 '+t.hp+', 피곤 '+t.tired);}
+// 2-1. 습격이 없어도 고른 사람은 [내 행동] 결과 줄을 받음(2026-11-28: 비어 있었음)
+{const s=fresh();toNight(s);const t=s.players.find(p=>p.team==='town');const n0=run(s,{[t.id]:{type:'goOut'}});ok(/밤새 집 밖에 나가 있었습니다/.test(to(s,n0,t)),'집 밖으로 나간 사람의 결과 줄');}
 // 3. 집을 비운 사이 그 집에서 폭약이 터져도 다치지 않음
 {const s=fresh();const m=s.players.find(p=>p.role==='godfather'),t=s.players.find(p=>p.team==='town');s.day=1;s.turn=0;s.stage='plan';m.location='home';m.houseId=t.id;m.alley=null;t.location='hall';
  S.resolve(s,m,{type:'scene',sceneKey:'arm'},rng);ok(s.scenario.fuse?.house===t.id,'낮에 '+t.name+'의 집에 설치');
