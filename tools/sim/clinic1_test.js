@@ -26,4 +26,4 @@ const resolve=(s,plans)=>{s.plans={...plans};for(const p of s.players)if(!s.plan
 {const {s}=fresh(),st=s.scenario.continuation,four=s.players.slice(0,4);for(const p of four){p.hp=4;p.money=3;}resolve(s,Object.fromEntries(four.map(p=>[p.id,{type:'nurseCare'}])));ok(four.filter(p=>p.hp===10).length===3&&st.medStock===0,'넷 중 셋만 치료받고 진료소 치료제 0 ('+four.map(p=>p.hp).join(',')+')');}
 // 7. 사람 화면: 버튼과 진료소 표, 게임 정보
 {const {s,a}=fresh();a.hp=4;const v=C.view(s,a.id),scr=NS.read(v);const m=NS.press(v,scr,{'버튼':'간호사에게 치료받기'});ok(m.req?.action?.type==='nurseCare'&&m.req.slot==='big','사람 화면: [간호사에게 치료받기] 버튼을 누르면 큰 행동으로 냄'+(m.error?' ('+m.error+')':''));
- ok(/간호사에게 치료받을 수 있습니다\(큰 행동, 소지금 2, 체력 \+6/.test(scr.text)&&/시작 소지금은 시민 3, 마피아 5/.test(scr.text),'게임 정보에 간호사 치료와 시작 소지금');}
+ const rules=NS.rulebook(v);ok(/간호사에게 치료받을 수 있습니다\(큰 행동, 소지금 2, 체력 \+6/.test(rules)&&/시작 소지금은 시민 3, 마피아 5/.test(rules),'게임 정보에 간호사 치료와 시작 소지금');}

@@ -31,8 +31,8 @@ const deck=(scr,slot)=>scr.buttons.filter(b=>['action-group','trial-open','scene
  ok(e&&v.tamperChoices?.some(a=>a.trace===e.id&&a.mode==='erase'),'밤에 마피아에게 우리 편 흔적 손보기가 보임');ok(!C.view(s,v0.id).tamperChoices?.length,'시민에게는 보이지 않음');
  const to=['big','mid','small'].find(z=>z!==e.boots);s.plans={[m.id]:{type:'tamper',trace:e.id,mode:to}};C.announceClashes(s);s.stage='plan';C.resolveBig(s,rng);ok(e.boots===to&&e.tampered,'흔적 손보기로 장화 자국 크기가 바뀜');}
 // 5. 화면에 없던 규칙과 재판 순서·소지품 쓰임
-{const s=fresh(),p=s.players.find(p=>p.team==='town');p.items.bandage=1;p.items.medicine=1;const t=NS.read(C.view(s,p.id)).text;
- ok(/불침번[^\n]*나 \+2/.test(t)&&/잠든 채라 습격자 공격 \+3/.test(t)&&/퇴역군인 \+2 더/.test(t),'게임 정보에 밤의 판정 수치');
- ok(/9 \+ 변장한 사람의 은신/.test(t)&&/재판 신청 대상에 나오지 않습니다/.test(t),'변장 알아보기 조건, 얼굴 가린 사람은 재판 신청 대상 아님');
+{const s=fresh(),p=s.players.find(p=>p.team==='town');p.items.bandage=1;p.items.medicine=1;const v=C.view(s,p.id),t=NS.read(v).text,rules=NS.rulebook(v);
+ ok(/불침번[^\n]*나 \+2/.test(rules)&&/잠든 채라 습격자 공격 \+3/.test(rules)&&/퇴역군인 \+2 더/.test(rules),'게임 정보에 밤의 판정 수치');
+ ok(/9 \+ 변장한 사람의 은신/.test(rules)&&/재판 신청 대상에 나오지 않습니다/.test(rules),'변장 알아보기 조건, 얼굴 가린 사람은 재판 신청 대상 아님');
  ok(/순서: ① /.test(t),'재판 신청 창에 순서');ok(/지혈\(피를 멎게 함\)에 씀/.test(t)&&/체력을 돌림/.test(t),'소지품에 붕대·치료제 쓰임');
  ok(!/미개정/.test(fs.readFileSync(path.join(dir,'00World.js'),'utf8')),'"미개정" 대신 "열리지 않음"');}

@@ -20,4 +20,4 @@ for(const [role,want] of [['mafioso',3],['guard',1],['sheriff',0]]){const {s,a,b
 // 5. 보안관(싸움 8)이 찌르면 많아야 5
 {let n=0,good=0;for(let i=0;i<60;i++){const {s,a,b}=fresh('sheriff');a.stats.fight=8;stab(s,a,b,rng);n++;if(b.hp>=5)good++;}ok(good===n,'보안관에게 찔린 '+n+'번 모두 피해 5 이하');}
 // 6. 사람 화면: 공격 창과 게임 정보에 새 값
-{const {s,a}=fresh('mafioso');const v=C.view(s,a.id),scr=NS.read(v);ok(/- 단검으로 찌르기 · 피해 3~5 맞으면 출혈/.test(scr.text),'공격 창에 "단검으로 찌르기 · 피해 3~5 맞으면 출혈"(2026-11-25 사용자: 무기 설명은 피해와 출혈만 · 2026-11-28: 이름은 하는 일)');ok(/단검은 전투 보정 대신 직업 보정만 받고\(대행자 \+3, 퇴역군인 \+1, 다른 사람 0\)/.test(scr.text),'게임 정보에 단검 보정 규칙');}
+{const {s,a}=fresh('mafioso');const v=C.view(s,a.id),scr=NS.read(v);ok(/- 단검으로 찌르기 · 피해 3~5 맞으면 출혈/.test(scr.text),'공격 창에 "단검으로 찌르기 · 피해 3~5 맞으면 출혈"(2026-11-25 사용자: 무기 설명은 피해와 출혈만 · 2026-11-28: 이름은 하는 일)');ok(/단검은 전투 보정 대신 직업 보정만 받고\(대행자 \+3, 퇴역군인 \+1, 다른 사람 0\)/.test(NS.rulebook(v)),'게임 정보에 단검 보정 규칙');}

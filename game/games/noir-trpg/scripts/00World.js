@@ -1,18 +1,18 @@
 (function(root){
 'use strict';
 const places={
- hall:{name:'마을 회관',short:'회관',direction:'중앙 회관',photo:0,light:2,cover:0,text:'긴 의자와 연단이 놓인 회관입니다. 고발 신청은 이곳에서 받습니다.'},
- warehouse:{name:'갱도 입구',short:'갱도',direction:'동쪽 갱도',photo:1,light:-2,cover:2,text:'녹슨 광차 너머로 갱도가 이어집니다. 입구 옆에 화약고가 있습니다. 어둡고 숨을 곳이 많습니다.'},
- tavern:{name:'광부 술집',short:'술집',direction:'서쪽 술집',photo:2,light:0,cover:1,text:'술잔과 탁자가 놓인 술집입니다. 바 뒤편은 시야가 잘 닿지 않습니다.'},
- clinic:{name:'마을 진료소',short:'진료소',direction:'북쪽 진료소',photo:3,light:2,cover:0,text:'밝은 진찰등과 처치대가 있습니다.'},
+ hall:{name:'마을 회관',short:'회관',direction:'중앙 회관',photo:0,light:2,cover:0,hint:'이곳에서 재판을 신청할 수 있습니다.',text:'긴 의자와 연단이 놓인 회관입니다. 고발 신청은 이곳에서 받습니다.'},
+ warehouse:{name:'갱도 입구',short:'갱도',direction:'동쪽 갱도',photo:1,light:-2,cover:2,hint:'입구 옆에 화약고가 있습니다. 어둡고 숨을 곳이 많습니다.',text:'녹슨 광차 너머로 갱도가 이어집니다. 입구 옆에 화약고가 있습니다. 어둡고 숨을 곳이 많습니다.'},
+ tavern:{name:'광부 술집',short:'술집',direction:'서쪽 술집',photo:2,light:0,cover:1,hint:'술집 뒤편은 시야가 잘 닿지 않습니다.',text:'술잔과 탁자가 놓인 술집입니다. 바 뒤편은 시야가 잘 닿지 않습니다.'},
+ clinic:{name:'마을 진료소',short:'진료소',direction:'북쪽 진료소',photo:3,light:2,cover:0,hint:'이곳에서 붕대를 살 수 있습니다.',text:'밝은 진찰등과 처치대가 있습니다.'},
  chapel:{name:'작은 교회',short:'교회',direction:'남쪽 교회',photo:4,light:0,cover:1,text:'긴 의자와 촛불이 놓여 있습니다. 목소리가 돌벽에 울립니다.'},
  home:{name:'주택가',short:'주거지',direction:'서남쪽 주택가',photo:5,light:0,cover:1,text:'주민들이 머무는 주택가입니다. 창문 너머로 눈 쌓인 길이 보입니다.'},
  /* 새 장소 네 곳(2026-11-16 사용자 승인 초안). 사진은 비슷한 곳의 것을 함께 쓴다 */
  rail:{name:'선로 옆',short:'선로',direction:'동북쪽 선로',photo:1,light:0,cover:1,text:'끊긴 선로 끝에 화물칸 몇 량이 서 있습니다. 화물칸 그늘 사이로 사람이 드나듭니다.'},
  office:{name:'보안관 사무소',short:'사무소',direction:'중앙 사무소',photo:0,light:1,cover:0,text:'리스가 쓰던 책상과 서류함, 빈 유치장이 있습니다. 주인 잃은 램프가 꺼져 있습니다.'},
- union:{name:'노조 사무실',short:'노조',direction:'동쪽 노조 사무실',photo:2,light:-1,cover:1,text:'장부 선반과 긴 의자가 놓인 노조 사무실입니다. 창이 작아 어둡습니다.'},
+ union:{name:'노조 사무실',short:'노조',direction:'동쪽 노조 사무실',photo:2,light:-1,cover:1,hint:'창이 작아 어둡습니다.',text:'장부 선반과 긴 의자가 놓인 노조 사무실입니다. 창이 작아 어둡습니다.'},
  bridge:{name:'협곡 다리',short:'다리',direction:'먼 협곡',photo:5,light:0,cover:2,text:'선로가 협곡 앞에서 끊겨 있습니다. 바위 사이로 찬 바람이 올라옵니다.'},
- hideout:{name:'마피아 본거지',short:'본거지',direction:'외딴 본거지',photo:6,light:-1,cover:2,secret:true,text:'마을 밖 버려진 광산 창고입니다. 마피아 편만 아는 곳입니다. 밤이면 이곳에 모여 계획을 나눕니다.'}
+ hideout:{name:'마피아 본거지',short:'본거지',direction:'외딴 본거지',photo:6,light:-1,cover:2,secret:true,hint:'밤에는 이곳에서 같은 편끼리 의논합니다.',text:'마을 밖 버려진 광산 창고입니다. 마피아 편만 아는 곳입니다. 밤이면 이곳에 모여 계획을 나눕니다.'}
 };
 const roles={
  godfather:{name:'대부',team:'mafia',desc:'마피아의 우두머리입니다. 설득 능력이 높습니다. 마을 사람(NPC)들은 대부를 두려워해서, 대부가 하는 일을 봐도 고발하지 않습니다. 사람은 고발할 수 있습니다.'/* 2026-11-25 사용자: 협박은 대부만의 능력이 아니라 마피아 모두가. 예전 설명의 협박·이기는 조건·아침 보고·조직원 부르기는 마피아 모두에게 해당하던 일이라 뺌. 대부의 새 능력은 사용자가 정할 때까지 비워 둠 */,stats:{fight:7,observe:6,agility:5,medical:3,persuade:10},items:{knife:1}},
@@ -122,7 +122,7 @@ function forViewer(e,id){return e.roll?{...e,roll:secretRoll(e.roll,id)}:e;}
 /* 남의 체력은 조사에 성공했거나 맞는 것을 직접 봤을 때만 안다 */function noteHp(s,ids,t){for(const id of ids){if(id===t.id)continue;const o=find(s,id);if(!o)continue;(o.hpSeen??={})[t.id]={hp:t.hp,downed:!!t.downed};}}
 function noteStatus(s,ids,t,ch){for(const id of ids){if(id===t.id)continue;const o=find(s,id);if(!o)continue;o.statusSeen??={};o.statusSeen[t.id]={...(o.statusSeen[t.id]||{}),...ch};}}
 function visible(s,viewer,p){return p.id===viewer.id||sameSpace(s,viewer,p)&&(!p.hidden||(p.spotted||[]).includes(viewer.id)||s.stage==='trial'||s.stage==='vote');}
-function environment(s,id){const p=find(s,id),others=alive(s).filter(o=>o.id!==id&&visible(s,p,o));const recent=s.feed.filter(e=>e.to.includes(id)&&e.i>=(s.chapter?.from||0)&&e.epoch>=s.epoch-1&&(e.localEvent||e.kind==='environment')).slice(-5);return [places[p.location].text,others.length?'지금 보이는 사람: '+(()=>{/* 2026-11-21: 자리 순서로 짐작하지 못하게 가나다순, 변장한 사람은 맨 뒤 */const ns=[...new Set(others.map(o=>nameFor(s,p,o)))],al=n=>n.startsWith('변장한 사람');return [...ns.filter(n=>!al(n)).sort((a,b)=>a.localeCompare(b,'ko')),...ns.filter(al).sort()].join(', ');})():'현재 같은 장소에 보이는 다른 사람은 없습니다.',...new Set(recent.map(e=>`${e.time}${e.place?' · '+places[e.place].name:''} · ${korean(s,e.localSummary||e.text)}`))];}
+function environment(s,id){const p=find(s,id),others=alive(s).filter(o=>o.id!==id&&visible(s,p,o));const recent=s.feed.filter(e=>e.to.includes(id)&&e.i>=(s.chapter?.from||0)&&e.epoch>=s.epoch-1&&(e.localEvent||e.kind==='environment')).slice(-5);const hint=places[p.location].hint;return [...(hint?[hint]:[]),others.length?'지금 보이는 사람: '+(()=>{/* 2026-11-21: 자리 순서로 짐작하지 못하게 가나다순, 변장한 사람은 맨 뒤 */const ns=[...new Set(others.map(o=>nameFor(s,p,o)))],al=n=>n.startsWith('변장한 사람');return [...ns.filter(n=>!al(n)).sort((a,b)=>a.localeCompare(b,'ko')),...ns.filter(al).sort()].join(', ');})():'현재 같은 장소에 보이는 다른 사람은 없습니다.',...new Set(recent.map(e=>`${e.time}${e.place?' · '+places[e.place].name:''} · ${korean(s,e.localSummary||e.text)}`))];}
 function combatContext(s,p,t,weapon){const place=places[p.location],ambush=p.hidden&&!visible(s,t,p),crowd=alive(s).filter(o=>o.id!==p.id&&o.id!==t.id&&sameSpace(s,o,p)&&!o.hidden&&!(p.team==='mafia'&&o.team==='mafia')).length,terms=[];
  if(s.turn===2)terms.push({label:'밤의 어둠',value:-2});if(s.turn===2&&s.plans[t.id]?.type==='sleep')terms.push({label:'잠든 상대',value:3});if(place.light<0)terms.push({label:place.name+'의 어둠',value:place.light});if(ambush)terms.push(weapon==='pistol'?{label:'숨은 자리에서 쏨 · 겨누기 어려움',value:-1}:{label:'상대에게 들키지 않은 기습',value:2});else if(crowd)terms.push({label:`주변에 보이는 ${crowd}명 앞의 공개 공격 · 상대가 대비하기 쉬움`,value:-Math.min(3,crowd)});
  return {env:terms.reduce((n,x)=>n+x.value,0),terms,ambush,publicAttack:!ambush&&crowd>0,dark:s.turn===2||place.light<0};}
