@@ -14,7 +14,7 @@ const role=(s,r)=>s.players.find(p=>p.role===r);
 {const s=game();const gf=role(s,'godfather'),mf=role(s,'mafioso');advance(s,{day:2,turn:0},s=>{if(s.day===1&&s.turn===0)for(const b of s.scenario.bombs)b.where='carry:'+gf.id;});
  const t=s.feed.filter(e=>e.to.includes(mf.id)&&e.source==='story/story_jobs.md'&&parseInt(e.time,10)===2).map(e=>e.text).join('\n');
  /* 2026-11-24 새 방향: 직업 이야기 단락 대신 상황 한 줄 */ok(/갱도 폐쇄/.test(t),'대행자: 둘째 날 아침에 갱도 상황이 나옴');
- advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)<=3&&/폭약 위치: .*의 품에 2개/.test(e.text)),'대행자: 아침에 폭약이 지금 누구 품에 있는지 나옴');}
+ advance(s,{day:3,turn:0});ok(s.feed.some(e=>e.to.includes(mf.id)&&parseInt(e.time,10)<=3&&/폭약 위치: .*의 품에 3개/.test(e.text)/* 2026-11-28 폭약 3개를 모두 대부 품으로 옮긴 경우 */),'대행자: 아침에 폭약이 지금 누구 품에 있는지 나옴');}
 // 2. 아침에 아무도 없을 때 생긴 장면(도일의 협박장 공개)은 그 턴에 그곳에 오는 사람이 본다
 {const s=game();advance(s,{day:1,turn:0})/* 2026-11-25 낮이 한 번: 예전 낮 2 → 낮 */;s.scenario.doyle.threatened=true;advance(s,{day:2,turn:0});const p=s.players.find(p=>p.team==='town');ok(!seen(s,p,/도일이 협박장 공개/),'아침에 집에 있던 사람은 아직 못 봄');p.location='hall';S.arrival(s,p);ok(seen(s,p,/도일이 협박장 공개/),'아침에 회관으로 온 사람은 도일의 협박장 공개를 봄');S.arrival(s,p);ok(count(s,p,/도일이 협박장 공개/)===1,'한 번만 봄');}
 // 3. 같은 편이 폭약을 꺼내면 바로 알린다 / 쓰러지면서 떨어뜨려도 알린다

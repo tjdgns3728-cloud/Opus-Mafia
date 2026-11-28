@@ -26,7 +26,7 @@ const other=town[1];other.location='tavern';ok(all(G().places.tavern)===all(t),'
 ok(!/담배꽁초|광차에|술통|약상자|세 번째/.test(all(G())),'원고에만 있는 단서(담배꽁초, 숨긴 곳, 열쇠 세 번째 주인)가 없음');
 const heardBefore=s.feed.some(e=>e.to.includes(p.id)&&/폭약/.test(String(e.text))&&/두 개/.test(String(e.text)));
 ok(/두 개가 없어졌다는/.test(G().places.warehouse.why)===heardBefore,'폭약 두 개 이야기는 화면에서 본 뒤에만 붙음 (본 적 '+heardBefore+')');
-C.emit(s,[p.id],'story','도일: 폭약 두 개가 없어졌소.');ok(/두 개가 없어졌다는/.test(G().places.warehouse.why),'도일에게 들은 뒤에는 화약고 설명에 붙음');
+C.emit(s,[p.id],'story','도일: 폭약 세 개가 없어졌소.');/* 2026-11-28 폭약 3개 */ok(/세 개가 없어졌다는/.test(G().places.warehouse.why),'도일에게 들은 뒤에는 화약고 설명에 붙음');
 
 // 4. 밤에는 지금 있는 곳 안내를 만들지 않는다(시민은 움직이지 않음)
 s.turn=2;p.location='home';ok(!G().places.home.here,'밤에는 지금 있는 곳 안내가 없음');

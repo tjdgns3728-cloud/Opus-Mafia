@@ -7,8 +7,8 @@ const names=['가람','나래','다온','라희','마루','바다','사랑','아
 function game(seed){let x=seed;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};const s=C.create(names.map((n,i)=>({id:'p'+i,name:n,bot:true})),rng);S.start(s,rng);S.afterGathering?.(s);s.rng=rng;return s;}
 const where=s=>s.scenario.bombs.map(b=>b.where);
 // 1. 2026-11-16 사용자 결정으로 바뀜: 예전 "여섯 개를 두 개씩, 본거지 포함" → 지금 "두 개를 마을 안 서로 다른 두 곳에 하나씩, 본거지 없음"
-{const seen=new Set();let okSplit=true;for(let i=1;i<=40;i++){const s=game(i*7);const w=where(s);if(w.length!==2||w.includes('hideout')||new Set(w).size!==2)okSplit=false;seen.add(s.scenario.spots.join('+'));if(s.scenario.spots.includes('chapel')&&s.scenario.spots[0]!=='chapel')okSplit=false;}
- ok(okSplit,'폭약 두 개가 마을 안 서로 다른 두 곳에 하나씩, 본거지에는 없음 (교회가 뽑히면 첫 번째)');ok(seen.size>=4,'판마다 숨긴 곳이 달라짐 ('+seen.size+'가지 조합: '+[...seen].join(', ')+')');}
+{const seen=new Set();let okSplit=true;for(let i=1;i<=40;i++){const s=game(i*7);const w=where(s).filter(v=>!String(v).startsWith('carry:'));/* 2026-11-28 사용자 "3개로 늘려주세요", "1개는 마피아한테": 숨긴 2 + 대부 품 1 */const gf=s.players.find(p=>p.role==='godfather');if(where(s).length!==3||!where(s).includes('carry:'+gf.id)||w.length!==2||w.includes('hideout')||new Set(w).size!==2)okSplit=false;seen.add(s.scenario.spots.join('+'));if(s.scenario.spots.includes('chapel')&&s.scenario.spots[0]!=='chapel')okSplit=false;}
+ ok(okSplit,'폭약 세 개 중 두 개는 마을 안 서로 다른 두 곳에 하나씩, 하나는 대부 품, 본거지에는 없음 (교회가 뽑히면 첫 번째)');ok(seen.size>=4,'판마다 숨긴 곳이 달라짐 ('+seen.size+'가지 조합: '+[...seen].join(', ')+')');}
 // 2. 단서 없이는 현장 수색에 성공해도 찾지 못하고, 단서를 들으면 찾는다
 {const s=game(3);s.scenario.spots=['chapel','barrel'];s.scenario.bombs=[{id:'d0',where:'chapel'},{id:'d1',where:'spot:barrel'}];/* 폭약은 두 개 */s.scenario.discovered=true;
  const p=s.players.find(p=>p.team==='town');const sure=()=>0.99;p.location='chapel';p.storyKnown=[];for(let i=0;i<4;i++)S.investigate(s,p,sure);ok(!p.storyKnown.some(k=>k.startsWith('cache:')),'단서 없이 교회를 뒤져도 폭약이 나오지 않음');
