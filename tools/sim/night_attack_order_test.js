@@ -18,6 +18,7 @@ const checked=(html,key)=>(new RegExp('name="pick-'+key+'" data-pick-field="'+ke
 // 밤: 마피아 둘이 본거지, 시민은 각자 집
 {const s=game();s.day=2;s.turn=2;s.stage='small';const mafia=s.players.filter(p=>p.team==='mafia'),P=mafia.find(p=>p.role==='mafioso')||mafia[0],mate=mafia.find(p=>p.id!==P.id);
  for(const p of s.players){p.hidden=false;p.used={big:false,small:false};if(p.team==='mafia'){p.location='hideout';p.houseId=null;}else{p.location='home';p.houseId=null;}}
+ P.nightMoveEpoch=s.epoch; // 본거지에 머물기로 한 뒤 공격 대상 창을 확인한다.
  P.items.knife=1;const {u,v}=uiFor(s,P,'big');u.actionPicker={type:'attack',epoch:v.epoch,stage:v.stage,slot:'big'};
  const list=u.pickerChoices(),html=u.pickerView(v),order=radioOrder(html,'target'),town=s.players.filter(p=>p.team!=='mafia').map(p=>p.id);
  ok(list.length>0&&list[0].nightRaid===true,'밤 본거지: 고를 목록의 첫 항목이 집 습격 · '+(list[0]?list[0].label||list[0].target:'없음'));

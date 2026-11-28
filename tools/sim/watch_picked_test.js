@@ -8,7 +8,7 @@ const tmp=path.join(os.tmpdir(),'noir_watch_picked_test_'+process.pid+'.jsonl');
 for(const f of ['00World','01Narrative','02Press','04Incidents','05Scenarios','06StoryDirector','07StoryActions','08StoryFlow','09Minds'])require(path.join(dir,f+'.js'));
 let UI=null;globalThis.WebEngine={room(){},Component:class{},define(n,c){if(n==='TRPGUI')UI=c;}};
 for(const f of ['03Visuals','20Interface'])new Function('WebEngine',fs.readFileSync(path.join(dir,f+'.js'),'utf8'))(globalThis.WebEngine);
-const src=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');eval(src.replace(/\}\)\(\);\s*$/,'globalThis.__t={ROOM};})();'));
+const src=fs.readFileSync(path.join(dir,'10Session.js'),'utf8');eval(src.replace(/\}\)\(\);\s*$/,'globalThis.__t={ROOM,aiTurn};})();'));
 const C=globalThis.NoirTRPG,S=globalThis.NoirScenarios,NS=globalThis.NoirScreen,T=globalThis.__t;
 const ok=(c,m)=>{console.log((c?'통과 ':'실패 ')+m);if(!c)process.exitCode=1;};
 let x=53;const rng=()=>{x=(x*16807)%2147483647;return x/2147483647;};
@@ -75,3 +75,29 @@ const btns=h=>[...h.matchAll(/<button([^>]*data-do="action-group"[^>]*)>([\s\S]*
  ok(/data-do="solo"[^>]*>혼자 하기 · AI 자리 채우기</.test(u.home()),'[혼자 하기 · AI 자리 채우기]는 그대로');
  u.now={room:'K7QM',watching:true,host:true,seats:Array.from({length:8},(_,i)=>({name:'주민'+i,bot:true,on:true})),status:'lobby'};u.isStarting=()=>false;ok(/같이 볼 수 있습니다/.test(u.lobby())&&/마을 이야기 시작/.test(u.lobby()),'관전 방 대기실: 같이 볼 수 있다는 글, 방장은 시작 단추');}
 try{fs.unlinkSync(tmp);}catch{}
+// 밤 장소 선택과 도착 후 행동은 실제 AI 실행 경로에서 별개의 화면이다.
+async function nightDecision(move){
+ const s=fresh(),p=s.players.find(o=>o.team==='mafia'),town=s.players.find(o=>o.team==='town');
+ Object.assign(s,{day:6,turn:2,stage:'plan',epoch:12});p.location='hideout';
+ const watcher=ui(null);watcher.watchId=p.id;
+ const watch=()=>{watcher.now=watcher.watchPick({status:'play',room:'TEST',watching:true,view:T.ROOM.watch(r)});return watcher.actionPanel(watcher.now.view);};
+ const prompts=[];
+ const r={state:s,random:rng,engine:{time:0,timeScale:1},seat:()=>({on:true}),refresh(){},after(){},closePhase(){},ai:{mode:'on',async ask(prompt,{purpose}){
+  const v=C.view(s,p.id),buttons=NS.read(v).buttons,first=prompts.length===0;prompts.push(purpose);
+  if(first){
+   ok(watch().includes('여기 머물기')&&buttons.some(b=>b.do==='stay-here')&&!buttons.some(b=>b.name==='살펴보기'),'관전·AI 첫 밤 화면에 장소 선택');
+   const missing=NS.press(v,NS.read(v),{'버튼':'이동하기 (행동 소모 없음)','고른 것':[]});ok(!!missing.error,'목적지 없는 이동은 자동 선택하지 않음');
+  }else{
+   ok(p.location===(move?'hall':'hideout')&&!p.used.small&&!p.used.big,'장소 확정 후 두 행동 기회 유지');
+   ok(!buttons.some(b=>b.do==='stay-here')&&watch().includes('이번 밤 선택'),'관전·AI 모두 현재 장소의 행동으로 넘어감');
+  }
+  const pick=first?(move?{'버튼':'이동하기 (행동 소모 없음)','고른 것':['마을 회관']}:{'버튼':'여기 머물기'}):{'버튼':'살펴보기','고른 것':['현장 수색']};
+  return {ok:true,text:JSON.stringify({'누름':[pick]})};
+ }}};
+ await T.aiTurn(r,p.id);
+ ok(prompts.join('/')==='밤 장소 선택/참가자 행동'&&p.nightChoice?.lastSmall?.type==='evidence','AI가 장소 다음에 현장 수색을 선택해 게임이 처리함');
+ ok(watch().includes(move?'이동 · 마을 회관':'본거지에 머물기')&&/이번 밤 선택<\/b>[^<]*현장 수색/.test(watch()),'관전에 장소와 후속 행동 표시');
+ ok(!T.ROOM.act(r,p.id,{type:'night-stay',stage:s.stage,epoch:s.epoch}).ok,'이미 정한 장소를 다시 확정할 수 없음');
+ ok(!NS.read(C.view(s,town.id)).buttons.some(b=>b.do==='stay-here'),'시민의 기존 밤 행동 유지');
+}
+nightDecision(false).then(()=>nightDecision(true)).catch(e=>{console.error(e);process.exitCode=1;});

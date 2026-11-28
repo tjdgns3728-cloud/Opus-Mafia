@@ -129,6 +129,20 @@ function offerView(s,o){return {id:o.id,kind:o.kind,from:C.find(s,o.from)?.name|
 function planLeft(r){const s=r.state,now=r.engine?.time??0,ts=r.engine?.timeScale||1,left=((s.opened??now)+(s.cfg?.planSeconds||60)-now)/ts-1;return Number.isFinite(left)?Math.max(5,left):30;}
 async function aiTurn(r,id){const s=r.state,epoch=s.epoch,p=C.find(s,id);if(!C.canAct(s,p))return;const live=()=>r.state===s&&s.epoch===epoch&&s.stage==='plan'&&p.hp>0;
  for(let step=0;step<2&&live();step++){const said=p.intendPlace,{v,scr}=screenFor(s,id);
+  const nightChoice=v.turn===2&&scr.buttons.some(b=>b.do==='stay-here'&&!b.disabled);
+  if(nightChoice){
+   const answer=await ask(r,`${AI_BASE(p)} ${AI_RULES} ${defeatsFor(s,p)} 지금은 밤에 머물지 이동할지 고르는 시간이다. ${PRESS_FORM} ${screenAnswer}\n화면:\n${scr.text}`,'밤 장소 선택',planLeft(r));
+   if(!live())return;
+   const presses=answer?.['누름'];
+   const press=Array.isArray(presses)?presses[0]:presses;
+   const decoded=press&&globalThis.NoirScreen.press(v,scr,press);
+   if(decoded?.req?.type==='night-stay'||decoded?.req?.action?.type==='move'){
+    const result=ROOM.act(r,seatOf(p),decoded.req);
+    if(result.ok)continue;
+    aiPressFail(r,p,'밤 장소 선택',press,result.error);
+   }else if(press)aiPressFail(r,p,'밤 장소 선택',press,decoded?.error||'밤 장소 선택이 아닙니다.');
+   break;
+  }
   const a=await ask(r,`${AI_BASE(p)}${said?' 너는 앞서 '+C.places[said.place].name+(said.place===p.location?'에 남겠다고':'에 가겠다고')+' 말했다.':''} ${AI_RULES} ${defeatsFor(s,p)} 지금은 이번 때의 행동을 고르는 시간이다. ${PRESS_FORM} 이동하기(행동 소모 없음)로 옮기면 그 뒤의 누름은 쓰지 않고, 옮긴 곳의 화면을 다시 보여 준다. "말"은 같은 장소 사람들에게 할 말이다(하지 않으려면 빈 글). "추측"은 인물 정보의 예상 직업·예상 진영을 고르는 것이다(바꾸지 않으려면 빈 목록). JSON {"누름":[{"버튼":"","고른 것":[],"적은 글":""}],"말":"","추측":[{"누구":"","직업":"","진영":""}]}\n화면:\n${scr.text}`,'참가자 행동',planLeft(r)/* 2026-11-24 사용자 "AI 답 시간 늘리기": 계획 단계에 남은 시간까지 기다림(예전 30초, 2026-11-20 CM) */);
   if(!live())return;if(!a||typeof a!=='object')break;
   if(typeof a['말']==='string'&&a['말'].trim()&&!p.hidden)spoken(r,id,clean(a['말']),{automatic:true});
@@ -220,6 +234,11 @@ WebEngine.room(ROOM={min:8,max:11,canStart:(r,n)=>[8,11].includes(n)?{ok:true}:{
  /* 2026-11-28 관전 방(엔진 ROOM-4): 보는 사람은 플레이어를 골라 그 사람의 화면을 본다 — 모든 플레이어의 화면을 보낸다 */watch(r){const s=r.state;if(!s?.players)return null;const views={};for(const p of s.players)views[p.id]=C.view(s,p.id);return {order:s.players.map(p=>({id:p.id,name:p.name})),views};},
  view(r,id){return C.view(r.state,seatAs(r.state,id));},chat(r,id,{text}){return spoken(r,seatAs(r.state,id),text);},
  act(r,seat,a){const s=r.state,id=seatAs(s,seat),p=C.find(s,id);if(!p)return error('자리 없음');if(a.type==='will'){p.will=clean(a.text);refresh(r);return {ok:true};}if(a.type==='watch'){if(!C.watchable(s,p))return error('숨을 거둔 뒤에만 다른 사람의 장면을 볼 수 있습니다.');const t=C.find(s,a.target);if(t&&t.id!==p.id&&!C.canWatch(s,p,t))return error('같은 편의 장면만 볼 수 있습니다.');p.watching=t&&t.id!==p.id?t.id:null;refresh(r);return {ok:true};}if(s.result&&a.type!=='text-shown')return error('판이 끝났습니다.');
+ if(a.type==='night-stay'){
+  if(s.turn!==2||!['small','plan'].includes(s.stage)||a.stage!==s.stage||a.epoch!==s.epoch||p.team!=='mafia'||!C.canAct(s,p)||s.ready.includes(id)||p.nightMoveEpoch===s.epoch)return error('지금은 밤 장소를 고를 수 없습니다.');
+  p.nightChoice={epoch:s.epoch,from:p.location,to:p.location,moved:false};p.nightMoveEpoch=s.epoch;
+  refresh(r);return {ok:true};
+ }
  if(a.type==='call-help'){/* 2026-11-25 사용자 "찾아가기+도움 청하기" */const err=C.callHelp(s,id);if(err)return error(err);refresh(r);return {ok:true};}
  if(a.type==='give-item'){/* 2026-11-28 밤 회의 아이템 전달하기(행동을 쓰지 않음) */const err=C.giveItem(s,id,a.item,a.target);if(err)return error(err);refresh(r);return {ok:true};}
  if(a.type==='extend-time'){if(s.stage!=='trial'||!s.trial)return error('재판 대화 중에만 시간을 늘릴 수 있습니다.');if(p.hp<=0)return error('살아 있는 사람만 시간을 늘릴 수 있습니다.');s.trial.extended??=[];if(s.trial.extended.includes(id))return error('시간 추가는 한 사람이 한 번만 요청할 수 있습니다.');if(!r.extendPhase||!r.extendPhase(30))return error('지금은 시간을 늘릴 수 없습니다.');s.trial.extended.push(id);quietMark(r)/* 제안 C1a: 시간 추가도 조용함을 다시 셈 */;C.emit(s,C.alive(s).map(o=>o.id),'notice',C.pp(p.name,'이','가')+' 재판 시간을 30초 늘렸습니다.');refresh(r);return {ok:true};}
@@ -235,7 +254,11 @@ WebEngine.room(ROOM={min:8,max:11,canStart:(r,n)=>[8,11].includes(n)?{ok:true}:{
  else if(a.type==='support'){if(s.stage!=='consent')err='현재 개정 동의를 받는 시간이 아닙니다.';else {err=C.support(s,id,a.case,a.accept!==false);if(!err&&(C.consentStatus(s,s.cases.find(c=>c.id===s.consent)).missing===0||C.consentStatus(s,s.cases.find(c=>c.id===s.consent)).yes>=C.consentStatus(s,s.cases.find(c=>c.id===s.consent)).needed))r.closePhase();}}
  else if(a.type==='offer')err=C.accept(s,id,a.offer,a.accept===true,a.fact);
  else if(a.type==='vote'){if(s.stage!=='vote'||p.hp<=0||p.masked||id===s.trial.target||!['guilty','innocent','abstain'].includes(a.vote))return error('투표할 수 없습니다.');s.trial.votes[id]=a.vote;voteDone(r);}
- else return error('알 수 없는 요청입니다.');if(err)return error(err);end(r);refresh(r);return {ok:true};},
+ else return error('알 수 없는 요청입니다.');if(err)return error(err);
+ if(a.type==='action'&&a.slot==='small'&&a.action.type!=='move'&&p.nightChoice?.epoch===s.epoch){
+  p.nightChoice.lastSmall={type:a.action.type,label:a.action.label||'',refunded:!p.used.small};
+ }
+ end(r);refresh(r);return {ok:true};},
  texts:{too_few:'네 자리 이상 모이면 시작할 수 있습니다.'}
 });
 })();
